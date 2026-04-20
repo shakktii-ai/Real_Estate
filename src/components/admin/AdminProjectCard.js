@@ -4,11 +4,10 @@ import PropertyCard from '../PropertyCard'; // Reuse the card we made earlier
 export default function AdminProjectCard({ project, onEdit, onDelete }) {
   return (
     <div className="flex flex-col">
-      {/* Reusing the public card UI for consistency */}
-      <PropertyCard project={project} />
-      
       {/* Admin Action Bar */}
-      <div className="flex border border-t-0 rounded-b-2xl overflow-hidden shadow-sm">
+      <div className=" border border-t-0 rounded-b-2xl overflow-hidden shadow-sm">
+        <PropertyCard project={project} />
+        <div className='flex'>
         <button 
           onClick={() => onEdit(project)}
           className="flex-1 flex items-center justify-center gap-2 py-3 bg-white hover:bg-gray-50 text-sm font-medium border-r"
@@ -21,6 +20,7 @@ export default function AdminProjectCard({ project, onEdit, onDelete }) {
         >
           <Trash2 size={16} />
         </button>
+        </div>
       </div>
     </div>
   );

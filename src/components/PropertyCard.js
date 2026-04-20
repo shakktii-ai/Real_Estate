@@ -1,6 +1,7 @@
 import React from 'react';
 import { Heart, MapPin, Calendar, Home } from 'lucide-react';
 import { useState } from 'react';
+import Link from 'next/link';
 const PropertyCard = ({ project }) => {
   const [showAllAmenities, setShowAllAmenities] = useState(false);
   const categoryColors = {
@@ -11,10 +12,14 @@ const PropertyCard = ({ project }) => {
   };
 
   return (
-    <div className="bg-white rounded-2xl shadow-sm border overflow-hidden hover:shadow-md transition-shadow relative p-4">
+    <div className="bg-white rounded-2xl shadow-sm border overflow-hidden hover:shadow-md transition-shadow relative ">
       {/* Top Image Section */}
       <div className="relative h-56">
-        <img src={project.image} alt={project.projectName} className="w-full h-full object-cover" />
+        <img
+          src={project.mainImage}
+          alt={project.projectName}
+          className="w-full h-full object-cover rounded-t-2xl"
+        />
         <div className="absolute top-3 left-3 flex flex-wrap gap-2 max-w-[80%]">
 
 
@@ -42,38 +47,33 @@ const PropertyCard = ({ project }) => {
 
       {/* Content Section */}
       <div className="p-4">
-        <h3 className="font-bold text-lg text-gray-800">{project.projectName}</h3>
-        <p className="text-sm text-gray-500 mb-2">{project.builderName}</p>
+        <h3 className="font-bold text-lg text-black ">{project.projectName}<span className='ml-1 font-normal text-sm'>({project.reraNumber})</span></h3>
+        <p className="text-sm text-black mb-2">{project.builderName}</p>
 
-        <p className="text-xl font-bold text-[#1447EA] mb-4">{project.pricing.displayPrice}<span className='font-normal text-sm text-black'>onwards</span></p>
+        <p className="text-xl font-bold text-[#1447EA] mb-4">{project.pricing.displayPrice}<span className='ml-2 font-normal text-sm text-black'>onwards</span></p>
 
         <div className="space-y-2 mb-4">
-          <div className="flex items-center gap-2 text-xs text-gray-600">
-            <MapPin size={14} /> {project.address}
+          <div className="flex items-center gap-2 text-xs text-black">
+            <MapPin size={14} /> {project.address?.area}, {project.address?.city}
           </div>
-          <div className="flex items-center gap-2 text-xs text-gray-600">
+          <div className="flex items-center gap-2 text-xs text-black">
             <Calendar size={14} /> Possession: {project.possessionDate}
           </div>
-          <div className="flex items-center gap-2 text-xs text-gray-600">
+          <div className="flex items-center gap-2 text-xs text-black">
             <Home size={14} />  {project.configuration?.join(", ")}
           </div>
         </div>
 
         {/* Construction Progress */}
         <div className="mb-4">
-          <div className="flex justify-between text-[10px] text-gray-400 mb-1">
+          <div className="flex justify-between text-[10px] text-[#6F6F6F] mb-1">
             <span>Construction</span>
             <span>{project.constructionProgress}% Complete</span>
           </div>
 
           <div className="w-full bg-gray-100 h-1.5 rounded-full overflow-hidden">
             <div
-              className={`h-1.5 rounded-full transition-all duration-500 ${project.constructionProgress >= 80
-                ? "bg-green-500"
-                : project.constructionProgress >= 50
-                  ? "bg-yellow-500"
-                  : "bg-red-500"
-                }`}
+              className="h-1 rounded-full transition-all duration-500 bg-[#02B11F]"
               style={{ width: `${project.constructionProgress || 0}%` }}
             />
           </div>
@@ -86,7 +86,7 @@ const PropertyCard = ({ project }) => {
             ).map((amenity) => (
               <span
                 key={amenity}
-                className="px-3 py-1 rounded-full bg-[#742E85]/10 text-[#742E85] text-[11px] font-medium"
+                className="px-3 py-1 rounded-full bg-[#D9D9D9] text-black text-[11px] font-medium"
               >
                 {amenity}
               </span>
@@ -96,7 +96,7 @@ const PropertyCard = ({ project }) => {
               <button
                 type="button"
                 onClick={() => setShowAllAmenities(true)}
-                className="px-3 py-1 rounded-full bg-gray-100 text-gray-600 text-[11px] font-medium hover:bg-gray-200 transition"
+                className="px-3 py-1 rounded-full bg-[#D9D9D9] text-black text-[11px] font-medium hover:bg-gray-200 transition"
               >
                 +{project.amenities.length - 2}
               </button>
@@ -105,7 +105,7 @@ const PropertyCard = ({ project }) => {
         )}
         {/* Buttons */}
         <div className="flex gap-2">
-          <button className="flex-1 bg-purple-800 text-white py-2 rounded-md text-sm font-semibold">View Details</button>
+          <Link href={`/properties/${project.slug}`} className="flex-1 flex items-center justify-center bg-[#742E85] text-white py-2 rounded-md text-sm font-semibold">View Details</Link>
           <button className="px-4 py-2 border border-gray-300 rounded-md text-sm font-semibold text-gray-700">Get Price</button>
         </div>
       </div>

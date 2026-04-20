@@ -12,12 +12,15 @@ const ProjectSchema = new mongoose.Schema(
       type: String, 
       required: [true, "Builder name is required"] 
     },
-   
-      address: { type: String, required: true },
-   
+     reraNumber:{
+      type:String, required:[true,"RERA Number is required"]
+     },
+      address:{
+     area: { type: String, required: true },
+      city: { type: String, required: true },
+
+      },
     pricing: {
-      minPrice: { type: Number, required: true }, // Store as Number for filtering
-      maxPrice: { type: Number, required: true },
       currency: { type: String, default: "INR" },
       displayPrice: { type: String }, // e.g., "₹1.5 cr - 2.2 cr"
     },
@@ -43,8 +46,8 @@ const ProjectSchema = new mongoose.Schema(
     // Price Drop Feature (Screenshot 80/82)
     priceDrop: {
       isEnabled: { type: Boolean, default: false },
-      oldPrice: { type: Number },
-      newPrice: { type: Number },
+      oldPrice: { type: String },
+      newPrice: { type: String},
     },
 
     // Categorization & Highlights
@@ -59,15 +62,15 @@ const ProjectSchema = new mongoose.Schema(
     },
 
     // Media & Files
-    images: [{ type: String }], // Array of URLs
+  
     mainImage: { type: String },
     brochureUrl: { type: String },
     priceSheetUrl: { type: String },
-
+   qrCodeUrl: { type: String },
     description: { type: String },
     
     // SEO & Tracking
-    slug: { type: String, unique: true }, // for URL: /listings/urban-heights
+    slug: { type: String, unique: true }, 
     isPublished: { type: Boolean, default: true },
   },
   { timestamps: true } // Automatically creates createdAt and updatedAt

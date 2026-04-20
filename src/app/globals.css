@@ -14,7 +14,7 @@
 
 @media (prefers-color-scheme: dark) {
   :root {
-    --background: #0a0a0a;
+    --background: #ffffff;
     --foreground: #ededed;
   }
 }
@@ -23,4 +23,43 @@ body {
   background: var(--background);
   color: var(--foreground);
   font-family: Arial, Helvetica, sans-serif;
+}
+@keyframes marquee {
+  0% { transform: translateX(0%); }
+  100% { transform: translateX(-50%); }
+}
+
+.animate-marquee {
+  animation: marquee 25s linear infinite;
+}
+
+@layer utilities {
+  .bg-vision-gradient {
+    background: radial-gradient(97.99% 97.99% at 50% 50%, #FFFFFF 0%, #CCA4D6 100%);
+  }
+
+  .bg-hero-overlay {
+    background: linear-gradient(178.85deg, #FFFFFF -21.47%, rgba(255, 255, 255, 0) 373%);
+  }
+
+  .bg-footer-gradient {
+    background: radial-gradient(298.95% 298.95% at 50% 50%, #E8DDEB 0%, #4F165C 100%);
+  }
+
+  /* EMI Calculator Slider Custom Styles */
+  input[type='range']::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 24px;
+    height: 24px;
+    background: #2563EB;
+    border: 4px solid white;
+    border-radius: 50%;
+    cursor: pointer;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    transition: all 0.2s;
+  }
+  input[type='range']::-webkit-slider-thumb:hover {
+    transform: scale(1.1);
+  }
 }

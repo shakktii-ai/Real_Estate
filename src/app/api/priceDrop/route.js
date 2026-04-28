@@ -1,10 +1,10 @@
 import { NextResponse } from 'next/server';
-import dbConnect from '@/lib/db'; // Ensure you have this DB connector
+import {connectToDatabase} from '@/lib/db'; // Ensure you have this DB connector
 import Project from '@/models/Project';
 
 export async function GET() {
   try {
-    await dbConnect();
+    await connectToDatabase();
     
     // Filter by the boolean field in your schema
     const projects = await Project.find({ 

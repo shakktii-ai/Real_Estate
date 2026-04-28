@@ -14,7 +14,8 @@ export default function AuthModal({ onClose }) {
     const [profileData, setProfileData] = useState({
         budget: "",
         buyingTimeline: "",
-        purpose: ""
+        purpose: "",
+         referralCode: "",
     });
     const [step, setStep] = useState("PHONE");
     const [phone, setPhone] = useState("");
@@ -137,6 +138,7 @@ export default function AuthModal({ onClose }) {
                     budget: profileData.budget,
                     buyingTimeline: profileData.buyingTimeline,
                     purpose,
+                      referralCodeUsed: profileData.referralCode,
                 }),
             });
             const finalData = {
@@ -359,6 +361,24 @@ export default function AuthModal({ onClose }) {
                                 </button>
                             </div>
                         </div>
+                        <div>
+  <label className="block text-sm text-black mb-2">
+    Referral Code (Optional)
+  </label>
+
+  <input
+    type="text"
+    value={profileData.referralCode}
+    onChange={(e) =>
+      setProfileData({
+        ...profileData,
+        referralCode: e.target.value.toUpperCase(),
+      })
+    }
+    placeholder="Enter referral code"
+    className="w-full border border-gray-300 rounded-xl px-4 py-3 outline-none text-black"
+  />
+</div>
                     </div>
 
                     <button

@@ -1,14 +1,21 @@
+//src/app/(website)/properties/[slug]/page.js
 "use client";
 import { useEffect, useState } from "react";
 import { useParams } from "next/navigation";
 import { Download, FileText, MapPin, CheckCircle, ArrowLeft } from "lucide-react";
 import Link from "next/link";
 import Navbar from "@/components/Navbar";
-
+import BookSiteVisitModal from "@/components/BookSiteVisitModal";
+import BookVirtualTourModal from "@/components/BookVirtualTourModal";
+import { useAuth } from "@/lib/context/AuthContext";
+import { toast } from "react-toastify";
 export default function ProjectDetails() {
+  const { user } = useAuth();
   const { slug } = useParams();
   const [project, setProject] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isVirtualModalOpen,setIsVirtualModalOpen] = useState(false);
   const categoryColors = {
     Premium: "bg-[#009966]",
     Luxury: "bg-[#F97316]",
@@ -38,10 +45,30 @@ export default function ProjectDetails() {
   return (
 
     <div className="max-w-full mx-auto p-4 md:p-8 bg-[#F8F9FA] min-h-screen text-black">
+      {isModalOpen && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm p-4">
+          <div className="max-w-[450px] w-full">
+            <BookSiteVisitModal
+              propertyId={project._id}
+              onClose={() => setIsModalOpen(false)}
+            />
+          </div>
+        </div>
+      )}
+      {isVirtualModalOpen && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm p-4">
+          <div className="max-w-[450px] w-full">
+            <BookVirtualTourModal
+              propertyId={project._id}
+              onClose={() => setIsVirtualModalOpen(false)}
+            />
+          </div>
+        </div>
+      )}
       {/* 1. Top Navigation & Document Buttons */}
       <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-6 gap-4">
         <div>
-          <Link href="/" className="flex items-center gap-1 text-gray-500 text-sm mb-2 hover:text-black">
+          <Link href={user ? '/dashboard' : '/'} className="flex items-center gap-1 text-gray-500 text-sm mb-2 hover:text-black">
             <ArrowLeft size={16} /> Back
           </Link>
           <h1 className="text-3xl font-semibold">{project.projectName}</h1>
@@ -61,8 +88,23 @@ export default function ProjectDetails() {
               <FileText size={16} /> Price Sheet
             </a>
           )}
-          <button className="px-6 py-2 bg-[#742E85] text-white rounded-lg text-sm font-bold shadow-md">Book Site Visit</button>
-          <button className="px-6 py-2 bg-[#E5097F] text-white rounded-lg text-sm font-bold shadow-md">Book Virtual Tour</button>
+          <button onClick={() => {
+            if (!user) {
+              toast.error("Please SignUp first to book a site visit");
+              return;
+            }
+            setIsModalOpen(true)
+          }}
+            className="px-6 py-2 bg-[#742E85] text-white rounded-lg text-sm font-bold shadow-md hover:cursor-pointer">Book Site Visit</button>
+          <button 
+          onClick={() => {
+            if (!user) {
+              toast.error("Please SignUp first to book a vitual tour");
+              return;
+            }
+            setIsVirtualModalOpen(true)
+          }}
+           className="px-6 py-2 bg-[#E5097F] text-white rounded-lg text-sm font-bold shadow-md hover:cursor-pointer">Book Virtual Tour</button>
         </div>
       </div>
 
@@ -142,7 +184,7 @@ export default function ProjectDetails() {
                 About {project.projectName}
               </h3>
 
-              <p className="text-gray-600 leading-relaxed">
+              <p className="text-gray-600 leading-relaxed whitespace-pre-wrap">
                 {project.description}
               </p>
             </div>
@@ -250,7 +292,7 @@ export default function ProjectDetails() {
             <div className="flex justify-between pb-2">
               <h3 className="text-sm font-normal">Overall Progress</h3>
               <p className=" font-normal text-black">
-                {project.constructionProgress || 0}% 
+                {project.constructionProgress || 0}%
               </p>
             </div>
             <div className="w-full bg-[#F6D0FF] rounded-full h-2 overflow-hidden">
@@ -260,7 +302,7 @@ export default function ProjectDetails() {
               />
             </div>
 
-            <p  className="p-2 rounded-xl text-[#742E85] bg-[#F6D0FF] my-4">
+            <p className="p-2 rounded-xl text-[#742E85] bg-[#F6D0FF] my-4">
               Construction is on schedule. Expected possession in {project.possessionDate}.
             </p>
           </div>

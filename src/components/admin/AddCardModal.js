@@ -8,14 +8,14 @@ export default function AddLivingStyleModal({ isOpen, onClose, onRefresh }) {
     title: '',
     categoryTag: '',
     cardColor: '',
-    description:'',
+    description: '',
     pricingRange: '',
     features: ['', '', '', ''],
     image: null
   });
 
   const handleSubmit = async (e) => {
-   
+
     e.preventDefault();
 
     if (!formData.title.trim()) {
@@ -27,7 +27,7 @@ export default function AddLivingStyleModal({ isOpen, onClose, onRefresh }) {
       toast.error("Please select a category");
       return;
     }
-if (!formData.description) {
+    if (!formData.description) {
       toast.error("Description is required");
       return;
     }
@@ -41,9 +41,14 @@ if (!formData.description) {
       return;
     }
 
-    const validFeatures = formData.features.filter(
-      (feature) => feature.trim() !== ""
-    );
+  const validFeatures = formData.features.filter(
+  (f) => f.trim() !== ""
+);
+
+if (validFeatures.length < 4) {
+  toast.error("First 4 features are required");
+  return;
+}
 
     if (validFeatures.length < 2) {
       toast.error("Please add at least 2 features");
@@ -54,7 +59,7 @@ if (!formData.description) {
       toast.error("Please upload an image");
       return;
     }
-  const toastId = toast.loading("Uploading media and saving project...");
+    const toastId = toast.loading("Uploading media and saving project...");
     try {
       setLoading(true);
       const imageFormData = new FormData();
@@ -85,12 +90,12 @@ if (!formData.description) {
       });
 
       if (res.ok) {
-         toast.update(toastId, {
-                            render: "Card added successfully! ",
-                            type: "success",
-                            isLoading: false,
-                            autoClose: 3000
-                        });
+        toast.update(toastId, {
+          render: "Card added successfully! ",
+          type: "success",
+          isLoading: false,
+          autoClose: 3000
+        });
         onRefresh();
         onClose();
 
@@ -98,7 +103,7 @@ if (!formData.description) {
           title: "",
           categoryTag: "Affordable",
           cardColor: "blue",
-          description:"",
+          description: "",
           pricingRange: "",
           features: ["", "", "", ""],
           image: null,
@@ -107,17 +112,17 @@ if (!formData.description) {
         alert("Failed to add card");
       }
     } catch (error) {
-        toast.update(toastId, {
-                      render: "Error: Could not save project. Please try again.",
-                      type: "error",
-                      isLoading: false,
-                      autoClose: 4000
-                  });
+      toast.update(toastId, {
+        render: "Error: Could not save project. Please try again.",
+        type: "error",
+        isLoading: false,
+        autoClose: 4000
+      });
       console.error("Error adding card:", error);
       alert("Something went wrong");
-    }finally {
-  setLoading(false);
-}
+    } finally {
+      setLoading(false);
+    }
   };
   if (!isOpen) return null;
 
@@ -170,36 +175,36 @@ if (!formData.description) {
               </select>
             </div>
           </div>
-  <div>
-              <label className="block text-xs font-bold text-black mb-2 ">
-                Description
-              </label>
-              <textarea
-                type="text"
-                placeholder=""
-                value={formData.description}
-                onChange={(e) =>
-                  setFormData({ ...formData, description: e.target.value })
-                }
-                className="w-full bg-gray-50 border border-gray-300 rounded-xl p-3 text-sm text-black placeholder:text-gray-500 focus:outline-none focus:ring-2 focus:ring-purple-500"
-              />
-            </div>
+          <div>
+            <label className="block text-xs font-bold text-black mb-2 ">
+              Description
+            </label>
+            <textarea
+              type="text"
+              placeholder=""
+              value={formData.description}
+              onChange={(e) =>
+                setFormData({ ...formData, description: e.target.value })
+              }
+              className="w-full bg-gray-50 border border-gray-300 rounded-xl p-3 text-sm text-black placeholder:text-gray-500 focus:outline-none focus:ring-2 focus:ring-purple-500"
+            />
+          </div>
           <div className="grid grid-cols-2 gap-6">
             <div>
               <label className="block text-xs font-bold text-black mb-2 ">Card Color</label>
-             <select
-  value={formData.cardColor}
-  onChange={(e) =>
-    setFormData({ ...formData, cardColor: e.target.value })
-  }
-  className="w-full bg-gray-50 border border-gray-300 rounded-xl p-3 text-sm text-black focus:outline-none focus:ring-2 focus:ring-purple-500"
->
-  <option value="">- Select Card Color -</option>
-  <option value="blue">Blue (Smart)</option>
-  <option value="green">Green (Comfort)</option>
-  <option value="yellow">Yellow (Elite)</option>
-  <option value="teal">Teal (Relax)</option>
-</select>
+              <select
+                value={formData.cardColor}
+                onChange={(e) =>
+                  setFormData({ ...formData, cardColor: e.target.value })
+                }
+                className="w-full bg-gray-50 border border-gray-300 rounded-xl p-3 text-sm text-black focus:outline-none focus:ring-2 focus:ring-purple-500"
+              >
+                <option value="">- Select Card Color -</option>
+                <option value="blue">Blue (Smart)</option>
+                <option value="green">Green (Comfort)</option>
+                <option value="yellow">Yellow (Elite)</option>
+                <option value="teal">Teal (Relax)</option>
+              </select>
             </div>
             <div>
               <label className="block text-xs font-bold text-black mb-2 ">Pricing Range</label>
@@ -216,31 +221,68 @@ if (!formData.description) {
           </div>
 
           <div>
-            <label className="block text-xs font-bold text-black mb-2 ">Features (List Items)</label>
-            <div className="grid grid-cols-2 gap-4">
-             {[0, 1, 2, 3].map((i) => (
-  <input
-    key={i}
-    type="text"
-    placeholder={`Feature ${i + 1}`}
-    value={formData.features[i]}
-    onChange={(e) => {
-      const newFeatures = [...formData.features];
-      newFeatures[i] = e.target.value;
+  <label className="block text-xs font-bold text-black mb-2">
+    Features (List Items)
+  </label>
 
+  <div className="grid grid-cols-2 gap-4">
+    {formData.features.map((feature, i) => (
+      <div key={i} className="flex gap-2 items-center">
+        <input
+          type="text"
+          placeholder={`Feature ${i + 1}`}
+          value={feature}
+          onChange={(e) => {
+            const newFeatures = [...formData.features];
+            newFeatures[i] = e.target.value;
+
+            setFormData({
+              ...formData,
+              features: newFeatures,
+            });
+          }}
+          className="w-full bg-gray-50 border border-gray-300 rounded-xl p-3 text-sm text-black focus:outline-none focus:ring-2 focus:ring-purple-500"
+        />
+
+        {/* ❌ Remove button (only for extra fields) */}
+        {i >= 4 && (
+          <button
+            type="button"
+            onClick={() => {
+              const newFeatures = formData.features.filter(
+                (_, index) => index !== i
+              );
+              setFormData({
+                ...formData,
+                features: newFeatures,
+              });
+            }}
+            className="text-red-500 text-xs"
+          >
+            ✕
+          </button>
+        )}
+      </div>
+    ))}
+  </div>
+
+  {/* ➕ Add More Button */}
+  <button
+    type="button"
+    onClick={() =>
       setFormData({
         ...formData,
-        features: newFeatures,
-      });
-    }}
-    className="w-full bg-gray-50 border border-gray-300 rounded-xl p-3 text-sm text-black placeholder:text-gray-500 focus:outline-none focus:ring-2 focus:ring-purple-500"
-  />
-))}
-            </div>
-          </div>
+        features: [...formData.features, ""],
+      })
+    }
+    className="mt-3 text-sm text-[#742E85] font-semibold hover:underline"
+  >
+    + Add Feature
+  </button>
+</div>
 
           <div>
-            <label className="block text-xs font-bold text-gray-400 uppercase tracking-widest mb-2">
+            <label className="block text-xs font-bold text-black uppercase tracking-widest mb-2">
               Image
             </label>
 
@@ -276,27 +318,26 @@ if (!formData.description) {
           </div>
 
           <div className="flex gap-4 pt-4">
-  <button
-    type="button"
-    onClick={onClose}
-    className="flex-1 bg-gray-100 text-gray-600 py-4 rounded-xl font-bold hover:bg-gray-200 transition-all"
-  >
-    Cancel
-  </button>
+            <button
+              type="button"
+              onClick={onClose}
+              className="flex-1 bg-gray-100 text-gray-600 py-4 rounded-xl font-bold hover:bg-gray-200 transition-all"
+            >
+              Cancel
+            </button>
 
-  <button
-    type="submit"
-    disabled={loading}
-    className={`flex-1 py-4 rounded-xl font-bold transition-all ${
-      loading
-        ? "bg-gray-400 cursor-not-allowed text-white"
-        : "bg-[#E5097F] text-white hover:opacity-90"
-    }`}
-  >
-    {loading ? "Adding..." : "Add Card"}
-  </button>
-</div>
-</form>
+            <button
+              type="submit"
+              disabled={loading}
+              className={`flex-1 py-4 rounded-xl font-bold transition-all ${loading
+                  ? "bg-gray-400 cursor-not-allowed text-white"
+                  : "bg-[#E5097F] text-white hover:opacity-90"
+                }`}
+            >
+              {loading ? "Adding..." : "Add Card"}
+            </button>
+          </div>
+        </form>
       </div>
     </div>
   );

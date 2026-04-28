@@ -31,8 +31,8 @@ const ContactSchema = new mongoose.Schema(
     },
     status: {
       type: String,
-      enum: ["New", "Contacted", "Closed"],
-      default: "New",
+      enum: ["Unread", "Read"],
+      default: "Unread",
     },
   },
   { timestamps: true }

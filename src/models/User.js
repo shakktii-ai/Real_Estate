@@ -18,7 +18,7 @@ const UserSchema = new mongoose.Schema(
     // Signup step data
     budget: {
       type: String,
-      required:true,
+      required: true,
       default: "",
     },
 
@@ -48,8 +48,24 @@ const UserSchema = new mongoose.Schema(
       type: String,
       default: "",
     },
+    referralCode: {
+      type: String,
+      unique: true,
+    },
+    referredBy: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "User",
+      default: null,
+    },
+    referralCount: {
+      type: Number,
+      default: 0,
+    },
+    rewardPoints: {
+      type: Number,
+      default: 0,
+    }
 
-    
   },
   { timestamps: true }
 );

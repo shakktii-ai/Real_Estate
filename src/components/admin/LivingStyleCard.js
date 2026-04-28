@@ -1,7 +1,7 @@
 import { CheckCircle2, ArrowRight } from "lucide-react";
 import Link from "next/link";
 
-export default function LivingStyleCard({ card }) {
+export default function LivingStyleCard({ card, onEdit, onDelete }) {
   const colorMap = {
     blue: {
       bg: "bg-[#EEF4FF]",
@@ -103,7 +103,7 @@ export default function LivingStyleCard({ card }) {
       </div>
 
       {/* Button */}
-      <Link href='/properties'
+      <Link href={`/properties?category=${card.categoryTag}`}
         className={`mt-auto h-[44px] rounded-[12px] border ${style.buttonBorder} ${style.text} bg-white font-semibold text-[13px] flex items-center justify-center gap-2 hover:scale-[1.01] transition-all`}
       >
         View {card.categoryTag} Homes

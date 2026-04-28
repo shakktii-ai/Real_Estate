@@ -15,7 +15,10 @@ export default function EMICalculator() {
   const [totalInterest, setTotalInterest] = useState(0);
   const [totalPayment, setTotalPayment] = useState(0);
   const [isCalculated, setIsCalculated] = useState(false);
-
+// Add this after your state definitions
+useEffect(() => {
+  calculateEMI();
+}, [price, downPayment, interestRate, tenure]);
   const calculateEMI = () => {
     const P = price - downPayment;
     const r = interestRate / 12 / 100;

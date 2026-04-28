@@ -1,21 +1,55 @@
 "use client";
 
-import { useMemo, useState, useEffect } from "react";
+import { useMemo, useState, useEffect, Suspense } from "react";
+import { useSearchParams } from "next/navigation";
 import Navbar from "@/components/Navbar";
 import PropertyCard from "@/components/PropertyCard";
 import { Grid2X2, List, Map } from "lucide-react";
 import PropertyCardHori from "@/components/PropertyCardHori";
-
-
-export default function Home() {
+import { useAuth } from "@/lib/context/AuthContext";
+function PropertiesContent() {
+    const searchParams = useSearchParams();
+    const categoryParam = searchParams.get("category");
     const [budget, setBudget] = useState(200);
     const [selectedConfig, setSelectedConfig] = useState("");
     const [selectedStatus, setSelectedStatus] = useState("");
     const [selectedCity, setSelectedCity] = useState("");
     const [selectedArea, setSelectedArea] = useState("");
-    const [selectedCategory, setSelectedCategory] = useState("");
+    const [selectedCategory, setSelectedCategory] = useState(categoryParam || "");
     const [projects, setProjects] = useState([]);
     const [viewMode, setViewMode] = useState("grid");
+    const { user } = useAuth(); // Access current user
+    const [wishlist, setWishlist] = useState([]);
+    const handleToggleWishlist = (propertyId, isNowWishlisted) => {
+        if (isNowWishlisted) {
+            // Add to wishlist array
+            setWishlist((prev) => [...prev, propertyId]);
+        } else {
+            // Remove from wishlist array
+            setWishlist((prev) => prev.filter((id) => id !== propertyId));
+        }
+    };
+    useEffect(() => {
+        if (!user) return;
+
+        // Inside your PropertiesContent component
+        const fetchWishlist = async () => {
+            try {
+                const res = await fetch(`/api/wishlist/get?userId=${user.uid}`);
+                const data = await res.json();
+
+                // CHANGE THIS: 
+                // Instead of mapping the whole object, map just the ID.
+                // Since you populated, item.propertyId is an object, so we access ._id
+                setWishlist(data.map(item => item.propertyId._id));
+
+            } catch (error) {
+                console.error("Failed to fetch wishlist", error);
+            }
+        };
+
+        fetchWishlist();
+    }, [user]);
     useEffect(() => {
         const fetchProjects = async () => {
             try {
@@ -29,7 +63,12 @@ export default function Home() {
 
         fetchProjects();
     }, []);
-
+    useEffect(() => {
+        // If the user manually changes the URL, update state
+        if (categoryParam) {
+            setSelectedCategory(categoryParam);
+        }
+    }, [categoryParam]);
 
     const cities = [
         ...new Set(projects.map((p) => p.address?.city).filter(Boolean)),
@@ -167,36 +206,36 @@ export default function Home() {
 
                         <div className="space-y-3">
                             <select
-                                    value={selectedCity}
-                                    onChange={(e) => {
-                                        setSelectedCity(e.target.value);
-                                        setSelectedArea("");
-                                    }}
-                                    className="w-full border border-gray-300 rounded-md px-4 py-3 text-[14px] text-black outline-none"
-                                >
-                                    <option value="">City</option>
-                                    {cities.map((city) => (
-                                        <option key={city} value={city}>
-                                            {city}
-                                        </option>
-                                    ))}
-                                </select>
+                                value={selectedCity}
+                                onChange={(e) => {
+                                    setSelectedCity(e.target.value);
+                                    setSelectedArea("");
+                                }}
+                                className="w-full border border-gray-300 rounded-md px-4 py-3 text-[14px] text-black outline-none"
+                            >
+                                <option value="">City</option>
+                                {cities.map((city) => (
+                                    <option key={city} value={city}>
+                                        {city}
+                                    </option>
+                                ))}
+                            </select>
+                            <select
+                                value={selectedArea}
+                                onChange={(e) => setSelectedArea(e.target.value)}
+                                className="w-full border border-gray-300 rounded-md px-4 py-3 text-[14px] text-black outline-none"
+                            >
+                                <option value="">Area</option>
+                                {areas.map((area) => (
+                                    <option key={area} value={area}>
+                                        {area}
+                                    </option>
+                                ))}
+                            </select>
+                            <div className="flex gap-2">
 
-                            <div className="flex gap-3">
-                               <select
-                                        value={selectedArea}
-                                        onChange={(e) => setSelectedArea(e.target.value)}
-                                        className="flex-1 border border-gray-300 rounded-md px-4 py-3 text-[14px] text-black outline-none"
-                                    >
-                                        <option value="">Area</option>
-                                        {areas.map((area) => (
-                                            <option key={area} value={area}>
-                                                {area}
-                                            </option>
-                                        ))}
-                                    </select>
 
-                                <button className="px-6 bg-[#742E85] text-white rounded-md text-[14px] font-medium">
+                                <button className="px-6 py-2 bg-[#742E85] text-white rounded-md text-[14px] font-medium">
                                     Apply
                                 </button>
 
@@ -208,7 +247,7 @@ export default function Home() {
                                         setSelectedCity("");
                                         setSelectedArea("");
                                     }}
-                                    className="px-6 border border-gray-300 rounded-md text-[14px] text-black"
+                                    className="px-6 py-2 border border-gray-300 rounded-md text-[14px] text-black"
                                 >
                                     Reset
                                 </button>
@@ -277,11 +316,18 @@ export default function Home() {
                 }>
                     {filteredProjects.map((project) => (
                         viewMode === "grid"
-                            ? <PropertyCard key={project._id} project={project} />
-                            : <PropertyCardHori key={project._id} project={project} />
+                            ? <PropertyCard key={project._id} project={project} isWishlisted={wishlist.includes(project._id)} onToggleWishlist={handleToggleWishlist} />
+                            : <PropertyCardHori key={project._id} project={project} isWishlisted={wishlist.includes(project._id)} onToggleWishlist={handleToggleWishlist} />
                     ))}
                 </div>
             </div>
         </main>
+    );
+}
+export default function Home() {
+    return (
+        <Suspense fallback={<div className="p-10 text-center">Loading...</div>}>
+            <PropertiesContent />
+        </Suspense>
     );
 }

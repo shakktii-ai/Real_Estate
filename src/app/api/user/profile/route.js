@@ -2,14 +2,20 @@
 import { connectToDatabase } from "@/lib/db";
 import User from "@/models/User";
 import { NextResponse } from "next/server";
-
 export async function POST(req) {
   try {
     await connectToDatabase();
 
     const body = await req.json();
 
-    const { uid, phone, budget, buyingTimeline, purpose } = body;
+    const {
+      uid,
+      phone,
+      budget,
+      buyingTimeline,
+      purpose,
+      referralCodeUsed,
+    } = body;
 
     if (!uid || !phone) {
       return NextResponse.json(
@@ -18,7 +24,29 @@ export async function POST(req) {
       );
     }
 
+    // Find existing user
     let user = await User.findOne({ uid });
+    const wasAlreadyReferred = !!user?.referredBy;
+    // Find referrer if referral code entered
+    let referrer = null;
+
+    if (referralCodeUsed) {
+      referrer = await User.findOne({
+        referralCode: referralCodeUsed.trim().toUpperCase(),
+      });
+      if (!referrer) {
+        return NextResponse.json(
+          { error: "Invalid referral code" },
+          { status: 400 }
+        );
+      }
+      if (!referrer) {
+        return NextResponse.json(
+          { error: "Invalid referral code" },
+          { status: 400 }
+        );
+      }
+    }
 
     if (user) {
       user.budget = budget || user.budget;
@@ -26,8 +54,15 @@ export async function POST(req) {
       user.purpose = purpose || user.purpose;
       user.profileCompleted = true;
 
+      // Only set referredBy once
+      if (!user.referredBy && referrer) {
+        user.referredBy = referrer._id;
+      }
+
       await user.save();
     } else {
+      const generatedReferralCode =
+        "USER" + uid.slice(-5).toUpperCase();
       user = await User.create({
         uid,
         phone,
@@ -35,7 +70,26 @@ export async function POST(req) {
         buyingTimeline,
         purpose,
         profileCompleted: true,
+
+        referralCode: generatedReferralCode,
+
+
       });
+    }
+
+
+    // Reward only if this user was not already referred
+    if (referrer && !wasAlreadyReferred) {
+      user.referredBy = referrer._id;
+
+      referrer.referralCount += 1;
+      referrer.rewardPoints += 500;
+
+      // Welcome bonus for the new user
+      user.rewardPoints = (user.rewardPoints || 0) + 50;
+
+      await user.save();
+      await referrer.save();
     }
 
     return NextResponse.json(
@@ -66,8 +120,8 @@ export async function PUT(req) {
       {
         fullName: body.fullName,
         email: body.email,
-      
-       
+
+
       },
       { new: true }
     );

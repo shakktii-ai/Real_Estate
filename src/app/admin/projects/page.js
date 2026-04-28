@@ -8,6 +8,7 @@ export default function AdminProjectsPage() {
   const [projects, setProjects] = useState([]);
   const [searchTerm, setSearchTerm] = useState("");
   const [isModalOpen, setIsModalOpen] = useState(false);
+
   // Backend Integration: Fetch projects on load
   const fetchProjects = async () => {
     try {
@@ -34,7 +35,7 @@ export default function AdminProjectsPage() {
     <div className="min-h-screen bg-[#F8F9FD] flex">
 
 
-      <main className="flex-1 md:ml-64 p-2 md:p-8">
+      <main className="flex-1 ">
         {/* Header Section */}
         <header className="flex justify-between items-center mb-8 mt-20 md:mt-0">
           <div>

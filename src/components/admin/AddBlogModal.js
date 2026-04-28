@@ -117,7 +117,7 @@ export default function AddBlogModal({ isOpen, onClose, onRefresh }) {
                     <div className="space-y-6">
                         {/* Title */}
                         <div>
-                            <label className="block text-xs font-bold text-gray-400 uppercase tracking-widest mb-2">
+                            <label className="block text-xs font-bold text-black uppercase tracking-widest mb-2">
                                 Blog Title
                             </label>
 
@@ -134,7 +134,7 @@ export default function AddBlogModal({ isOpen, onClose, onRefresh }) {
 
                         {/* Description */}
                         <div>
-                            <label className="block text-xs font-bold text-gray-400 uppercase tracking-widest mb-2">
+                            <label className="block text-xs font-bold text-black uppercase tracking-widest mb-2">
                                 Description
                             </label>
 
@@ -151,7 +151,7 @@ export default function AddBlogModal({ isOpen, onClose, onRefresh }) {
 
                         {/* Image Upload */}
                         <div>
-                            <label className="block text-xs font-bold text-gray-400 uppercase tracking-widest mb-2">
+                            <label className="block text-xs font-bold text-black uppercase tracking-widest mb-2">
                                 Blog Image
                             </label>
 

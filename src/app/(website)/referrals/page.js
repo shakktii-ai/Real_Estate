@@ -1,16 +1,38 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import { motion } from "framer-motion";
 import { Copy, Share2 } from "lucide-react";
-
+import { auth } from "@/lib/firebase";
 export default function ReferralsPage() {
   const [copied, setCopied] = useState(false);
-  const referralCode = "PG3ZDHCW";
+  const [referralCode, setReferralCode] = useState("");
+  const [stats, setStats] = useState({
+    referralCount: 0,
+    rewardPoints: 0,
+  });
+useEffect(() => {
+  const unsubscribe = auth.onAuthStateChanged(async (user) => {
+    if (!user) return;
 
-  const copyToClipboard = () => {
+    try {
+      const res = await fetch(`/api/user/profile/${user.uid}`);
+      const data = await res.json();
+
+      setReferralCode(data.referralCode || "");
+      setStats({
+        referralCount: data.referralCount || 0,
+        rewardPoints: data.rewardPoints || 0,
+      });
+    } catch (error) {
+      console.error("Failed to fetch referral data", error);
+    }
+  });
+
+  return () => unsubscribe();
+}, []);  const copyToClipboard = () => {
     navigator.clipboard.writeText(referralCode);
     setCopied(true);
     setTimeout(() => setCopied(false), 2000);
@@ -28,19 +50,19 @@ export default function ReferralsPage() {
 
   return (
     <div className="min-h-screen bg-white font-roboto-condensed text-black overflow-x-hidden">
-    
 
-      <main className="max-w-[1270px] mx-auto px-4 md:px-0 py-12">
+
+      <main className="max-w-[1270px] mx-auto px-4 md:px-12 py-12">
         {/* Header */}
         <div className="text-left mb-10 pl-4 md:pl-0">
-          <motion.h1 
+          <motion.h1
             initial={{ opacity: 0, y: -20 }}
             animate={{ opacity: 1, y: 0 }}
             className="text-[32px] font-bold text-gray-900 mb-2"
           >
             Refer & Earn
           </motion.h1>
-          <motion.p 
+          <motion.p
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ delay: 0.1 }}
@@ -51,7 +73,7 @@ export default function ReferralsPage() {
         </div>
 
         {/* Hero Section: Referral Code Card (Rectangle 4742) */}
-        <motion.div 
+        <motion.div
           initial={{ opacity: 0, scale: 0.95 }}
           animate={{ opacity: 1, scale: 1 }}
           style={{
@@ -61,17 +83,17 @@ export default function ReferralsPage() {
           className="w-full min-h-[326px] py-10 flex flex-col justify-center items-center text-center text-white mb-[40px] md:mb-[76px] relative px-6"
         >
           <p className="text-white/90 text-[16px] md:text-[18px] mb-4">Your Referral Code</p>
-          <h2 className="text-[40px] md:text-[56px] font-bold tracking-wider mb-8 md:mb-10">{referralCode}</h2>
-          
+          <h2 className="text-[12px] md:text-[36px] font-bold tracking-wider mb-8 md:mb-10">{referralCode}</h2>
+
           <div className="flex flex-col sm:flex-row gap-6 justify-center items-center">
-            <button 
+            <button
               onClick={copyToClipboard}
               className="flex items-center gap-3 bg-white/20 hover:bg-white/30 px-10 py-4 rounded-xl font-bold transition-all border border-white/30 min-w-[200px] justify-center"
             >
               <Copy size={20} />
               {copied ? "Copied!" : "Copy Code"}
             </button>
-            <button 
+            <button
               onClick={shareViaWhatsApp}
               className="flex items-center gap-3 bg-white/20 hover:bg-white/30 px-10 py-4 rounded-xl font-bold transition-all border border-white/30 min-w-[200px] justify-center"
             >
@@ -83,7 +105,7 @@ export default function ReferralsPage() {
 
         {/* How it works Section (Rectangle 4745) */}
         <section className="mb-[40px] md:mb-[76px]">
-          <div 
+          <div
             style={{
               ...commonCardStyle,
             }}
@@ -115,7 +137,7 @@ export default function ReferralsPage() {
 
         {/* Reward Structure Section (Rectangle 4746) */}
         <section className="mb-[40px] md:mb-[76px]">
-          <div 
+          <div
             style={{
               ...commonCardStyle,
             }}
@@ -142,7 +164,7 @@ export default function ReferralsPage() {
 
         {/* Referral Stats Section (Rectangle 4750) */}
         <section className="mb-[40px] md:mb-[76px]">
-          <div 
+          <div
             style={{
               ...commonCardStyle,
             }}
@@ -151,7 +173,9 @@ export default function ReferralsPage() {
             <h3 className="text-2xl font-bold mb-10 pl-2">Your Referral Stats</h3>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6 md:gap-8">
               <div className="bg-[#EFF6FF] p-6 md:p-8 rounded-2xl text-center border border-blue-100 flex flex-col justify-center h-[120px] md:h-[140px]">
-                <p className="text-[32px] md:text-[40px] font-bold text-blue-600 mb-1">0</p>
+       <p className="text-[32px] md:text-[40px] font-bold text-blue-600 mb-1">
+  {stats.referralCount}
+</p>
                 <p className="text-blue-900 font-medium text-xs md:text-sm">Total Referrals</p>
               </div>
               <div className="bg-[#F0FDF4] p-6 md:p-8 rounded-2xl text-center border border-green-100 flex flex-col justify-center h-[120px] md:h-[140px]">
@@ -159,7 +183,7 @@ export default function ReferralsPage() {
                 <p className="text-green-900 font-medium text-xs md:text-sm">Successful Bookings</p>
               </div>
               <div className="bg-[#FDF2F8] p-6 md:p-8 rounded-2xl text-center border border-pink-100 flex flex-col justify-center h-[120px] md:h-[140px]">
-                <p className="text-[32px] md:text-[40px] font-bold text-pink-600 mb-1">₹ 0</p>
+                <p className="text-[32px] md:text-[40px] font-bold text-pink-600 mb-1">{stats.rewardPoints}</p>
                 <p className="text-pink-900 font-medium text-xs md:text-sm">Total Earnings</p>
               </div>
             </div>
@@ -167,10 +191,10 @@ export default function ReferralsPage() {
         </section>
 
         {/* Terms & Conditions Section */}
-        <section className="mb-24 px-6 md:px-0">
-          <h3 className="text-[24px] md:text-[32px] font-medium text-black mb-6 md:mb-8 leading-tight">Terms & Conditions</h3>
-          <ul 
-            className="space-y-4 list-disc marker:text-[#E5097F] max-w-full md:max-w-[725px]"
+        <section className="mb-24 px-6 md:px-0 ">
+          <h3 className="text-[24px] md:text-[24px]  font-medium text-black mb-6 md:mb-8 leading-tight">Terms & Conditions</h3>
+          <ul
+            className="space-y-4 list-disc marker:text-[#E5097F] max-w-full  md:max-w-[725px]"
             style={{
               fontFamily: "'Roboto Condensed', sans-serif",
             }}
@@ -181,9 +205,9 @@ export default function ReferralsPage() {
               "Self-referrals are not allowed",
               "Piinggaksha reserves the right to modify the program"
             ].map((text, idx) => (
-              <li 
+              <li
                 key={idx}
-                className="text-[20px] md:text-[32px] leading-tight font-normal text-[#6F6F6F]"
+                className="text-[20px] md:text-[20px] leading-tight font-normal text-[#6F6F6F]"
               >
                 {text}
               </li>
@@ -192,7 +216,7 @@ export default function ReferralsPage() {
         </section>
       </main>
 
-     
+
     </div>
   );
 }

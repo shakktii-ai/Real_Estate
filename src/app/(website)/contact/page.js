@@ -21,18 +21,18 @@ export default function ContactPage() {
   const [loading, setLoading] = useState(false);
   const [status, setStatus] = useState({ type: "", message: "" });
 
-  useEffect(() => {
-    const fetchProjects = async () => {
-      try {
-        const res = await fetch("/api/projects");
-        const data = await res.json();
-        setProjects(data);
-      } catch (error) {
-        console.error("Failed to fetch projects", error);
-      }
-    };
-    fetchProjects();
-  }, []);
+  // useEffect(() => {
+  //   const fetchProjects = async () => {
+  //     try {
+  //       const res = await fetch("/api/projects");
+  //       const data = await res.json();
+  //       setProjects(data);
+  //     } catch (error) {
+  //       console.error("Failed to fetch projects", error);
+  //     }
+  //   };
+  //   fetchProjects();
+  // }, []);
 
   const handleChange = (e) => {
     const { name, value } = e.target;

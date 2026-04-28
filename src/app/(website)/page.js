@@ -10,6 +10,7 @@ import Review from '@/components/Review';
 import WhyPiingkasha from '@/components/WhyPiingkasha';
 import Counter from '@/components/Counter';
 import { useAuth } from '@/lib/context/AuthContext';
+import { useRouter } from 'next/navigation';
 import {
     CalendarDays,
     TrendingDown,
@@ -30,6 +31,15 @@ export default function WebsitePage() {
     const { user, loading } = useAuth();
 
 
+  const router = useRouter();
+
+  useEffect(() => {
+    if (!loading && user) {
+      router.replace("/dashboard");
+    }
+  }, [user, loading, router]);
+
+ 
     useEffect(() => {
         fetch('/api/living-styles')
             .then(res => res.json())
@@ -97,7 +107,7 @@ export default function WebsitePage() {
         selectedArea,
         selectedCategory,
     ]);
-    if (loading) return null;
+    if (loading || user) return null;
     return (
         <div className='bg-white max-h-full'>
             <img
@@ -121,92 +131,9 @@ export default function WebsitePage() {
                     ))}
                 </div>
             </section>
-             <section className='mt-[8rem] mx-4'>
-            {user && (
-                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mt-10">
-                    <Link
-                        href="/visits"
-                        className="bg-white rounded-3xl shadow-sm border border-gray-100 p-6 flex items-center justify-between hover:shadow-md transition"
-                    >
-                        <div className="flex items-center gap-5">
-                            <div className="w-14 h-14 rounded-full bg-blue-100 flex items-center justify-center">
-                                <CalendarDays className="text-blue-600" size={28} />
-                            </div>
-
-                            <div>
-                                <p className="text-black text-sm">Site Visits</p>
-                                <h3 className="text-xl font-semibold text-black">
-                                    0 Scheduled
-                                </h3>
-                            </div>
-                        </div>
-
-                        <ChevronRight className="text-black" size={30} />
-                    </Link>
-
-                    <Link
-                        href="/price-drops"
-                        className="bg-white rounded-3xl shadow-sm border border-gray-100 p-6 flex items-center justify-between hover:shadow-md transition"
-                    >
-                        <div className="flex items-center gap-5">
-                            <div className="w-14 h-14 rounded-full bg-red-100 flex items-center justify-center">
-                                <TrendingDown className="text-red-500" size={28} />
-                            </div>
-
-                            <div>
-                                <p className="text-black text-sm">Price Drops</p>
-                                <h3 className="text-xl font-semibold text-black">
-                                    3 Alerts
-                                </h3>
-                            </div>
-                        </div>
-
-                        <ChevronRight className="text-black" size={30} />
-                    </Link>
-
-                    <Link
-                        href="/referrals"
-                        className="bg-white rounded-3xl shadow-sm border border-gray-100 p-6 flex items-center justify-between hover:shadow-md transition"
-                    >
-                        <div className="flex items-center gap-5">
-                            <div className="w-14 h-14 rounded-full bg-green-100 flex items-center justify-center">
-                                <Gift className="text-green-600" size={28} />
-                            </div>
-
-                            <div>
-                                <p className="text-black text-sm">Referrals</p>
-                                <h3 className="text-xl font-semibold text-black">
-                                    Earn Rewards
-                                </h3>
-                            </div>
-                        </div>
-
-                        <ChevronRight className="text-black" size={30} />
-                    </Link>
-
-                    <Link
-                        href="/profile"
-                        className="bg-white rounded-3xl shadow-sm border border-gray-100 p-6 flex items-center justify-between hover:shadow-md transition"
-                    >
-                        <div className="flex items-center gap-5">
-                            <div className="w-14 h-14 rounded-full bg-purple-100 flex items-center justify-center">
-                                <User className="text-purple-600" size={28} />
-                            </div>
-
-                            <div>
-                                <p className="text-black text-sm">Profile</p>
-                                <h3 className="text-xl font-semibold text-black">
-                                    Manage
-                                </h3>
-                            </div>
-                        </div>
-
-                        <ChevronRight className="text-black" size={30} />
-                    </Link>
-                </div>
-            )}
-           </section>
-            <div className='mt-12'>
+             
+            
+            <div className='mt-36'>
                 <h2 className="text-4xl md:text-6xl  font-semibold text-[#742E85] mb-3 flex items-center justify-center">
                     Featured Projects
                 </h2>

@@ -1,7 +1,10 @@
 import Link from "next/link";
 import { MapPin, Calendar, Home,Heart } from "lucide-react";
 import { useState } from "react";
-export default function ProjectListCard({ project }) {
+import HeartButton from "@/components/HeartButton"
+import { useAuth } from "@/lib/context/AuthContext";
+export default function ProjectListCard({ project , isWishlisted, onToggleWishlist}) {
+    const {user} = useAuth();
      const [showAllAmenities, setShowAllAmenities] = useState(false);
       const categoryColors = {
         Premium: "bg-[#009966]",
@@ -34,9 +37,14 @@ export default function ProjectListCard({ project }) {
               </span>
             ))}
         </div>
-        <button className="absolute top-3 right-3 bg-white/80 p-1.5 rounded-full hover:bg-white">
-                  <Heart size={16} className="text-gray-600" />
-                </button>
+        <span className="absolute top-3 right-3 bg-white/50 rounded-full">
+                 <HeartButton
+                 propertyId={project._id}  // Make sure this matches your project object ID
+                 userId={user?.uid}        // Pass the UID from your auth object
+                 initialIsWishlisted={isWishlisted}
+                 onToggle={onToggleWishlist}
+                 />
+             </span>
         {project.tags?.includes("RERA Verified") && (
           <div className="absolute bottom-3 left-3 bg-[#DBFCE7] px-2 py-1 rounded-full flex items-center gap-1 text-[10px] text-[#009318] font-bold border border-green-200">
             RERA Verified

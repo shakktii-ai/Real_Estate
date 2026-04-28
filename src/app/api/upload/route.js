@@ -37,9 +37,11 @@ export async function POST(req) {
       url: result.secure_url,
     });
   } catch (error) {
-    return NextResponse.json(
-      { error: "Upload failed" },
-      { status: 500 }
-    );
-  }
+  console.error("UPLOAD ERROR:", error); // ✅ VERY IMPORTANT
+
+  return NextResponse.json(
+    { error: error.message || "Upload failed" },
+    { status: 500 }
+  );
+}
 }

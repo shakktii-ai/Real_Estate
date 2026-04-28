@@ -295,7 +295,7 @@ export default function AddProjectModal({ isOpen, onClose, refreshData }) {
                         <input
                             type="range"
                             {...register("constructionProgress")}
-                            className="w-full h-1.5 bg-gray-200 rounded-lg appearance-none cursor-pointer accent-[#D81B60]"
+                            className="w-full accent-pink-500"
                         />
                     </div>
 

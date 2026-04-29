@@ -9,7 +9,7 @@ export async function GET(req) {
   const { searchParams } = new URL(req.url);
 
   const firebaseUid = searchParams.get("userId");
-  const role = searchParams.get("role"); // 👈 IMPORTANT
+  const role = searchParams.get("role"); // IMPORTANT
 
   // ✅ ADMIN
   if (role === "admin") {
@@ -24,8 +24,11 @@ export async function GET(req) {
   const user = await User.findOne({ uid: firebaseUid });
 
   const notifications = await Notification.find({
-    userId: user?._id,
     receiverRole: "user",
+    $or: [
+      { userId: user?._id },   // personal notifications
+      { isGlobal: true },      //price drop notifications
+    ],
   }).sort({ createdAt: -1 });
 
   return NextResponse.json(notifications);

@@ -29,6 +29,7 @@ export default function WebsitePage() {
     const [selectedCategory, setSelectedCategory] = useState("");
     const { user, loading } = useAuth();
     const [wishlist, setWishlist] = useState([]);
+    const [priceDropCount, setPriceDropCount] = useState(0);
     const handleToggleWishlist = (propertyId, isNowWishlisted) => {
         if (isNowWishlisted) {
             // Add to wishlist array
@@ -38,6 +39,26 @@ export default function WebsitePage() {
             setWishlist((prev) => prev.filter((id) => id !== propertyId));
         }
     };
+    useEffect(() => {
+  if (!user) return;
+
+  const fetchPriceDrops = async () => {
+    try {
+      const res = await fetch(`/api/notifications?userId=${user.uid}&role=user`);
+      const data = await res.json();
+
+      const count = data.filter(
+        (n) => n.type === "priceDrop"
+      ).length;
+
+      setPriceDropCount(count);
+    } catch (err) {
+      console.error("Price drop fetch error:", err);
+    }
+  };
+
+  fetchPriceDrops();
+}, [user]);
     useEffect(() => {
         if (!user) return;
 
@@ -158,27 +179,42 @@ const siteVisitCount = bookingData.siteVisit.length + bookingData.virtualTour.le
     if (loading) return null;
     return (
         <div className='bg-white max-h-full'>
-            <img
-                src='/banner.png'
-                alt='banner image'
-                className=" h-[50rem] object-cover group-hover:scale-105 transition-transform duration-500 rounded-b-[2rem]"
-            />
-            <section className="relative z-10 -mt-[45rem] max-w-[1000px] mx-auto px-12">
-                <div className="text-center mb-10">
-                    <h2 className="text-4xl md:text-4xl  font-extrabold text-[#742E85] mb-3">
-                        Choose Your Living Style
-                    </h2>
-                    <p className="text-black  text-lg max-w-3xl mx-auto">
-                        Find a home that matches your lifestyle, comfort, and aspirations.
-                    </p>
-                </div>
+    <section className="relative min-h-screen w-full flex flex-col items-center justify-start md:justify-center py-12 md:py-20">
+    {/* Background Image Container */}
+    <div className="absolute inset-0 z-0">
+        <img
+            src='/banner.png'
+            alt='banner image'
+            /* Added object-center to keep the image focused */
+            className="w-full h-full object-cover object-center transition-transform duration-700 rounded-b-[2rem]"
+        />
+        {/* Slightly darker overlay for better text contrast on small screens */}
+        <div className="absolute inset-0 " />
+    </div>
 
-                <div className="flex flex-wrap xl:flex-nowrap justify-center gap-4">
-                    {cards.map((card) => (
-                        <LivingStyleCard key={card._id} card={card} />
-                    ))}
+    {/* Content Wrapper */}
+    <div className="relative z-10 w-full max-w-[1200px] mx-auto px-4 md:px-12 flex flex-col items-center">
+        
+        {/* Header Text - Responsive alignment */}
+        <div className="text-center mb-8 md:mb-12">
+            <h2 className="text-3xl md:text-6xl font-extrabold text-[#742E85] drop-shadow-md mb-2">
+                Choose Your Living Style
+            </h2>
+            <p className="text-black text-sm md:text-xl max-w-2xl mx-auto font-medium opacity-90">
+                   Find a home that matches your lifestyle, comfort, and aspirations.
+            </p>
+        </div>
+
+        {/* Cards Grid - Use justify-items-center for perfect centering */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8 w-full justify-items-center">
+            {cards.map((card) => (
+                <div key={card._id} className="">
+                     <LivingStyleCard card={card} />
                 </div>
-            </section>
+            ))}
+        </div>
+    </div>
+</section>
              <section className='mt-[8rem] mx-4'>
             {user && (
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mt-10">
@@ -203,7 +239,7 @@ const siteVisitCount = bookingData.siteVisit.length + bookingData.virtualTour.le
                     </Link>
 
                     <Link
-                        href="/price-drops"
+                        href="/priceDrop"
                         className="bg-white rounded-3xl shadow-sm border border-gray-100 p-6 flex items-center justify-between hover:shadow-md transition"
                     >
                         <div className="flex items-center gap-5">
@@ -213,9 +249,9 @@ const siteVisitCount = bookingData.siteVisit.length + bookingData.virtualTour.le
 
                             <div>
                                 <p className="text-black text-sm">Price Drops</p>
-                                <h3 className="text-xl font-semibold text-black">
-                                    3 Alerts
-                                </h3>
+                               <h3 className="text-xl font-semibold text-black">
+  {priceDropCount > 0 ? `${priceDropCount} Alerts` : "No Alerts"}
+</h3>
                             </div>
                         </div>
 
@@ -265,12 +301,15 @@ const siteVisitCount = bookingData.siteVisit.length + bookingData.virtualTour.le
             )}
            </section>
             <div className='mt-12'>
-                <h2 className="text-4xl md:text-6xl  font-semibold text-[#742E85] mb-3 flex items-center justify-center">
-                    Featured Projects
-                </h2>
-                <p className="flex justify-center text-black text-[24px] max-w-4xl mx-auto mb-4">
-                    Hand-picked developments with verified details and instant transparency
-                </p>
+               <div className="px-4"> {/* Wrapper to prevent text hitting screen edges on mobile */}
+    <h2 className="text-3xl sm:text-4xl md:text-6xl font-semibold text-[#742E85] mb-3 text-center">
+        Featured Projects
+    </h2>
+    
+    <p className="text-center text-black text-base md:text-lg lg:text-xl max-w-3xl mx-auto mb-4 leading-relaxed">
+        Hand-picked developments with verified details and instant transparency
+    </p>
+</div>
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-8 px-12 py-8">
                     {projects
                         .slice(0, 6)

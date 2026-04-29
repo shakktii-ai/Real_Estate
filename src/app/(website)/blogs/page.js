@@ -3,6 +3,7 @@ import React, { useState, useEffect } from 'react';
 import BlogCard from '@/components/BlogCard';
 import Sidebar from '@/components/BlogSidebar';
 import { Phone, Search, Loader2, ArrowLeft, Calendar, User } from 'lucide-react';
+import Link from 'next/link';
 
 export default function BlogPage() {
   const [blogs, setBlogs] = useState([]);
@@ -175,9 +176,10 @@ export default function BlogPage() {
           <div className="bg-gradient-to-tl from-[#742E85] to-[#E5097F] p-8 rounded-2xl text-white shadow-lg relative overflow-hidden">
             <h3 className="text-xl font-bold mb-4 leading-tight">Looking to Buy Your Dream Home?</h3>
             <p className="text-sm opacity-90 mb-6 font-light">Get expert guidance.</p>
-            <button className="bg-white text-black w-full py-3 rounded-xl font-bold text-sm hover:bg-gray-100 transition-all flex items-center justify-center gap-2">
+           <Link href='/contact'> <button className="bg-white text-black w-full py-3 rounded-xl font-bold text-sm hover:bg-gray-100 transition-all flex items-center justify-center gap-2">
               <Phone className='w-4 h-4' /> Get Free Consultation
             </button>
+            </Link>
           </div>
         </aside>
       </main>

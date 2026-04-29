@@ -10,6 +10,10 @@
   --color-foreground: var(--foreground);
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
+   --color-primary-purple: #742E85;
+  --color-primary-pink: #E5097F;
+  --color-card-bg: #F4F4F4;
+  --shadow-card: 4px 4px 7.3px rgba(0, 0, 0, 0.15);
 }
 
 @media (prefers-color-scheme: dark) {

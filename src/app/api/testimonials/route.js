@@ -25,9 +25,11 @@ export async function POST(req) {
   try {
     await connectToDatabase();
     const body = await req.json();
+    console.log("📝 Testimonial POST body:", body);
     const newTestimonial = await Testimonial.create(body);
     return NextResponse.json(newTestimonial, { status: 201 });
   } catch (error) {
-    return NextResponse.json({ error: "Failed to create testimonial" }, { status: 500 });
+    console.error("❌ Testimonial POST error:", error.message, error.errors);
+    return NextResponse.json({ error: "Failed to create testimonial", details: error.message }, { status: 500 });
   }
 }

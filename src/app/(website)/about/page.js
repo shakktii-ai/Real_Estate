@@ -7,6 +7,7 @@ import { FaFacebookF, FaInstagram, FaWhatsapp } from "react-icons/fa";
 import { motion } from "framer-motion";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
+import About from "@/components/about";
 
 export default function AboutUs() {
   const [activeIndex, setActiveIndex] = useState(0);
@@ -399,75 +400,7 @@ export default function AboutUs() {
           </div>
         </section>
 
-        {/* Testimonials */}
-        <section className="px-6 py-20 lg:px-16">
-          <h2 className="text-4xl lg:text-[40px] font-bold text-primary-pink mb-12">
-            What They Say About Us
-          </h2>
-          <div className="relative max-w-6xl mx-auto flex items-center gap-6">
-            <div className="bg-card-bg p-12 rounded-[21px] flex-1 flex flex-col md:flex-row gap-12 items-center">
-              <div className="w-[362px] h-[259px] rounded-[21px] flex-shrink-0 overflow-hidden relative">
-                <Image
-                  src="/rectangle-4854.png"
-                  alt="Swapnil Birhamane"
-                  fill
-                  className="object-cover"
-                  sizes="362px"
-                />
-              </div>
-              <div className="flex-1 text-black font-roboto-condensed">
-                <div className="text-primary-purple text-5xl mb-4">“</div>
-                <p className="text-xl leading-relaxed mb-6 italic">
-                  I highly recommend PIINGGAKSHA for their exceptional service
-                  and professionalism. Abhishek Tripathi and his team made my
-                  property purchase in Pune, a seamless experience. Their
-                  honesty, transparency, and dedication to client satisfaction
-                  truly stood out. Thank you, Abhishek and team, for a
-                  hassle-free journey!
-                </p>
-                <div className="mb-4 text-yellow-500 text-2xl flex gap-1">
-                  {"★".repeat(5)}
-                </div>
-                <span className="text-xl font-bold text-black uppercase tracking-wider block">
-                  by Swapnil Birhamane
-                </span>
-              </div>
-            </div>
-
-            <div className="flex gap-4">
-              <button className="w-12 h-12 border-2 border-primary-purple rounded-full flex items-center justify-center text-primary-purple hover:bg-primary-purple hover:text-white transition-all">
-                <svg
-                  className="w-6 h-6 rotate-180"
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth="2.5"
-                    d="M9 5l7 7-7 7"
-                  />
-                </svg>
-              </button>
-              <button className="w-12 h-12 border-2 border-primary-purple rounded-full flex items-center justify-center text-primary-purple hover:bg-primary-purple hover:text-white transition-all">
-                <svg
-                  className="w-6 h-6"
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth="2.5"
-                    d="M9 5l7 7-7 7"
-                  />
-                </svg>
-              </button>
-            </div>
-          </div>
-        </section>
+        <About />
       </main>
 
     

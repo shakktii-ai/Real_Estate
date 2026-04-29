@@ -140,14 +140,32 @@ export async function PUT(req) {
     );
   }
 }
-export async function GET() {
+export async function GET(req) {
   try {
     await connectToDatabase();
 
-    const users = await User.find().sort({ createdAt: -1 });
+    // 1. Check if a UID was provided in the URL (e.g., /api/user/profile?uid=123)
+    const { searchParams } = new URL(req.url);
+    const uid = searchParams.get("uid");
 
+    if (uid) {
+      // Logic for your Login Modal: Find one specific user
+      const user = await User.findOne({ uid });
+      
+      return NextResponse.json({
+        exists: !!user,
+        profileCompleted: user?.profileCompleted || false,
+        // Optional: return basic user data if needed for the UI
+        user: user || null 
+      });
+    }
+
+    // 2. Logic for your existing code: Fetch all users
+    const users = await User.find().sort({ createdAt: -1 });
     return NextResponse.json(users);
+
   } catch (error) {
+    console.error("GET Error:", error);
     return NextResponse.json(
       { error: "Failed to fetch users" },
       { status: 500 }

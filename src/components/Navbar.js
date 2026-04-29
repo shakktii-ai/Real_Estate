@@ -196,7 +196,7 @@ const Navbar = () => {
             </Link>
           ))}
           <Link href="/contact" onClick={()=>setIsMobileMenuOpen(false)} className="py-3  font-medium text-[#742E85]">Contact Us</Link>
-          <Link href="/profile" onClick={()=>setIsMobileMenuOpen(false)} className="py-3  font-medium text-[#742E85]">My Profile</Link>
+          {/* <Link href="/profile" onClick={()=>setIsMobileMenuOpen(false)} className="py-3  font-medium text-[#742E85]">My Profile</Link> */}
           <button onClick={handleLogout} className="text-left py-3 text-red-600 font-bold">Logout</button>
         </div>
       )}

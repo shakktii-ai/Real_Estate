@@ -24,6 +24,26 @@ export default function ProjectDetails() {
   };
   const [activeTab, setActiveTab] = useState("Overview");
   const tabs = ["Overview", "Pricing", "Amenities", "Construction", "Location", "USP's of Project"];
+  const formatPrice = (price) => {
+  if (!price) return "--";
+
+  if (price >= 10000000) {
+    return "₹" + (price / 10000000).toFixed(2) + " Cr";
+  }
+  if (price >= 100000) {
+    return "₹" + (price / 100000).toFixed(1) + " L";
+  }
+  return "₹" + price.toLocaleString("en-IN");
+};
+const oldPrice = project?.priceDrop?.oldPrice || 0;
+const newPrice = project?.priceDrop?.newPrice || 0;
+
+const percentage =
+  oldPrice > 0
+    ? Math.round(((oldPrice - newPrice) / oldPrice) * 100)
+    : 0;
+
+const dropAmount = oldPrice - newPrice;
   useEffect(() => {
     const fetchProject = async () => {
       try {
@@ -240,7 +260,7 @@ export default function ProjectDetails() {
                       Old Price
                     </p>
                     <p className="text-lg font-semibold line-through text-gray-400">
-                      {project.priceDrop.oldPrice}
+                      {formatPrice(oldPrice)}
                     </p>
                   </div>
 
@@ -249,7 +269,7 @@ export default function ProjectDetails() {
                       New Price
                     </p>
                     <p className="text-xl font-bold text-green-600">
-                      {project.priceDrop.newPrice}
+                      {formatPrice(newPrice)}
                     </p>
                   </div>
                 </>

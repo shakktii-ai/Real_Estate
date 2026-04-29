@@ -36,7 +36,12 @@ export default function AddProjectModal({ isOpen, onClose, refreshData }) {
     };
     const onSubmit = async (data) => {
         const toastId = toast.loading("Uploading media and saving project...");
-
+        const convertToRupees = (value, unit) => {
+            if (!value) return 0;
+            if (unit === "Cr") return value * 10000000;
+            if (unit === "L") return value * 100000;
+            return value;
+        };
         try {
             // 1. Handle File Uploads (Multiple Files)
             const uploadFile = async (file) => {
@@ -59,6 +64,7 @@ export default function AddProjectModal({ isOpen, onClose, refreshData }) {
             // 2. Format Data for MongoDB
             const formattedData = {
                 ...data,
+                tags: data.tags || [],
                 mainImage: mainImageUrl,
                 brochureUrl,
                 priceSheetUrl,
@@ -73,6 +79,17 @@ export default function AddProjectModal({ isOpen, onClose, refreshData }) {
                 amenities: data.amenities
                     ? data.amenities.split(",").map((i) => i.trim())
                     : [],
+                priceDrop : {
+                    isEnabled: data.priceDrop?.isEnabled,
+                    oldPrice: convertToRupees(
+                        data.priceDrop?.oldPrice,
+                        data.priceDrop?.oldPriceUnit
+                    ),
+                    newPrice: convertToRupees(
+                        data.priceDrop?.newPrice,
+                        data.priceDrop?.newPriceUnit
+                    ),
+                },
             };
 
             // Clean up temporary form fields
@@ -267,21 +284,31 @@ export default function AddProjectModal({ isOpen, onClose, refreshData }) {
                                 <div>
                                     <label className="block text-xs font-medium mb-1">Old Price</label>
                                     <input
-                                        type="text"
-                                        placeholder="Enter old price"
+                                        type="number"
+                                        step="any"
                                         {...register("priceDrop.oldPrice")}
-                                        className="w-full border rounded-md px-3 py-2 text-sm outline-none"
+                                        className="border rounded-md px-3 py-2 text-sm outline-none mr-2"
+
                                     />
+                                    <select {...register("priceDrop.oldPriceUnit")} className="border rounded-md px-3 py-2 text-sm outline-none">
+                                        <option value="L">Lakh</option>
+                                        <option value="Cr">Crore</option>
+                                    </select>
                                 </div>
 
                                 <div>
                                     <label className="block text-xs font-medium mb-1">New Price</label>
                                     <input
-                                        type="text"
+                                        type="number"
+                                        step="any"
                                         placeholder="Enter new price"
                                         {...register("priceDrop.newPrice")}
-                                        className="w-full border rounded-md px-3 py-2 text-sm outline-none"
+                                        className="mr-2 border rounded-md px-3 py-2 text-sm outline-none"
                                     />
+                                    <select {...register("priceDrop.newPriceUnit")} className="border rounded-md px-3 py-2 text-sm outline-none">
+                                        <option value="L">Lakh</option>
+                                        <option value="Cr">Crore</option>
+                                    </select>
                                 </div>
                             </div>
                         )}
@@ -357,8 +384,8 @@ export default function AddProjectModal({ isOpen, onClose, refreshData }) {
                             type="submit"
                             disabled={isSubmitting}
                             className={`flex-1 py-3 rounded-xl font-bold text-sm shadow-lg transition-all ${isSubmitting
-                                    ? "bg-gray-400 cursor-not-allowed text-white"
-                                    : "bg-[#D81B60] hover:bg-[#ad1457] text-white"
+                                ? "bg-gray-400 cursor-not-allowed text-white"
+                                : "bg-[#D81B60] hover:bg-[#ad1457] text-white"
                                 }`}
                         >
                             {isSubmitting ? "Uploading..." : "Upload Project"}

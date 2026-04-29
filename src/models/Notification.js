@@ -16,7 +16,7 @@ const NotificationSchema = new mongoose.Schema(
 
     type: {
       type: String,
-      enum: ["booking", "confirmation", "reschedule"],
+      enum: ["booking", "confirmation", "reschedule","priceDrop"],
     },
 
     title: String,
@@ -26,6 +26,7 @@ const NotificationSchema = new mongoose.Schema(
       type: Boolean,
       default: false,
     },
+    isGlobal: { type: Boolean, default: false },
   },
   { timestamps: true }
 );

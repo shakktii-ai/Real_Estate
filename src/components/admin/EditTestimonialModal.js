@@ -2,6 +2,7 @@
 import { useState, useEffect } from "react";
 import { CldUploadWidget } from "next-cloudinary";
 import { Star, X } from "lucide-react";
+import { toast } from "react-toastify";
 
 export default function EditTestimonialModal({ isOpen, onClose, onRefresh, testimonial }) {
     const [formData, setFormData] = useState({
@@ -34,28 +35,37 @@ export default function EditTestimonialModal({ isOpen, onClose, onRefresh, testi
         e.preventDefault();
 
         // 3. Safety Guard: Prevent execution if _id is missing
-        if (!testimonial?._id) {
-            alert("Error: No testimonial selected.");
+        const testimonialId = testimonial._id || testimonial.id;
+        if (!testimonialId) {
+            toast.error("Error: No testimonial ID found.");
             return;
         }
 
         try {
-            const res = await fetch(`/api/testimonials/${testimonial._id}`, {
+            const res = await fetch(`/api/testimonials/${testimonialId}`, {
                 method: "PUT",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify(formData),
             });
 
             if (res.ok) {
-                alert("Testimonial Updated!");
+                toast.success("Testimonial Updated!");
                 onRefresh();
                 onClose();
             } else {
-                alert("Failed to update testimonial");
+                const text = await res.text();
+                let errorMessage = "Unknown error";
+                try {
+                    const data = JSON.parse(text);
+                    errorMessage = data.message || data.error || errorMessage;
+                } catch (e) {
+                    errorMessage = text.substring(0, 100);
+                }
+                toast.error(`Failed to update testimonial: ${errorMessage}`);
             }
         } catch (error) {
             console.error("Update error:", error);
-            alert("An error occurred");
+            toast.error("An unexpected error occurred");
         }
     };
     if (!isOpen || !testimonial) return null;
@@ -97,47 +107,57 @@ export default function EditTestimonialModal({ isOpen, onClose, onRefresh, testi
                     </div>
 
                     <label>Update Video/Media</label>
-                    <CldUploadWidget
-                        uploadPreset={process.env.NEXT_PUBLIC_CLOUDINARY_UPLOAD_PRESET}
-                        onSuccess={(result) => {
-                            // result.info.secure_url is what you want
-                            setFormData({ ...formData, videoUrl: result.info.secure_url });
-                        }}
-                        options={{
-                            sources: ["local"], // Only allow user to upload from their computer
-                            multiple: false,    // Prevent uploading more than one file
-                            maxFiles: 1,
-                            clientAllowedFormats: ["mp4", "jpg", "png"], // UI-level restriction
-                            styles: {
-                                palette: {
-                                    window: "#FFFFFF",
-                                    sourceBg: "#F4F4F4",
-                                    windowBorder: "#742E85",
-                                    tabIcon: "#742E85",
-                                    inactiveTabIcon: "#999",
-                                    menuIcons: "#742E85",
-                                    link: "#742E85",
-                                    action: "#742E85",
-                                    inProgress: "#742E85",
-                                    complete: "#22c55e", // Green checkmark
-                                    error: "#ef4444",
+                    <div className="relative">
+                        <CldUploadWidget
+                            uploadPreset={process.env.NEXT_PUBLIC_CLOUDINARY_UPLOAD_PRESET}
+                            onSuccess={(result) => {
+                                setFormData((prev) => ({ ...prev, videoUrl: result.info.secure_url }));
+                            }}
+                            options={{
+                                sources: ["local"],
+                                multiple: false,
+                                maxFiles: 1,
+                                clientAllowedFormats: ["mp4", "webm", "mov", "jpg", "png"],
+                                resourceType: "auto",
+                                styles: {
+                                    palette: {
+                                        window: "#FFFFFF",
+                                        sourceBg: "#F4F4F4",
+                                        windowBorder: "#742E85",
+                                        tabIcon: "#742E85",
+                                        inactiveTabIcon: "#999",
+                                        menuIcons: "#742E85",
+                                        link: "#742E85",
+                                        action: "#742E85",
+                                        inProgress: "#742E85",
+                                        complete: "#22c55e",
+                                        error: "#ef4444",
+                                    },
                                 },
-                            },
-                        }}
-                    >
-                        {({ open, isLoading }) => (
+                            }}
+                        >
+                            {({ open, isLoading }) => (
+                                <button
+                                    type="button"
+                                    onClick={() => open()}
+                                    disabled={isLoading}
+                                    className="w-full border-2 border-dashed border-gray-200 p-6 rounded-lg text-gray-500 hover:border-[#742E85] transition-colors"
+                                >
+                                    {isLoading ? "Uploading..." : formData.videoUrl ? "Video Uploaded ✅" : "Click to Upload"}
+                                </button>
+                            )}
+                        </CldUploadWidget>
+                        {formData.videoUrl && (
                             <button
-                                type="button" // Important: prevents form submission when clicking upload
-                                onClick={(e) =>
-                                    open()
-                                }
-                                disabled={isLoading} // Prevent clicking while loading
-                                className="w-full border-2 border-dashed border-gray-200 p-6 rounded-lg text-gray-500 hover:border-[#742E85] transition-colors"
+                                type="button"
+                                onClick={() => setFormData(prev => ({ ...prev, videoUrl: "" }))}
+                                className="absolute top-2 right-2 p-1 bg-red-100 text-red-600 rounded-full hover:bg-red-200 transition-colors z-10"
+                                title="Remove Video"
                             >
-                                {isLoading ? "Uploading..." : formData.videoUrl ? "Video Uploaded ✅" : "Click to Upload"}
+                                <X size={16} />
                             </button>
                         )}
-                    </CldUploadWidget>
+                    </div>
 
                     {/* Visibility Toggles */}
                     <div className="flex flex-col gap-4">

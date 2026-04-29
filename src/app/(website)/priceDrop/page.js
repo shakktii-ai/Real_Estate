@@ -1,9 +1,14 @@
 // src/app/price-drop/page.js
+"use client"
 import React from 'react';
+import { useState, useEffect } from 'react';
 import { Heart, Sparkles, Phone, Calendar, MapPin } from 'lucide-react';
-
+import PriceDropFilters from '@/components/PriceDropFilter';
 // 1. Server-side Data Fetching
+
 async function getPriceDropProjects() {
+const baseUrl = process.env.NEXT_PUBLIC_HOST || 'http://localhost:3000';
+  
   const res = await fetch(`/api/priceDrop`, {
     cache: 'no-store',
   });
@@ -13,9 +18,24 @@ async function getPriceDropProjects() {
 }
 
 // 2. Main Page Component
-export default async function PriceDropPage() {
-  const { data: projects } = await getPriceDropProjects();
-  const totalDrops = projects?.length || 0;
+export default  function PriceDropPage() {
+const [projects, setProjects] = useState([]);
+const [filteredProjects, setFilteredProjects] = useState([]);
+
+useEffect(() => {
+  const fetchData = async () => {
+    try {
+      const data = await getPriceDropProjects();
+      setProjects(data.data);
+      setFilteredProjects(data.data);
+    } catch (err) {
+      console.error(err);
+    }
+  };
+
+  fetchData();
+}, []);
+ const totalDrops = filteredProjects.length;
 
   return (
     <main className="min-h-screen bg-gray-50">
@@ -30,11 +50,14 @@ export default async function PriceDropPage() {
             </div>
           </div>
         </div>
-
+<PriceDropFilters 
+  projects={projects} 
+  onFilter={setFilteredProjects} 
+/>
         {/* Properties List */}
         <div className="space-y-6">
-          {projects && projects.length > 0 ? (
-            projects.map((prop) => (
+          {filteredProjects.length > 0 ? (
+            filteredProjects.map((prop) => (
               <PropertyCard key={prop._id} property={prop} />
             ))
           ) : (
@@ -57,7 +80,26 @@ const PropertyCard = ({ property }) => {
     tags, 
     units 
   } = property;
+  const formatPrice = (price) => {
+  if (!price) return "--";
 
+  if (price >= 10000000) {
+    return "₹" + (price / 10000000).toFixed(2) + " Cr";
+  }
+  if (price >= 100000) {
+    return "₹" + (price / 100000).toFixed(1) + " L";
+  }
+  return "₹" + price.toLocaleString("en-IN");
+};
+const oldPrice = priceDrop?.oldPrice || 0;
+const newPrice = priceDrop?.newPrice || 0;
+
+const percentage =
+  oldPrice > 0
+    ? Math.round(((oldPrice - newPrice) / oldPrice) * 100)
+    : 0;
+
+const dropAmount = oldPrice - newPrice;
   return (
     <div className="group bg-white rounded-2xl border border-gray-100 shadow-sm hover:shadow-md transition-all duration-300 overflow-hidden flex flex-col md:flex-row">
       
@@ -80,7 +122,7 @@ const PropertyCard = ({ property }) => {
           <div className="flex justify-between items-start mb-4">
             <div>
               <h2 className="text-xl font-bold text-gray-900">{projectName}</h2>
-              <p className="text-sm text-gray-500 font-medium">By {builderName}</p>
+              <p className="text-sm text-gray-500 font-medium"> {builderName}</p>
               <p className="text-xs text-gray-400 flex items-center mt-1">
                 <MapPin size={12} className="mr-1" /> {address?.area}, {address?.city}
               </p>
@@ -93,14 +135,25 @@ const PropertyCard = ({ property }) => {
           {/* Price Box */}
           <div className="bg-red-50/50 border border-red-100 rounded-xl p-4 mb-4">
             <div className="flex justify-between items-end">
-              <div>
-                <p className="text-[10px] text-gray-500 line-through">Previous Price: {priceDrop?.oldPrice}</p>
-                <p className="text-2xl font-bold text-[#742E85]">New Price: {priceDrop?.newPrice}</p>
-              </div>
-              <div className="text-right">
-                <p className="text-red-600 font-bold text-xs">↓ Price Drop</p>
-                <p className="text-gray-400 text-[10px]">Updated Today</p>
-              </div>
+             <div>
+  <p className="text-[10px] text-gray-500 line-through">
+    Previous Price: {formatPrice(oldPrice)}
+  </p>
+
+  <p className="text-2xl font-bold text-[#742E85]">
+    New Price: {formatPrice(newPrice)}
+  </p>
+</div>
+
+<div className="text-right">
+  <p className="text-red-600 font-bold text-lg">
+    ↓ {percentage}%
+  </p>
+  <p className="text-[11px] text-gray-500">
+    Save {formatPrice(dropAmount)}
+  </p>
+  <p className="text-gray-400 text-[10px]">Updated Today</p>
+</div>
             </div>
           </div>
 

@@ -85,30 +85,40 @@ export default function AuthModal({ onClose }) {
             setLoading(false);
         }
     };
-    const handleVerifyOtp = async () => {
-        if (!otp.trim()) {
-            toast.error("Please enter OTP");
-            return;
-        }
+   const handleVerifyOtp = async () => {
+    if (!otp.trim() || otp.length !== 6) {
+        toast.error("Please enter a valid 6-digit OTP");
+        return;
+    }
 
-        if (otp.length !== 6) {
-            toast.error("OTP must be 6 digits");
-            return;
-        }
+    try {
+        setLoading(true);
 
-        try {
-            setLoading(true);
+        // 1. Confirm OTP with Firebase
+        const result = await confirmationResult.confirm(otp);
+        const firebaseUser = result.user;
 
-            await confirmationResult.confirm(otp);
+        // 2. Check if user exists in your MongoDB
+        // We use the same route but pass the UID as a query param
+        const response = await fetch(`/api/user/profile?uid=${firebaseUser.uid}`);
+        const data = await response.json();
 
-            toast.success("Verified");
+        if (data.exists && data.profileCompleted) {
+            // Returning User: Logged in successfully, no need for profile form
+            toast.success("Welcome back!");
+            onClose(); // Close the modal
+        } else {
+            // New User: Move to profile completion step
+            toast.success("Phone verified! Let's set up your profile.");
             setStep("PROFILE");
-        } catch (err) {
-            toast.error("Invalid OTP");
-        } finally {
-            setLoading(false);
         }
-    };
+    } catch (err) {
+        console.error("Verification Error:", err);
+        toast.error("Invalid OTP. Please try again.");
+    } finally {
+        setLoading(false);
+    }
+};
     const handleProfileSubmit = async () => {
         if (!profileData.budget.trim()) {
             toast.error("Please enter your budget");
@@ -386,7 +396,7 @@ export default function AuthModal({ onClose }) {
                         disabled={loading}
                         className="w-full mt-6 py-3 rounded-xl font-semibold text-white bg-[#742E85] hover:bg-[#5f256d] hover:cursor-pointer"
                     >
-                        {loading ? "Saving..." : "Conplete Profile"}
+                        {loading ? "Saving..." : "Complete Profile"}
                     </button>
                 </>
                 )}

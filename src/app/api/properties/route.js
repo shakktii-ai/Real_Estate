@@ -1,7 +1,7 @@
 import { connectToDatabase } from "@/lib/db";
 import Project from "@/models/Project";
 import { NextResponse } from "next/server";
-import slugify from "slugify";
+import Notification from "@/models/Notification";
 
 // 1. GET: Fetch projects for the Index Page & Admin Dashboard
 export async function GET(req) {
@@ -54,22 +54,18 @@ export async function POST(req) {
       ...body,
       slug,
 
-      pricing: {
-        ...body.pricing,
-        minPrice: Number(body.pricing?.minPrice || 0),
-        maxPrice: Number(body.pricing?.maxPrice || 0),
-      },
+
       reraNumber: body.reraNumber || "",
 
       pricing: {
         ...body.pricing,
-      
+
       },
-priceDrop: {
-  isEnabled: body.priceDrop?.isEnabled || false,
-  oldPrice: body.priceDrop?.oldPrice || "",
-  newPrice: body.priceDrop?.newPrice || "",
-},
+      priceDrop: {
+        isEnabled: body.priceDrop?.isEnabled || false,
+        oldPrice: Number(body.priceDrop?.oldPrice) || 0,
+        newPrice: Number(body.priceDrop?.newPrice) || 0,
+      },
 
       qrCodeUrl: body.qrCodeUrl || "",
       configuration: body.configuration
@@ -90,7 +86,29 @@ priceDrop: {
     };
 
     const newProject = await Project.create(projectData);
+  
 
+    //Trigger notification ONLY if valid price drop
+    if (
+      projectData.priceDrop?.isEnabled &&
+      projectData.priceDrop.oldPrice > projectData.priceDrop.newPrice
+    ) {
+      const dropAmount =
+        projectData.priceDrop.oldPrice - projectData.priceDrop.newPrice;
+
+      const percentage = Math.round(
+        (dropAmount / projectData.priceDrop.oldPrice) * 100
+      );
+
+      await Notification.create({
+        receiverRole: "user",
+        type: "priceDrop",
+        title: "Price Drop Alert",
+        message: `${projectData.projectName} price dropped by ₹${dropAmount.toLocaleString(
+          "en-IN"
+        )} (${percentage}%). Check it now!`,
+      });
+    }
     return NextResponse.json(
       { message: "Project created!", id: newProject._id },
       { status: 201 }

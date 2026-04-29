@@ -5,6 +5,7 @@ import Testimonial from '@/models/Testimonial'; // Ensure your Mongoose model is
 export async function PUT(request, { params }) {
     const { id } = await params; // Get the ID from the URL
     const body = await request.json(); // Get the updated data from the form
+    console.log("PUT /api/testimonials/[id] hit", { id, body });
 
     try {
         await connectToDatabase();
@@ -22,7 +23,8 @@ export async function PUT(request, { params }) {
 
         return NextResponse.json({ success: true, data: updatedTestimonial }, { status: 200 });
     } catch (error) {
-        return NextResponse.json({ success: false, message: error.message }, { status: 400 });
+        console.error("PUT /api/testimonials/[id] error:", error);
+        return NextResponse.json({ success: false, message: error.message }, { status: 500 });
     }
 }
 export async function DELETE(request, { params }) {

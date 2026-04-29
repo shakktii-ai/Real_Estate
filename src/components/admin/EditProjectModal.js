@@ -11,7 +11,7 @@ export default function EditProjectModal({
   project,
 }) {
   const [loading, setLoading] = useState(false);
-
+  
   const [formData, setFormData] = useState({
     projectName: "",
     builderName: "",
@@ -25,17 +25,47 @@ export default function EditProjectModal({
     oldPrice: "",
     newPrice: "",
     progress: 0,
-    tag: "",
+    tags: [],
     priceDrop: false,
     image: null,
     brochure: null,
     priceSheet: null,
     qrCode: null,
+    oldPriceUnit: "L",
+    newPriceUnit: "L",
   });
+  const convertToRupees = (value, unit) => {
+    if (!value) return 0;
+    if (unit === "Cr") return value * 10000000;
+    if (unit === "L") return value * 100000;
+    return Number(value);
+  };
+  const convertFromRupees = (price) => {
+    if (!price) return { value: "", unit: "L" };
 
+    if (price >= 10000000) {
+      return { value: price / 10000000, unit: "Cr" };
+    }
+
+    return { value: price / 100000, unit: "L" };
+  };
+ const toggleTag = (tag) => {
+  setFormData((prev) => {
+    const exists = prev.tags.includes(tag);
+
+    return {
+      ...prev,
+      tags: exists
+        ? prev.tags.filter((t) => t !== tag) // remove
+        : [...prev.tags, tag], // add
+    };
+  });
+};
   // ✅ Prefill
   useEffect(() => {
     if (project) {
+       const old = convertFromRupees(project.priceDrop?.oldPrice);
+  const newP = convertFromRupees(project.priceDrop?.newPrice);
       setFormData({
         projectName: project.projectName || "",
         builderName: project.builderName || "",
@@ -52,11 +82,13 @@ export default function EditProjectModal({
 
         progress: project.constructionProgress || 0,
 
-        oldPrice: project.priceDrop?.oldPrice || "",
-        newPrice: project.priceDrop?.newPrice || "",
+        oldPrice: old.value,
+        oldPriceUnit: old.unit,
+        newPrice: newP.value,
+        newPriceUnit: newP.unit,
         priceDrop: project.priceDrop?.isEnabled || false,
 
-        tag: project.tags?.[0] || "",
+       tags: project.tags || [],
 
         description: project.description || "",
       });
@@ -119,11 +151,11 @@ export default function EditProjectModal({
 
         priceDrop: {
           isEnabled: formData.priceDrop,
-          oldPrice: formData.oldPrice,
-          newPrice: formData.newPrice,
+          oldPrice: convertToRupees(formData.oldPrice, formData.oldPriceUnit),
+          newPrice: convertToRupees(formData.newPrice, formData.newPriceUnit),
         },
 
-        tags: formData.tag ? [formData.tag] : [],
+        tags: formData.tags || [],
 
         description: formData.description,
 
@@ -138,34 +170,34 @@ export default function EditProjectModal({
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(payload),
       });
-const result = await res.json();
+      const result = await res.json();
       if (!res.ok) {
-      // Throw the error message from the backend if available
-      throw new Error(result.error || "Failed to update");
+        // Throw the error message from the backend if available
+        throw new Error(result.error || "Failed to update");
+      }
+
+      toast.update(toastId, {
+        render: "Project updated successfully",
+        type: "success",
+        isLoading: false,
+        autoClose: 2000,
+      });
+
+      // Call onRefresh and wait for it to finish before closing
+      if (onRefresh) await onRefresh();
+      onClose();
+
+    } catch (err) {
+      console.error("Update Error Details:", err); 
+      toast.update(toastId, {
+        render: err.message || "Update failed", 
+        type: "error",
+        isLoading: false,
+        autoClose: 3000,
+      });
+    } finally {
+      setLoading(false);
     }
-
-    toast.update(toastId, {
-      render: "Project updated successfully",
-      type: "success",
-      isLoading: false,
-      autoClose: 2000,
-    });
-
-    // Call onRefresh and wait for it to finish before closing
-    if (onRefresh) await onRefresh(); 
-    onClose();
-
-  } catch (err) {
-    console.error("Update Error Details:", err); // CHECK YOUR CONSOLE FOR THIS
-    toast.update(toastId, {
-      render: err.message || "Update failed", // Use the actual error message
-      type: "error",
-      isLoading: false,
-      autoClose: 3000,
-    });
-  } finally {
-    setLoading(false);
-  }
   };
 
   if (!isOpen || !project) return null;
@@ -255,21 +287,64 @@ const result = await res.json();
           </div>
 
           {/* PRICE DROP */}
-        <div className="border p-4 rounded-xl flex items-center justify-between">
+          <div className="border p-4 rounded-xl flex items-center justify-between">
             <span className="text-sm font-semibold">Enable Price Drop</span>
-            <input type="checkbox" checked={formData.priceDrop} onChange={(e) => setFormData({...formData, priceDrop: e.target.checked})} />
+            <input type="checkbox" checked={formData.priceDrop} onChange={(e) => setFormData({ ...formData, priceDrop: e.target.checked })} />
           </div>
 
           {formData.priceDrop && (
             <div className="grid grid-cols-2 gap-4 animate-in fade-in">
               <div>
-            <label className="text-sm font-semibold mb-2 block">Old Price</label>
-              <input value={formData.oldPrice} onChange={(e) => setFormData({...formData, oldPrice: e.target.value})} placeholder="Old Price" className="border p-2.5 rounded-lg text-sm" />
-              </div>
+                <label className="text-sm font-semibold mb-2 block">Old Price</label>
+                <div className="flex gap-2">
+                  <input
+                    type="number"
+                    value={formData.oldPrice}
+                    onChange={(e) =>
+                      setFormData({ ...formData, oldPrice: e.target.value })
+                    }
+                    className="border p-2.5 rounded-lg text-sm w-full"
+                  />
+
+                  <select
+                    value={formData.oldPriceUnit}
+                    onChange={(e) =>
+                      setFormData({ ...formData, oldPriceUnit: e.target.value })
+                    }
+                    className="border p-2.5 rounded-lg text-sm"
+                  >
+                    <option value="L">Lakh</option>
+                    <option value="Cr">Cr</option>
+                  </select>
+                </div>  
+                </div>
               <div>
-            <label className="text-sm font-semibold mb-2 block">New Price</label>
-              <input value={formData.newPrice} onChange={(e) => setFormData({...formData, newPrice: e.target.value})} placeholder="New Price" className="border p-2.5 rounded-lg text-sm" />
-            </div>
+                
+                <div>
+  <label className="text-sm font-semibold mb-2 block">New Price</label>
+
+  <div className="flex gap-2">
+    <input
+      type="number"
+      value={formData.newPrice}
+      onChange={(e) =>
+        setFormData({ ...formData, newPrice: e.target.value })
+      }
+      className="border p-2.5 rounded-lg text-sm w-full"
+    />
+
+    <select
+      value={formData.newPriceUnit}
+      onChange={(e) =>
+        setFormData({ ...formData, newPriceUnit: e.target.value })
+      }
+      className="border p-2.5 rounded-lg text-sm"
+    >
+      <option value="L">Lakh</option>
+      <option value="Cr">Cr</option>
+    </select>
+  </div>
+</div> </div>
             </div>
           )}
 
@@ -295,8 +370,8 @@ const result = await res.json();
                 <button
                   type="button"
                   key={tag}
-                  onClick={() => setFormData({ ...formData, tag })}
-                  className={`px-3 py-1 rounded-full text-sm ${formData.tag === tag
+                   onClick={() => toggleTag(tag)}
+                  className={`px-3 py-1 rounded-full text-sm ${formData.tags.includes(tag)
                     ? "bg-[#E5097F] text-white"
                     : "bg-gray-100"
                     }`}

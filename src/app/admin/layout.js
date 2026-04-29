@@ -3,8 +3,6 @@ import "../globals.css";
 import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { AuthProvider } from "@/lib/context/AuthContext";
-import Sidebar from "@/components/admin/Sidebar";
-import Topbar from "@/components/admin/Topbar"
 import { Bell } from "lucide-react";
 import Link from "next/link";
 const geistSans = Geist({
@@ -27,23 +25,16 @@ export const metadata = {
   title: "Real Estate",
   description: "",
 };
+import AdminContent from "@/components/admin/AdminContent";
+
 export default function RootLayout({ children }) {
   return (
     <html lang="en" className="h-full">
       <body className="flex flex-col h-screen overflow-hidden">
         <AuthProvider>
-          {/* 1. Header takes fixed height at top */}
-          <Topbar/>
-
-          {/* 2. Container for Sidebar + Content */}
-          <div className="flex flex-1 mt-20 overflow-hidden">
-            <Sidebar />
-            
-            {/* 3. Main Content Area */}
-            <main className="flex-1 overflow-y-auto bg-gray-50 p-6">
-              {children}
-            </main>
-          </div>
+          <AdminContent>
+            {children}
+          </AdminContent>
           <ToastContainer
             position="top-right"
             autoClose={3000}

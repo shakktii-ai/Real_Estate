@@ -46,8 +46,8 @@ const ProjectSchema = new mongoose.Schema(
     // Price Drop Feature (Screenshot 80/82)
     priceDrop: {
       isEnabled: { type: Boolean, default: false },
-      oldPrice: { type: String },
-      newPrice: { type: String},
+      oldPrice: { type: Number },
+      newPrice: { type: Number},
     },
 
     // Categorization & Highlights

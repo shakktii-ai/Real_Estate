@@ -3,8 +3,9 @@
 import Image from "next/image";
 import Link from "next/link";
 import { FaFacebookF, FaInstagram, FaWhatsapp } from "react-icons/fa";
-
+import { useAuth } from "@/lib/context/AuthContext";
 const Footer = () => {
+  const { user } = useAuth();
   return (
     <footer className="bg-footer-gradient py-4 px-4 lg:px-16 text-black relative">
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-12">
@@ -38,7 +39,7 @@ const Footer = () => {
               </Link>
             </li>
             <li>
-              <Link href="/" className="hover:text-[#E61E8C]">
+              <Link href="/properties" className="hover:text-[#E61E8C]">
                 Explore Properties
               </Link>
             </li>
@@ -52,16 +53,12 @@ const Footer = () => {
                 Blogs
               </Link>
             </li>
-            <li>
+            {user && <li>
               <Link href="/referrals" className="hover:text-[#E61E8C]">
                 Referrals
               </Link>
             </li>
-            <li>
-              <Link href="/virtual-tour" className="hover:text-[#E61E8C]">
-                Virtual Tour
-              </Link>
-            </li>
+            }
             <li>
               <Link href="/about" className="hover:text-[#E61E8C]">
                 About Us
@@ -96,24 +93,24 @@ const Footer = () => {
           </h3>
           <ul className="space-y-3 text-[18px]">
             <li>
-              <Link href="/affordable" className="hover:text-[#E61E8C]">
-                Affordable
-              </Link>
+
+              Affordable
+
             </li>
             <li>
-              <Link href="/premium" className="hover:text-[#E61E8C]">
-                Premium
-              </Link>
+
+              Premium
+
             </li>
             <li>
-              <Link href="/luxury" className="hover:text-[#E61E8C]">
-                Luxury
-              </Link>
+
+              Luxury
+
             </li>
             <li>
-              <Link href="/holiday" className="hover:text-[#E61E8C]">
-                Holiday
-              </Link>
+
+              Holiday
+
             </li>
           </ul>
         </div>

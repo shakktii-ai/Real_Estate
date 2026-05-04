@@ -16,22 +16,28 @@ export async function POST(req) {
     const bytes = await file.arrayBuffer();
     const buffer = Buffer.from(bytes);
 
-    const result = await new Promise((resolve, reject) => {
-      cloudinary.uploader
-        .upload_stream(
-          {
-            folder: "real-estate-projects",
-             resource_type: "auto",
+  const mimeType = file.type;
+
+const isPdf = mimeType === "application/pdf";
+
+const result = await new Promise((resolve, reject) => {
+  cloudinary.uploader
+    .upload_stream(
+      {
+        folder: "real-estate-projects",
+        resource_type: isPdf ? "raw" : "image", // 🔥 key fix
+        type: "upload",
+        access_mode: "public", // ensure public
         use_filename: true,
         unique_filename: true,
-          },
-          (error, result) => {
-            if (error) reject(error);
-            else resolve(result);
-          }
-        )
-        .end(buffer);
-    });
+      },
+      (error, result) => {
+        if (error) reject(error);
+        else resolve(result);
+      }
+    )
+    .end(buffer);
+});
 
     return NextResponse.json({
       url: result.secure_url,

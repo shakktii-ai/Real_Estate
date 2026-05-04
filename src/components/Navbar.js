@@ -183,7 +183,7 @@ const Navbar = () => {
             <button onClick={handleLogout} className="hidden md:flex text-black hover:cursor-pointer"><LogOut size={20} /></button>
           </>
         ) : (
-          <button onClick={() => setShowModal(true)} className="bg-[#E5097F] text-white px-4 py-2 rounded-lg">SignUp</button>
+          <button onClick={() => setShowModal(true)} className="bg-[#E5097F] text-white px-4 py-2 rounded-lg hover:cursor-pointer">SignUp</button>
         )}
       </div>
 

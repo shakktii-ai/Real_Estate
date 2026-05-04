@@ -104,11 +104,11 @@ export default function AdminLoginPage() {
   };
 
   return (
-    <div className="min-h-screen bg-[#F2EDF3] flex items-center justify-center p-4">
+    <div className="min-h-screen bg-[#F2EDF3] flex items-center justify-center p-2">
       <div className="w-full max-w-[450px] relative z-10">
-        <div className="bg-white rounded-[30px] shadow-[0_10px_30px_rgba(0,0,0,0.05)] p-10">
+        <div className="bg-white rounded-[30px] shadow-[0_10px_30px_rgba(0,0,0,0.05)] p-6">
           {/* Logo Section */}
-          <div className="flex flex-col items-center mb-10">
+          <div className="flex flex-col items-center mb-6">
             <div className="bg-white p-4 rounded-2xl shadow-sm border border-gray-50 mb-6">
               <img
                 src="/piinggaksha.png"

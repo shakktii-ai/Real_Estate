@@ -4,11 +4,12 @@ import React from 'react';
 import { useState, useEffect } from 'react';
 import { Heart, Sparkles, Phone, Calendar, MapPin } from 'lucide-react';
 import PriceDropFilters from '@/components/PriceDropFilter';
+import Link from 'next/link';
 // 1. Server-side Data Fetching
 
 async function getPriceDropProjects() {
-const baseUrl = process.env.NEXT_PUBLIC_HOST || 'http://localhost:3000';
-  
+  const baseUrl = process.env.NEXT_PUBLIC_HOST || 'http://localhost:3000';
+
   const res = await fetch(`/api/priceDrop`, {
     cache: 'no-store',
   });
@@ -18,42 +19,43 @@ const baseUrl = process.env.NEXT_PUBLIC_HOST || 'http://localhost:3000';
 }
 
 // 2. Main Page Component
-export default  function PriceDropPage() {
-const [projects, setProjects] = useState([]);
-const [filteredProjects, setFilteredProjects] = useState([]);
+export default function PriceDropPage() {
+  const [projects, setProjects] = useState([]);
+  const [filteredProjects, setFilteredProjects] = useState([]);
 
-useEffect(() => {
-  const fetchData = async () => {
-    try {
-      const data = await getPriceDropProjects();
-      setProjects(data.data);
-      setFilteredProjects(data.data);
-    } catch (err) {
-      console.error(err);
-    }
-  };
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const data = await getPriceDropProjects();
+        setProjects(data.data);
+        setFilteredProjects(data.data);
+      } catch (err) {
+        console.error(err);
+      }
+    };
 
-  fetchData();
-}, []);
- const totalDrops = filteredProjects.length;
+    fetchData();
+  }, []);
+  const totalDrops = filteredProjects.length;
 
   return (
     <main className="min-h-screen bg-gray-50">
       <div className="max-w-6xl mx-auto p-4">
         {/* Header Stats */}
         <div className="mb-8">
-          <h1 className="text-2xl font-bold mb-4">Price Drop Alerts</h1>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+          <h1 className="text-xl lg:text-2xl md:text-3xl font-bold text-black">Price Drop Alerts</h1>
+          <p className='text-sm lg:text-md md:text-md text-black'>Track properties with recent price reductions and save money</p>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mt-6">
             <div className="bg-white p-6 rounded-xl shadow-sm border">
-              <p className="text-gray-500 text-sm">Total Drops This Week</p>
-              <p className="text-3xl font-bold text-gray-900 mt-2">{totalDrops}</p>
+              <p className="text-[#6F6F6F] text-sm">Total Drops</p>
+              <p className="text-3xl font-bold text-[#DF2C2C] mt-2">{totalDrops}</p>
             </div>
           </div>
         </div>
-<PriceDropFilters 
-  projects={projects} 
-  onFilter={setFilteredProjects} 
-/>
+        <PriceDropFilters
+          projects={projects}
+          onFilter={setFilteredProjects}
+        />
         {/* Properties List */}
         <div className="space-y-6">
           {filteredProjects.length > 0 ? (
@@ -71,44 +73,44 @@ useEffect(() => {
 
 // 3. Property Card Component
 const PropertyCard = ({ property }) => {
-  const { 
-    projectName, 
-    builderName, 
-    address, 
-    mainImage, 
-    priceDrop, 
-    tags, 
-    units 
+  const {
+    projectName,
+    builderName,
+    address,
+    mainImage,
+    priceDrop,
+    tags,
+    units
   } = property;
   const formatPrice = (price) => {
-  if (!price) return "--";
+    if (!price) return "--";
 
-  if (price >= 10000000) {
-    return "₹" + (price / 10000000).toFixed(2) + " Cr";
-  }
-  if (price >= 100000) {
-    return "₹" + (price / 100000).toFixed(1) + " L";
-  }
-  return "₹" + price.toLocaleString("en-IN");
-};
-const oldPrice = priceDrop?.oldPrice || 0;
-const newPrice = priceDrop?.newPrice || 0;
+    if (price >= 10000000) {
+      return "₹" + (price / 10000000).toFixed(2) + " Cr";
+    }
+    if (price >= 100000) {
+      return "₹" + (price / 100000).toFixed(1) + " L";
+    }
+    return "₹" + price.toLocaleString("en-IN");
+  };
+  const oldPrice = priceDrop?.oldPrice || 0;
+  const newPrice = priceDrop?.newPrice || 0;
 
-const percentage =
-  oldPrice > 0
-    ? Math.round(((oldPrice - newPrice) / oldPrice) * 100)
-    : 0;
+  const percentage =
+    oldPrice > 0
+      ? Math.round(((oldPrice - newPrice) / oldPrice) * 100)
+      : 0;
 
-const dropAmount = oldPrice - newPrice;
+  const dropAmount = oldPrice - newPrice;
   return (
     <div className="group bg-white rounded-2xl border border-gray-100 shadow-sm hover:shadow-md transition-all duration-300 overflow-hidden flex flex-col md:flex-row">
-      
+
       {/* Left: Image Section */}
       <div className="md:w-[350px] relative shrink-0">
-        <img 
-          src={mainImage || "/api/placeholder/400/500"} 
-          alt={projectName} 
-          className="w-full h-64 md:h-full object-cover" 
+        <img
+          src={mainImage || "/api/placeholder/400/500"}
+          alt={projectName}
+          className="w-full h-64 md:h-full object-cover"
         />
         <div className="absolute bottom-4 left-4 bg-red-600 text-white text-[10px] font-bold px-3 py-1 rounded shadow-lg uppercase tracking-wider">
           Limited time deal
@@ -127,33 +129,34 @@ const dropAmount = oldPrice - newPrice;
                 <MapPin size={12} className="mr-1" /> {address?.area}, {address?.city}
               </p>
             </div>
-            <button className="text-gray-300 hover:text-red-500 transition-colors">
+            {/* <button className="text-gray-300 hover:text-red-500 transition-colors">
               <Heart size={24} />
-            </button>
+            </button> */}
           </div>
 
           {/* Price Box */}
           <div className="bg-red-50/50 border border-red-100 rounded-xl p-4 mb-4">
             <div className="flex justify-between items-end">
-             <div>
-  <p className="text-[10px] text-gray-500 line-through">
-    Previous Price: {formatPrice(oldPrice)}
-  </p>
+              <div>
+                <p className="text-sm text-gray-600 line-through">
+                  Previous Price: {formatPrice(oldPrice)}
+                </p>
 
-  <p className="text-2xl font-bold text-[#742E85]">
-    New Price: {formatPrice(newPrice)}
-  </p>
-</div>
+                <p className="text-2xl font-bold text-[#00A11B]">
+                  New Price: {formatPrice(newPrice)}
+                </p>
+              </div>
 
-<div className="text-right">
-  <p className="text-red-600 font-bold text-lg">
-    ↓ {percentage}%
-  </p>
-  <p className="text-[11px] text-gray-500">
-    Save {formatPrice(dropAmount)}
-  </p>
-  <p className="text-gray-400 text-[10px]">Updated Today</p>
-</div>
+              <div className="text-right">
+                <p className="text-lg text-[#ff0000] font-bold">
+                  Price Drop: ↓{formatPrice(dropAmount)}
+                </p>
+                <p className="text-[#ff0000]  text-sm">
+                  {percentage}% deduction
+                </p>
+
+                {/* <p className="text-gray-400 text-[10px]">Updated Today</p> */}
+              </div>
             </div>
           </div>
 
@@ -171,7 +174,7 @@ const dropAmount = oldPrice - newPrice;
 
           {/* AI Insight */}
           <div className="bg-blue-50/50 text-blue-700 p-2 rounded-md text-[11px] font-medium flex items-center gap-2 mb-4">
-            <Sparkles size={14} className="shrink-0" /> 
+            <Sparkles size={14} className="shrink-0" />
             <span>AI Insight: Early possession advantage - ready to move</span>
           </div>
 
@@ -186,20 +189,24 @@ const dropAmount = oldPrice - newPrice;
         </div>
 
         {/* Footer Actions */}
-        <div className="flex gap-2 mt-4 pt-4 border-t border-gray-50">
-          <button className="flex-1 border border-gray-200 py-2.5 rounded-lg text-xs font-semibold text-gray-700 hover:bg-gray-50 transition-all">
-            View Details
-          </button>
-          <button className="flex-1 border border-gray-200 py-2.5 rounded-lg text-xs font-semibold text-gray-700 flex items-center justify-center gap-2 hover:bg-gray-50 transition-all">
-            <Phone size={14}/> Contact Expert
-          </button>
-          <button className="flex-1 bg-[#742E85] text-white py-2.5 rounded-lg text-xs font-bold flex items-center justify-center gap-2 hover:bg-[#5e256c] transition-all">
-            <Calendar size={14}/> Schedule Visit
-          </button>
-          <button className="border border-gray-200 px-3 rounded-lg hover:bg-gray-50 transition-all">
-            <Heart size={16} className="text-gray-500" />
-          </button>
-        </div>
+      <div className="flex gap-2 mt-4 pt-4 border-t border-gray-50">
+  
+  <Link
+    href={`/properties/${property.slug}`}
+    className="flex-1 flex items-center justify-center border border-gray-200 py-2.5 rounded-lg text-xs font-semibold text-gray-700 hover:bg-gray-50 transition-all"
+  >
+    View Details
+  </Link>
+
+  <Link
+    href="/contact"
+    className="flex-1 flex items-center justify-center gap-2 border border-gray-200 py-2.5 rounded-lg text-xs font-semibold text-gray-700 hover:bg-gray-50 transition-all"
+  >
+    <Phone size={14} />
+    Contact Expert
+  </Link>
+
+</div>
       </div>
     </div>
   );

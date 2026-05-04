@@ -99,14 +99,24 @@ const dropAmount = oldPrice - newPrice;
 
         <div className="flex flex-wrap gap-2">
           {project.brochureUrl && (
-            <a target="_blank" className="flex items-center gap-2 px-4 py-2 border bg-white rounded-lg text-sm font-bold shadow-sm">
+            <Link
+              href={project.brochureUrl}
+              target="_blank"
+              rel="noreferrer noopener"
+              className="flex items-center gap-2 px-4 py-2 border bg-white rounded-lg text-sm font-bold shadow-sm"
+            >
               <Download size={16} /> Brochure
-            </a>
+            </Link>
           )}
           {project.priceSheetUrl && (
-            <a target="_blank" className="flex items-center gap-2 px-4 py-2 border bg-white rounded-lg text-sm font-bold shadow-sm">
+            <Link
+              href={project.priceSheetUrl}
+              target="_blank"
+              rel="noreferrer noopener"
+              className="flex items-center gap-2 px-4 py-2 border bg-white rounded-lg text-sm font-bold shadow-sm"
+            >
               <FileText size={16} /> Price Sheet
-            </a>
+            </Link>
           )}
           <button onClick={() => {
             if (!user) {

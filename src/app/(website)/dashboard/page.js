@@ -498,7 +498,7 @@ export default function WebsitePage() {
                 </section>
             </div>
             <WhyChooseUs />
-            <About />
+            <About showOn="homepage" />
             <h2 className="text-4xl md:text-6xl  font-semibold text-[#742E85] mb-3 flex items-center justify-center">
                 Google Reviews
             </h2>

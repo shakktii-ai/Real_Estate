@@ -400,7 +400,7 @@ export default function AboutUs() {
           </div>
         </section>
 
-        <About />
+        <About showOn="about" />
       </main>
 
     

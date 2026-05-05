@@ -50,40 +50,33 @@ export default function HomePage() {
       console.error("Error fetching testimonials:", error);
     }
   };
-  const handleDelete = async (id) => {
-    if (!confirm("Delete this card?")) return;
+  const [deleteConfirm, setDeleteConfirm] = useState({ show: false, id: null, type: null });
 
+  const handleDelete = async (id) => {
+    setDeleteConfirm({ show: true, id, type: 'style' });
+  };
+
+  const handleTestimonialDelete = async (id) => {
+    setDeleteConfirm({ show: true, id, type: 'testimonial' });
+  };
+
+  const confirmDelete = async () => {
+    const { id, type } = deleteConfirm;
     try {
-      const res = await fetch(`/api/living-styles/${id}`, {
-        method: "DELETE",
-      });
+      const url = type === 'style' ? `/api/living-styles/${id}` : `/api/testimonials/${id}`;
+      const res = await fetch(url, { method: "DELETE" });
 
       if (!res.ok) throw new Error("Delete failed");
 
-      toast.success("Card deleted successfully ✅");
-
-      fetchCards(); // refresh list
+      toast.success(`${type === 'style' ? 'Card' : 'Testimonial'} deleted successfully ✅`);
+      
+      if (type === 'style') fetchCards();
+      else fetchReviews();
     } catch (error) {
       toast.error("Failed to delete ❌");
       console.error(error);
-    }
-  };
-  const handleTestimonialDelete = async (id) => {
-    if (!confirm("Delete this card?")) return;
-
-    try {
-      const res = await fetch(`/api/testimonials/${id}`, {
-        method: "DELETE",
-      });
-
-      if (!res.ok) throw new Error("Delete failed");
-
-      toast.success("Deleted successfully ✅");
-
-      fetchCards(); // refresh list
-    } catch (error) {
-      toast.error("Failed to delete ");
-      console.error(error);
+    } finally {
+      setDeleteConfirm({ show: false, id: null, type: null });
     }
   };
   useEffect(() => {
@@ -121,8 +114,7 @@ export default function HomePage() {
 
   return (
     <div className=" bg-[#F8F9FA] min-h-screen ">
-      <div className="flex justify-between items-center mb-8">
-        <h1 className="text-2xl font-bold text-gray-800">Home Management</h1>
+      <div className="flex justify-end items-center mb-8">
         <button
           onClick={() => setIsModalOpen(true)}
           className="bg-[#742E85] text-white px-5 py-2.5 rounded-xl flex items-center gap-2 font-bold"
@@ -201,7 +193,7 @@ export default function HomePage() {
               >
 
                 {/* MEDIA */}
-                <div className="w-full lg:w-[360px] h-[200px] sm:h-[260px] rounded-xl overflow-hidden relative shrink-0">
+                <div className="w-full lg:w-[360px] h-[200px] sm:h-[260px] rounded-xl overflow-hidden relative shrink-0 bg-white border border-gray-100 flex items-center justify-center">
                   {review.videoUrl &&
                     (review.videoUrl.includes(".mp4") ||
                       review.videoUrl.includes("video/upload")) ? (
@@ -212,10 +204,10 @@ export default function HomePage() {
                     />
                   ) : (
                     <Image
-                      src={review.videoUrl || "/rectangle-4854.png"}
+                      src={review.videoUrl || "/piinggaksha.png"}
                       alt={review.customerName}
                       fill
-                      className="object-cover rounded-xl"
+                      className={review.videoUrl ? "object-cover rounded-xl" : "object-contain p-12"}
                     />
                   )}
                 </div>
@@ -263,8 +255,8 @@ export default function HomePage() {
               onClick={handlePrev}
               disabled={startIndex === 0}
               className={`w-10 h-10 sm:w-12 sm:h-12 rounded-full border flex items-center justify-center transition ${startIndex === 0
-                  ? "border-gray-200 text-gray-300 cursor-not-allowed"
-                  : "border-[#742E85] text-[#742E85] hover:bg-[#742E85] hover:text-white"
+                ? "border-gray-200 text-gray-300 cursor-not-allowed"
+                : "border-[#742E85] text-[#742E85] hover:bg-[#742E85] hover:text-white"
                 }`}
             >
               <ChevronLeft size={20} />
@@ -274,8 +266,8 @@ export default function HomePage() {
               onClick={handleNext}
               disabled={startIndex + cardsPerPage >= reviews.length}
               className={`w-10 h-10 sm:w-12 sm:h-12 rounded-full border flex items-center justify-center transition ${startIndex + cardsPerPage >= reviews.length
-                  ? "border-gray-200 text-gray-300 cursor-not-allowed"
-                  : "border-[#742E85] text-[#742E85] hover:bg-[#742E85] hover:text-white"
+                ? "border-gray-200 text-gray-300 cursor-not-allowed"
+                : "border-[#742E85] text-[#742E85] hover:bg-[#742E85] hover:text-white"
                 }`}
             >
               <ChevronRight size={20} />
@@ -314,6 +306,38 @@ export default function HomePage() {
         />
         <Review />
       </section>
+      {/* Delete Confirmation Modal */}
+      {deleteConfirm.show && (
+        <div className="fixed inset-0 z-[200] flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm animate-in fade-in duration-200">
+          <div className="bg-white rounded-2xl w-full max-w-sm p-6 shadow-2xl animate-in zoom-in-95 duration-200">
+            <div className="flex flex-col items-center text-center space-y-4">
+              <div className="w-16 h-16 bg-red-100 rounded-full flex items-center justify-center">
+                <Trash2 size={32} className="text-red-500" />
+              </div>
+              <div className="space-y-2">
+                <h3 className="text-xl font-bold text-gray-900">Confirm Delete</h3>
+                <p className="text-gray-500">
+                  Are you sure you want to delete this {deleteConfirm.type === 'style' ? 'card' : 'testimonial'}? This action cannot be undone.
+                </p>
+              </div>
+              <div className="flex gap-3 w-full pt-2">
+                <button
+                  onClick={() => setDeleteConfirm({ show: false, id: null, type: null })}
+                  className="flex-1 px-4 py-2.5 border border-gray-200 text-gray-700 rounded-xl font-bold hover:bg-gray-50 transition-colors"
+                >
+                  Cancel
+                </button>
+                <button
+                  onClick={confirmDelete}
+                  className="flex-1 px-4 py-2.5 bg-red-500 text-white rounded-xl font-bold hover:bg-red-600 transition-colors shadow-lg shadow-red-200"
+                >
+                  Delete
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

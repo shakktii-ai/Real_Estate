@@ -25,7 +25,7 @@ const result = await new Promise((resolve, reject) => {
     .upload_stream(
       {
         folder: "real-estate-projects",
-        resource_type: isPdf ? "raw" : "image", // 🔥 key fix
+        resource_type: isPdf ? "raw" : "image", 
         type: "upload",
         access_mode: "public", // ensure public
         use_filename: true,
@@ -43,7 +43,7 @@ const result = await new Promise((resolve, reject) => {
       url: result.secure_url,
     });
   } catch (error) {
-  console.error("UPLOAD ERROR:", error); // ✅ VERY IMPORTANT
+  console.error("UPLOAD ERROR:", error);
 
   return NextResponse.json(
     { error: error.message || "Upload failed" },

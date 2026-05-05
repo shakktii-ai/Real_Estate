@@ -7,8 +7,8 @@ export async function GET(req) {
   const { searchParams } = new URL(req.url);
   const showOn = searchParams.get("showOn"); // 'homepage' or 'about'
 
-  const query = showOn === 'homepage' ? { showOnHomepage: true } : 
-                showOn === 'about' ? { showOnAboutUs: true } : {};
+  const query = showOn === 'homepage' ? { showOnHomepage: { $ne: false } } : 
+                showOn === 'about' ? { showOnAboutUs: { $ne: false } } : {};
                 
   const reviews = await Review.find(query).sort({ createdAt: -1 });
   return NextResponse.json(reviews);

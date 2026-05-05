@@ -27,23 +27,46 @@ const menuItems = [
 ];
 
 // components/admin/Sidebar.js
-export default function Sidebar() {
+export default function Sidebar({ isOpen, setIsOpen }) {
   const pathname = usePathname();
 
   return (
-    <aside className="w-64 bg-white border-r border-gray-300 shadow-md p-4 h-full hidden md:block">
-      <nav className="space-y-1">
-        {menuItems.map((item) => {
-          const Icon = item.icon;
-          const isActive = pathname === item.link;
-          return (
-            <Link key={item.name} href={item.link} className={`flex items-center gap-3 px-4 py-3 rounded-xl text-sm ${isActive ? "bg-[#703081] text-white" : "text-gray-500 hover:bg-gray-50"}`}>
-              <Icon size={18} />
-              <span>{item.name}</span>
-            </Link>
-          );
-        })}
-      </nav>
-    </aside>
+    <>
+      {/* Mobile Overlay */}
+      {isOpen && (
+        <div 
+          className="fixed inset-0 bg-black/50 z-[60] md:hidden backdrop-blur-sm transition-all duration-300"
+          onClick={() => setIsOpen(false)}
+        />
+      )}
+
+      {/* Sidebar */}
+      <aside className={`
+        fixed inset-y-0 left-0 z-[70] w-64 bg-white border-r border-gray-200 shadow-xl p-4 transition-transform duration-300 ease-in-out md:translate-x-0 md:static md:block md:shadow-md h-full
+        ${isOpen ? "translate-x-0" : "-translate-x-full"}
+      `}>
+        <nav className="space-y-1">
+          {menuItems.map((item) => {
+            const Icon = item.icon;
+            const isActive = pathname === item.link;
+            return (
+              <Link 
+                key={item.name} 
+                href={item.link} 
+                onClick={() => setIsOpen(false)}
+                className={`flex items-center gap-3 px-4 py-3 rounded-xl text-sm transition-all ${
+                  isActive 
+                    ? "bg-[#742E85] text-white shadow-lg shadow-purple-200" 
+                    : "text-gray-500 hover:bg-purple-50 hover:text-[#742E85]"
+                }`}
+              >
+                <Icon size={18} />
+                <span className="font-medium">{item.name}</span>
+              </Link>
+            );
+          })}
+        </nav>
+      </aside>
+    </>
   );
 }

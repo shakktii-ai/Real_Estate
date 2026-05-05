@@ -91,7 +91,7 @@ export default function EditBlogModal({ isOpen, onClose, onRefresh, blog }) {
   if (!isOpen || !blog) return null;
 
   return (
-    <div className="fixed inset-0 z-[100] flex items-center justify-center  bg-black/50 p-4">
+    <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/60 backdrop-blur-sm p-4">
       <div className="bg-white w-full max-w-2xl rounded-3xl shadow-2xl overflow-hidden">
 
         {/* HEADER */}

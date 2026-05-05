@@ -32,12 +32,8 @@ export async function DELETE(request, { params }) {
 
     try {
         await connectToDatabase();
-        const deletedTestimonial = await Testimonial.findByIdAndDelete(id);
-
-        if (!deletedTestimonial) {
-            return NextResponse.json({ success: false, message: "Not found" }, { status: 404 });
-        }
-
+        await Testimonial.findByIdAndDelete(id);
+        // Return 200 even if not found — treat missing doc as already deleted
         return NextResponse.json({ success: true, message: "Deleted successfully" });
     } catch (error) {
         return NextResponse.json({ success: false, message: error.message }, { status: 400 });

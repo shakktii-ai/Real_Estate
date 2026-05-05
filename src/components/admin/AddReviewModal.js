@@ -5,7 +5,7 @@ import { Star, X } from 'lucide-react';
 export default function AddReviewModal({ isOpen, onClose, onRefresh }) {
   const [formData, setFormData] = useState({
     customerName: '', reviewText: '', rating: 5, googleLink: '', 
-    showOnHomepage: false, showOnAboutUs: false
+    showOnHomepage: true, showOnAboutUs: true
   });
 
   const handleSubmit = async (e) => {
@@ -18,7 +18,7 @@ export default function AddReviewModal({ isOpen, onClose, onRefresh }) {
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4">
+    <div className="fixed inset-0 bg-black/60 backdrop-blur-sm z-[100] flex items-center justify-center p-4">
       <form onSubmit={handleSubmit} className="bg-white rounded-2xl w-full max-w-lg p-6 space-y-4">
         <div className="flex justify-between items-center mb-4 text-black">
           <h2 className="text-xl font-bold">Add New Google Review</h2>

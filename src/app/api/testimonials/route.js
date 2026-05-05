@@ -3,12 +3,18 @@ import Testimonial from "@/models/Testimonial";
 import { NextResponse } from "next/server";
 
 // GET: Fetch all testimonials
-export async function GET() {
+export async function GET(req) {
   try {
     await connectToDatabase();
     
-    // Fetch all testimonials and sort by newest first
-    const testimonials = await Testimonial.find({}).sort({ createdAt: -1 });
+    const { searchParams } = new URL(req.url);
+    const showOn = searchParams.get("showOn");
+
+    const query = showOn === "homepage" ? { showOnHomepage: { $ne: false } } :
+                  showOn === "about" ? { showOnAboutUs: { $ne: false } } : {};
+
+    // Fetch testimonials based on query and sort by newest first
+    const testimonials = await Testimonial.find(query).sort({ createdAt: -1 });
     
     return NextResponse.json(testimonials, { status: 200 });
   } catch (error) {

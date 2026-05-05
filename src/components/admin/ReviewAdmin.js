@@ -42,15 +42,20 @@ useEffect(() => {
   fetchReviews();
   setLoading(false);
 }, []);
-const handleDelete = async (id) => {
-  if (!confirm("Are you sure you want to delete this review?")) return;
+  const [deleteConfirm, setDeleteConfirm] = useState({ show: false, id: null });
 
-  await fetch(`/api/reviews/${id}`, {
-    method: "DELETE",
-  });
+  const handleDelete = (id) => {
+    setDeleteConfirm({ show: true, id });
+  };
 
-  fetchReviews(); // refresh UI
-};
+  const confirmDelete = async () => {
+    const { id } = deleteConfirm;
+    await fetch(`/api/reviews/${id}`, {
+      method: "DELETE",
+    });
+    setDeleteConfirm({ show: false, id: null });
+    fetchReviews(); // refresh UI
+  };
 
   const handleNext = () => {
     if (startIndex + cardsPerPage < reviews.length) {
@@ -127,6 +132,39 @@ const handleDelete = async (id) => {
           </div>
         )}
       </div>
+
+      {/* Delete Confirmation Modal */}
+      {deleteConfirm.show && (
+        <div className="fixed inset-0 z-[200] flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm">
+          <div className="bg-white rounded-2xl w-full max-w-sm p-6 shadow-2xl">
+            <div className="flex flex-col items-center text-center space-y-4">
+              <div className="w-16 h-16 bg-red-100 rounded-full flex items-center justify-center">
+                <ChevronRight size={32} className="text-red-500 rotate-90" /> {/* Using an icon as placeholder or similar */}
+              </div>
+              <div className="space-y-2">
+                <h3 className="text-xl font-bold text-gray-900">Confirm Delete</h3>
+                <p className="text-gray-500">
+                  Are you sure you want to delete this Google review? This action cannot be undone.
+                </p>
+              </div>
+              <div className="flex gap-3 w-full pt-2">
+                <button
+                  onClick={() => setDeleteConfirm({ show: false, id: null })}
+                  className="flex-1 px-4 py-2.5 border border-gray-200 text-gray-700 rounded-xl font-bold hover:bg-gray-50"
+                >
+                  Cancel
+                </button>
+                <button
+                  onClick={confirmDelete}
+                  className="flex-1 px-4 py-2.5 bg-red-500 text-white rounded-xl font-bold hover:bg-red-600"
+                >
+                  Delete
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
     </section>
   );
 }

@@ -9,6 +9,7 @@ export default function AdminContent({ children }) {
     const router = useRouter();
     const isLoginPage = pathname === "/admin/login";
     const [isCheckingAuth, setIsCheckingAuth] = useState(true);
+    const [isSidebarOpen, setIsSidebarOpen] = useState(false);
 
     useEffect(() => {
         // Skip auth check if we are on the login page
@@ -24,6 +25,8 @@ export default function AdminContent({ children }) {
             setIsCheckingAuth(false);
         }
     }, [pathname, router, isLoginPage]);
+
+    const toggleSidebar = () => setIsSidebarOpen(!isSidebarOpen);
 
     if (isCheckingAuth && !isLoginPage) {
         return (
@@ -42,14 +45,14 @@ export default function AdminContent({ children }) {
     }
 
     return (
-        <>
-            <Topbar />
-            <div className="flex flex-1 mt-20 overflow-hidden">
-                <Sidebar />
-                <main className="flex-1 overflow-y-auto bg-gray-50 p-6">
+        <div className="flex flex-col h-screen overflow-hidden">
+            <Topbar toggleSidebar={toggleSidebar} />
+            <div className="flex flex-1 mt-20 overflow-hidden relative">
+                <Sidebar isOpen={isSidebarOpen} setIsOpen={setIsSidebarOpen} />
+                <main className="flex-1 overflow-y-auto bg-gray-50 p-4 md:p-6">
                     {children}
                 </main>
             </div>
-        </>
+        </div>
     );
 }

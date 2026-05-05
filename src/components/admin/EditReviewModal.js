@@ -65,7 +65,7 @@ const handleUpdate = async (e) => {
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4">
+    <div className="fixed inset-0 bg-black/60 backdrop-blur-sm z-[100] flex items-center justify-center p-4">
       <form
         onSubmit={handleUpdate}
         className="bg-white rounded-2xl w-full max-w-lg p-6 space-y-4"

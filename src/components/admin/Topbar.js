@@ -135,7 +135,7 @@
 
 "use client";
 import { usePathname } from "next/navigation";
-import { Bell, Settings, LogOut, User } from "lucide-react";
+import { Bell, Settings, LogOut, User, Menu } from "lucide-react";
 import { useEffect, useState, useRef } from "react";
 import { useRouter } from "next/navigation";
 
@@ -150,7 +150,7 @@ const pageConfigs = {
     "/admin/settings": { title: "Settings,", subtitle: "Manage your admin panel settings and preferences" }
 };
 
-export default function Header() {
+export default function Header({ toggleSidebar }) {
     const pathname = usePathname();
     const [notifications, setNotifications] = useState([]);
     const [notifOpen, setNotifOpen] = useState(false);
@@ -236,12 +236,23 @@ export default function Header() {
     const current = pageConfigs[pathname] || { title: "Dashboard", subtitle: "Welcome back" };
 
     return (
-        <header className="h-20 w-full bg-white border-b border-gray-200 shadow-md flex items-center justify-between px-8 z-50 fixed top-0">
-            <div className="flex items-center gap-8 ml-12">
-                <img src="/piinggaksha.png" alt="Logo" className="h-18 w-auto object-contain " />
-                <div className="ml-24">
-                    <h1 className="text-xl font-bold text-black">{current.title}</h1>
-                    <p className="text-sm text-gray-500">{current.subtitle}</p>
+        <header className="h-20 w-full bg-white border-b border-gray-200 shadow-md flex items-center justify-between px-4 md:px-8 z-50 fixed top-0">
+            <div className="flex items-center gap-4 md:gap-8">
+                {/* Burger Menu Button */}
+                <button 
+                    onClick={toggleSidebar}
+                    className="p-2 hover:bg-gray-100 rounded-xl md:hidden transition-colors"
+                >
+                    <Menu size={24} className="text-gray-600" />
+                </button>
+
+                <img src="/piinggaksha.png" alt="Logo" className="h-10 md:h-14 w-auto object-contain" />
+                
+                <div className="hidden lg:block h-8 w-px bg-gray-200 mx-2"></div>
+
+                <div className="hidden sm:block">
+                    <h1 className="text-lg md:text-xl font-bold text-black truncate max-w-[200px] md:max-w-none">{current.title}</h1>
+                    <p className="text-[10px] md:text-sm text-gray-500 truncate max-w-[200px] md:max-w-none">{current.subtitle}</p>
                 </div>
             </div>
 
@@ -258,7 +269,7 @@ export default function Header() {
                     </button>
 
                     {notifOpen && (
-                        <div className="absolute right-0 mt-3 w-80 bg-white border rounded-2xl shadow-xl z-50 max-h-[70vh] overflow-y-auto overflow-x-hidden animate-in fade-in slide-in-from-top-2 duration-200">
+                        <div className="fixed md:absolute left-4 right-4 md:left-auto md:right-0 mt-3 md:w-80 bg-white border rounded-2xl shadow-xl z-50 max-h-[70vh] overflow-y-auto overflow-x-hidden animate-in fade-in slide-in-from-top-2 duration-200">
                             <div className="p-4 border-b font-bold text-[#742E85] flex justify-between items-center">
                                 <span>Notifications</span>
                                 <span className="text-[10px] bg-purple-100 px-2 py-0.5 rounded-full">{unreadCount} New</span>

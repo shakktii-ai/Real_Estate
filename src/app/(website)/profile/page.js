@@ -29,16 +29,17 @@ export default function ProfilePage() {
                 const data = await res.json();
 
                 setProfile({
-                    uid: data.uid,
+                    uid: data.uid || firebaseUser.uid,
                     phone: data.phone || "",
                     fullName: data.fullName || "",
-                    email: data.email || "",
+                    email: data.email || firebaseUser.email || "",
                     budget: data.budget || "",
                     buyingTimeline: data.buyingTimeline || "",
                     purpose: data.purpose || "",
                 });
             } catch (err) {
-                toast.error("Failed to load profile");
+                console.error("Failed to load profile", err);
+                setProfile(prev => ({ ...prev, uid: firebaseUser.uid }));
             } finally {
                 setLoading(false);
             }
@@ -119,9 +120,14 @@ export default function ProfilePage() {
                     <div>
                         <label className="text-sm text-gray-500">Mobile Number</label>
                         <input
+                            type="tel"
+                            maxLength={10}
                             value={profile.phone}
-                            disabled
-                            className="w-full border rounded-xl px-4 py-3 bg-[#F5F5F5] mt-1"
+                            onChange={(e) =>
+                                setProfile({ ...profile, phone: e.target.value.replace(/\D/g, "") })
+                            }
+                            placeholder="Enter mobile number"
+                            className="w-full border rounded-xl px-4 py-3 bg-[#F5F5F5] mt-1 outline-none focus:border-[#742E85] focus:bg-white transition text-black"
                         />
                     </div>
 

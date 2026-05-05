@@ -11,25 +11,23 @@ const UserSchema = new mongoose.Schema(
 
     phone: {
       type: String,
-      required: true,
-      unique: true,
+      required: false,
+      trim: true,
     },
 
     // Signup step data
     budget: {
       type: String,
-      required: true,
-      default: "",
+      required: false,
     },
 
     buyingTimeline: {
       type: String,
-      default: "",
     },
 
     purpose: {
       type: String,
-      enum: ["self_use", "investment"],
+      enum: ["self_use", "investment", "", null],
       default: "",
     },
 
@@ -41,16 +39,17 @@ const UserSchema = new mongoose.Schema(
     // Remaining profile data collected later
     fullName: {
       type: String,
-      default: "",
     },
 
     email: {
       type: String,
-      default: "",
+      trim: true,
+      lowercase: true,
     },
     referralCode: {
       type: String,
       unique: true,
+      sparse: true,
     },
     referredBy: {
       type: mongoose.Schema.Types.ObjectId,
@@ -68,6 +67,14 @@ const UserSchema = new mongoose.Schema(
 
   },
   { timestamps: true }
+);
+
+UserSchema.index(
+  { phone: 1 },
+  { 
+    unique: true, 
+    partialFilterExpression: { phone: { $type: "string" } } 
+  }
 );
 
 export default mongoose.models.User || mongoose.model("User", UserSchema);

@@ -90,7 +90,7 @@ export default function SettingsPage() {
 
       {/* Tab Switcher */}
       <div
-        className="flex bg-[#818181] p-1 rounded-[25px] w-[467px] h-[37px] mb-10 items-center shadow-[0px_3px_4px_rgba(0,0,0,0.25)]"
+        className="flex bg-[#818181] p-1 rounded-[25px] w-full max-w-[467px] h-[37px] mb-10 items-center shadow-[0px_3px_4px_rgba(0,0,0,0.25)]"
       >
         <button
           onClick={() => setActiveTab("admin")}
@@ -115,9 +115,9 @@ export default function SettingsPage() {
       </div>
 
       {activeTab === "admin" ? (
-        <div className="w-[1031px] h-[520px] bg-white rounded-[10px] shadow-[0px_4px_4px_rgba(0,0,0,0.25)] p-[15px] flex gap-[20px]">
+        <div className="max-w-[1031px] w-full bg-white rounded-[10px] shadow-[0px_4px_4px_rgba(0,0,0,0.25)] p-4 md:p-[15px] flex flex-col lg:flex-row gap-6 lg:gap-[20px]">
           {/* Add Sub-admin Card */}
-          <div className="w-[587px] h-[480px] bg-white rounded-[10px] p-8 shadow-[0px_4px_4px_rgba(0,0,0,0.25)] border border-gray-50 flex flex-col justify-between">
+          <div className="flex-1 min-h-[480px] bg-white rounded-[10px] p-6 md:p-8 shadow-[0px_4px_4px_rgba(0,0,0,0.25)] border border-gray-50 flex flex-col justify-between">
             <h3 className="text-[20px] font-roboto font-normal text-black mb-2 tracking-tight">Add Sub-admin</h3>
 
             <div className="space-y-4">
@@ -251,7 +251,7 @@ export default function SettingsPage() {
           </div>
 
           {/* Current Admin's Card */}
-          <div className="w-[401px] h-[480px] bg-white rounded-[10px] p-8 shadow-[0px_4px_4px_rgba(0,0,0,0.25)] border border-gray-50 flex flex-col">
+          <div className="lg:w-[401px] w-full min-h-[480px] bg-white rounded-[10px] p-6 md:p-8 shadow-[0px_4px_4px_rgba(0,0,0,0.25)] border border-gray-50 flex flex-col">
             <h3 className="text-[20px] font-roboto font-normal text-black mb-8 tracking-tight">Current Admin's</h3>
 
             <div className="space-y-4 overflow-y-auto pr-2 custom-scrollbar">
@@ -292,13 +292,13 @@ export default function SettingsPage() {
         </div>
       ) : (
         /* Notifications Tab */
-        <div className="w-[1031px] space-y-4">
+        <div className="max-w-[1031px] w-full space-y-4">
           {/* Email Notifications Card */}
           <div className="bg-white rounded-[10px] p-6 shadow-[0px_4px_4px_rgba(0,0,0,0.25)] border border-gray-50">
             <h3 className="text-[20px] font-roboto font-normal text-black mb-6 tracking-tight">Email Notifications</h3>
 
             <div className="space-y-4">
-              <div className="p-4 border border-gray-100 rounded-[10px] flex items-center justify-between hover:bg-gray-50 transition-all">
+              <div className="p-4 border border-gray-100 rounded-[10px] flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 hover:bg-gray-50 transition-all">
                 <div className="flex items-center gap-4">
                   <div className="w-10 h-10 border border-gray-100 rounded-[10px] flex items-center justify-center text-[#092F63]">
                     <Mail size={20} />
@@ -318,7 +318,7 @@ export default function SettingsPage() {
                 </button>
               </div>
 
-              <div className="p-4 border border-gray-100 rounded-[10px] flex items-center justify-between hover:bg-gray-50 transition-all">
+              <div className="p-4 border border-gray-100 rounded-[10px] flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 hover:bg-gray-50 transition-all">
                 <div className="flex items-center gap-4">
                   <div className="w-10 h-10 border border-gray-100 rounded-[10px] flex items-center justify-center text-[#092F63]">
                     <Mail size={20} />
@@ -342,7 +342,7 @@ export default function SettingsPage() {
 
           {/* WhatsApp Notifications Card */}
           <div className="bg-white rounded-[10px] p-6 shadow-[0px_4px_4px_rgba(0,0,0,0.25)] border border-gray-50 relative">
-            <h3 className="text-[20px] font-roboto font-normal text-black mb-6 tracking-tight">Email Notifications</h3>
+            <h3 className="text-[20px] font-roboto font-normal text-black mb-6 tracking-tight">WhatsApp Notifications</h3>
 
             <div className="space-y-4">
               {/* WhatsApp Business API Banner */}
@@ -361,7 +361,7 @@ export default function SettingsPage() {
               </div>
 
               {/* WhatsApp Booking Toggle */}
-              <div className="p-4 border border-gray-100 rounded-[10px] flex items-center justify-between hover:bg-gray-50 transition-all">
+              <div className="p-4 border border-gray-100 rounded-[10px] flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 hover:bg-gray-50 transition-all">
                 <div className="flex items-center gap-4">
                   <div className="w-10 h-10 border border-gray-100 rounded-full flex items-center justify-center text-gray-400">
                     <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
@@ -384,7 +384,7 @@ export default function SettingsPage() {
               </div>
 
               {/* WhatsApp Inquiry Toggle */}
-              <div className="p-4 border border-gray-100 rounded-[10px] flex items-center justify-between hover:bg-gray-50 transition-all">
+              <div className="p-4 border border-gray-100 rounded-[10px] flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 hover:bg-gray-50 transition-all">
                 <div className="flex items-center gap-4">
                   <div className="w-10 h-10 border border-gray-100 rounded-full flex items-center justify-center text-gray-400">
                     <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">

@@ -9,7 +9,7 @@ export default function AdminBlogManagement() {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [blogs, setBlogs] = useState([]);
   const [loading, setLoading] = useState(true);
-const [editBlog, setEditBlog] = useState(null);
+  const [editBlog, setEditBlog] = useState(null);
   // 1. Fetch Blogs from DB
   const fetchBlogs = async () => {
     try {
@@ -30,33 +30,40 @@ const [editBlog, setEditBlog] = useState(null);
   }, []);
 
   // 2. Delete Handler
- const handleDelete = async (id) => {
-  if (!confirm("Are you sure you want to delete this blog?")) return;
+  const [deleteConfirm, setDeleteConfirm] = useState({ show: false, id: null });
 
-  const toastId = toast.loading("Deleting blog...");
+  const handleDelete = (id) => {
+    setDeleteConfirm({ show: true, id });
+  };
 
-  try {
-    const res = await fetch(`/api/blogs/${id}`, { method: "DELETE" });
+  const confirmDelete = async () => {
+    const { id } = deleteConfirm;
+    const toastId = toast.loading("Deleting blog...");
 
-    if (!res.ok) throw new Error("Delete failed");
+    try {
+      const res = await fetch(`/api/blogs/${id}`, { method: "DELETE" });
 
-    setBlogs((prev) => prev.filter((b) => b._id !== id));
+      if (!res.ok) throw new Error("Delete failed");
 
-    toast.update(toastId, {
-      render: "Blog deleted successfully",
-      type: "success",
-      isLoading: false,
-      autoClose: 2000,
-    });
-  } catch (error) {
-    toast.update(toastId, {
-      render: error.message,
-      type: "error",
-      isLoading: false,
-      autoClose: 2000,
-    });
-  }
-};
+      setBlogs((prev) => prev.filter((b) => b._id !== id));
+
+      toast.update(toastId, {
+        render: "Blog deleted successfully",
+        type: "success",
+        isLoading: false,
+        autoClose: 2000,
+      });
+    } catch (error) {
+      toast.update(toastId, {
+        render: error.message,
+        type: "error",
+        isLoading: false,
+        autoClose: 2000,
+      });
+    } finally {
+      setDeleteConfirm({ show: false, id: null });
+    }
+  };
 
   // 3. Dynamic Stats Calculation
   const stats = [
@@ -103,9 +110,9 @@ const [editBlog, setEditBlog] = useState(null);
           <thead className="bg-gray-50 text-[11px] uppercase font-bold text-black">
             <tr>
               <th className="px-6 py-4">Title</th>
-             
+
               <th className="px-6 py-4">Date</th>
-            
+
               <th className="px-6 py-4 text-center">Actions</th>
             </tr>
           </thead>
@@ -116,11 +123,11 @@ const [editBlog, setEditBlog] = useState(null);
                   <p className="font-bold text-sm text-gray-800">{blog.title}</p>
                   <p className="text-[11px] text-gray-600 line-clamp-1">{blog.description}</p>
                 </td>
-               
+
                 <td className="px-6 py-5 text-sm text-gray-600">
                   {new Date(blog.createdAt).toLocaleDateString()}
                 </td>
-              
+
                 <td className="px-6 py-5">
                   <div className="flex justify-center gap-2">
                     <button onClick={() => setEditBlog(blog)} className="p-2 text-black hover:text-[#742E85]">
@@ -136,12 +143,45 @@ const [editBlog, setEditBlog] = useState(null);
           </tbody>
         </table>
         <EditBlogModal
-  isOpen={!!editBlog}
-  blog={editBlog}
-  onClose={() => setEditBlog(null)}
-  onRefresh={fetchBlogs}
-/>
+          isOpen={!!editBlog}
+          blog={editBlog}
+          onClose={() => setEditBlog(null)}
+          onRefresh={fetchBlogs}
+        />
       </div>
+
+      {/* Delete Confirmation Modal */}
+      {deleteConfirm.show && (
+        <div className="fixed inset-0 z-[200] flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm">
+          <div className="bg-white rounded-2xl w-full max-w-sm p-6 shadow-2xl">
+            <div className="flex flex-col items-center text-center space-y-4">
+              <div className="w-16 h-16 bg-red-100 rounded-full flex items-center justify-center">
+                <Trash2 size={32} className="text-red-500" />
+              </div>
+              <div className="space-y-2">
+                <h3 className="text-xl font-bold text-gray-900">Confirm Delete</h3>
+                <p className="text-gray-500">
+                  Are you sure you want to delete this blog? This action cannot be undone.
+                </p>
+              </div>
+              <div className="flex gap-3 w-full pt-2">
+                <button
+                  onClick={() => setDeleteConfirm({ show: false, id: null })}
+                  className="flex-1 px-4 py-2.5 border border-gray-200 text-gray-700 rounded-xl font-bold hover:bg-gray-50"
+                >
+                  Cancel
+                </button>
+                <button
+                  onClick={confirmDelete}
+                  className="flex-1 px-4 py-2.5 bg-red-500 text-white rounded-xl font-bold hover:bg-red-600 shadow-lg shadow-red-200"
+                >
+                  Delete
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

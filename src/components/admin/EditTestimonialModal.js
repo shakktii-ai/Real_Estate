@@ -70,7 +70,7 @@ export default function EditTestimonialModal({ isOpen, onClose, onRefresh, testi
     };
     if (!isOpen || !testimonial) return null;
     return (
-        <div className="fixed inset-0 bg-black/50 flex items-center justify-center p-4 z-50">
+        <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center p-4 z-[100]">
             <div className="bg-white rounded-2xl w-full max-w-lg max-h-[90vh] flex flex-col shadow-xl">
                 {/* Header */}
                 <div className="flex justify-between items-center p-6 border-b flex-shrink-0">

@@ -203,7 +203,7 @@ export default function EditProjectModal({
   if (!isOpen || !project) return null;
 
   return (
-    <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
+    <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-[100]">
       <div className="bg-white w-full max-w-3xl rounded-2xl overflow-hidden shadow-2xl">
 
         {/* HEADER */}

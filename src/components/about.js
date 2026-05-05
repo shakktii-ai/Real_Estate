@@ -3,7 +3,7 @@ import { useState, useEffect } from "react";
 import Image from "next/image";
 import { ChevronLeft, ChevronRight, Maximize2, X } from "lucide-react";
 
-export default function About() {
+export default function About({ showOn }) {
   const [reviews, setReviews] = useState([]);
   const [startIndex, setStartIndex] = useState(0);
   const [expandedVideo, setExpandedVideo] = useState(null);
@@ -12,7 +12,8 @@ export default function About() {
   useEffect(() => {
     const fetchReviews = async () => {
       try {
-        const res = await fetch("/api/testimonials");
+        const url = showOn ? `/api/testimonials?showOn=${showOn}` : "/api/testimonials";
+        const res = await fetch(url);
         const data = await res.json();
         setReviews(Array.isArray(data) ? data : []);
       } catch (error) {
@@ -20,7 +21,7 @@ export default function About() {
       }
     };
     fetchReviews();
-  }, []);
+  }, [showOn]);
 
   const handleNext = () => {
     if (startIndex + cardsPerPage < reviews.length) {
@@ -53,24 +54,24 @@ export default function About() {
               className="bg-[#F4F4F4] p-6 md:p-8 rounded-[21px] flex flex-col md:flex-row gap-8 md:gap-12 items-center shadow-[4px_4px_7.3px_rgba(0,0,0,0.15)] w-full min-h-[305px]"
             >
               {/* Left Panel: Video or Avatar */}
-              {review.videoUrl ? (
-                <div className="relative w-full md:w-[362px] h-[200px] md:h-[259px] rounded-[21px] flex-shrink-0 overflow-hidden group bg-black">
-                  {isVideo(review.videoUrl) ? (
-                    <video
-                      src={review.videoUrl}
-                      className="w-full h-full object-cover"
-                      controls
-                    />
-                  ) : (
-                    <Image
-                      src={review.videoUrl}
-                      alt={review.customerName}
-                      fill
-                      className="object-cover"
-                      sizes="(max-width: 768px) 100vw, 362px"
-                    />
-                  )}
-                  {/* Enlarge Button */}
+              <div className="relative w-full md:w-[362px] h-[200px] md:h-[259px] rounded-[21px] flex-shrink-0 overflow-hidden group bg-white border border-gray-100 shadow-inner flex items-center justify-center">
+                {review.videoUrl && isVideo(review.videoUrl) ? (
+                  <video
+                    src={review.videoUrl}
+                    className="w-full h-full object-cover"
+                    controls
+                  />
+                ) : (
+                  <Image
+                    src={review.videoUrl || "/piinggaksha.png"}
+                    alt={review.customerName}
+                    fill
+                    className={review.videoUrl ? "object-cover" : "object-contain p-16"}
+                    sizes="(max-width: 768px) 100vw, 362px"
+                  />
+                )}
+                {/* Enlarge Button (only if media exists) */}
+                {review.videoUrl && (
                   <button
                     onClick={() => setExpandedVideo(review.videoUrl)}
                     className="absolute top-3 right-3 bg-black/60 hover:bg-black/80 text-white p-2 rounded-lg opacity-0 group-hover:opacity-100 transition-opacity duration-200"
@@ -78,15 +79,8 @@ export default function About() {
                   >
                     <Maximize2 size={18} />
                   </button>
-                </div>
-              ) : (
-                /* Gmail-style circular avatar */
-                <div className="w-[150px] h-[150px] md:w-[220px] md:h-[220px] rounded-full flex-shrink-0 bg-gradient-to-br from-[#CCA4D6] to-[#742E85] flex items-center justify-center shadow-lg">
-                  <span className="text-white text-4xl md:text-7xl font-bold uppercase">
-                    {review.customerName?.charAt(0)}
-                  </span>
-                </div>
-              )}
+                )}
+              </div>
 
               {/* Content */}
               <div className="flex-1 text-black font-roboto-condensed w-full">

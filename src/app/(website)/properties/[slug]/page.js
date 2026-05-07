@@ -21,6 +21,7 @@ export default function ProjectDetails() {
     Luxury: "bg-[#F97316]",
     Affordable: "bg-[#1447EA]",
     Holiday: "bg-[#1DA2B3]",
+     Featured:"bg-[#A566B8]",
   };
   const [activeTab, setActiveTab] = useState("Overview");
   const tabs = ["Overview", "Pricing", "Amenities", "Construction", "Location", "USP's of Project"];
@@ -59,7 +60,7 @@ const dropAmount = oldPrice - newPrice;
     if (slug) fetchProject();
   }, [slug]);
 
-  if (loading) return <div className="p-10 text-center">Loading Project Details...</div>;
+  if (loading) return <div className="p-10 text-center text-black">Loading Project Details...</div>;
   if (!project) return <div className="p-10 text-center">Project not found.</div>;
 
   return (

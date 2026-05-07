@@ -1,4 +1,5 @@
 import { Star } from 'lucide-react';
+import Link from 'next/link';
 
 export default function ReviewCard({ review }) {
   const getTimeAgo = (date) => {
@@ -12,7 +13,7 @@ export default function ReviewCard({ review }) {
       { label: "month", seconds: 2592000 },
       { label: "day", seconds: 86400 },
       { label: "hour", seconds: 3600 },
-      { label: "minute", seconds: 60 },
+      { label: "min", seconds: 60 },
     ];
 
     for (const interval of intervals) {
@@ -26,7 +27,7 @@ export default function ReviewCard({ review }) {
     return "Just now";
   };
   return (
-    <div className="bg-white text-black rounded-md border border-gray-300 shadow-lg hover:shadow-xl transition-all">
+    <div className="bg-white text-black rounded-md border border-gray-300 shadow-lg hover:shadow-xl transition-all pb-4 transition-all duration-300 ease-in-out hover:-translate-y-1 hover:shadow-xl hover:scale-[1.02]">
       <div className="flex justify-start gap-4 rounded-md  p-2 bg-[#F4F4F4]">
         <div className="w-12 h-12 rounded-full bg-[#D9D9D9] flex items-center justify-center  font-bold text-lg uppercase">
           {review.customerName?.charAt(0)}
@@ -49,11 +50,11 @@ export default function ReviewCard({ review }) {
       </p>
       </div>
     
-      <p className="text-gray-600 text-sm leading-relaxed   p-4">{review.reviewText}</p>
+      <p className="text-gray-600 text-sm leading-relaxed p-4 line-clamp-6">{review.reviewText}</p>
 
-      <a href={review.googleLink} target="_blank" className="text-[#1447EA] font-bold text-sm p-4 hover:underline ">
+      {/* <Link href={review.googleLink} target="_blank" className="text-[#1447EA] font-bold text-sm p-4 hover:underline ">
         View on Google →
-      </a>
+      </Link> */}
     </div>
   );
 }

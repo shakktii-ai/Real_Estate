@@ -8,14 +8,15 @@ export default function ReviewsPage() {
   const [reviews, setReviews] = useState([]);
   const [loading, setLoading] = useState(true);
   const [startIndex, setStartIndex] = useState(0);
-  const [cardsPerPage, setCardsPerPage] = useState(3);
+  const [cardsPerPage, setCardsPerPage] = useState(5);
+  const [isHovering, setIsHovering] = useState(false);
 
   useEffect(() => {
     const updateCardsPerPage = () => {
       if (window.innerWidth < 640) {
         setCardsPerPage(1); // mobile
       } else {
-        setCardsPerPage(3); // tablet/desktop
+        setCardsPerPage(5); // desktop
       }
     };
 
@@ -40,6 +41,23 @@ export default function ReviewsPage() {
         setLoading(false);
       });
   }, []);
+
+  // Auto-scroll functionality
+  useEffect(() => {
+    if (reviews.length <= cardsPerPage || isHovering) return;
+
+    const interval = setInterval(() => {
+      setStartIndex((prevIndex) => {
+        const nextIndex = prevIndex + 1;
+        if (nextIndex + cardsPerPage > reviews.length) {
+          return 0; // Loop back to start
+        }
+        return nextIndex;
+      });
+    }, 3000); // Change every 2 seconds
+
+    return () => clearInterval(interval);
+  }, [reviews.length, cardsPerPage, isHovering]);
 
   const handleNext = () => {
     if (startIndex + cardsPerPage < reviews.length) {
@@ -68,17 +86,19 @@ export default function ReviewsPage() {
 
   return (
     <section className="py-20 px-4 md:px-6">
-      <div className="max-w-7xl mx-auto">
+      <div className="max-w-7xl mx-auto" onMouseEnter={() => setIsHovering(true)} onMouseLeave={() => setIsHovering(false)}>
         {visibleReviews.length > 0 ? (
           <div
-            className={`grid gap-6 ${
+            className={`grid gap-6  ${
               cardsPerPage === 1
                 ? "grid-cols-1"
-                : "grid-cols-1 sm:grid-cols-2 xl:grid-cols-3"
+                : "grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 xl:grid-cols-5"
             }`}
           >
             {visibleReviews.map((review) => (
-              <ReviewCard key={review._id} review={review} />
+        
+               <ReviewCard key={review._id} review={review} />
+             
             ))}
           </div>
         ) : (
@@ -88,7 +108,7 @@ export default function ReviewsPage() {
         )}
 
         {reviews.length > cardsPerPage && (
-          <div className="flex items-center justify-center gap-3 mt-8">
+          <div className="flex items-center justify-center gap-5 mt-8">
             <button
               onClick={handlePrev}
               disabled={startIndex === 0}

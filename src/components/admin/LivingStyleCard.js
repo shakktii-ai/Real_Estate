@@ -41,7 +41,7 @@ export default function LivingStyleCard({ card, onEdit, onDelete }) {
 
   return (
     <div
-      className={`w-[270px] min-w-[270px] rounded-[26px] border ${style.border} ${style.bg} shadow-[0_8px_24px_rgba(0,0,0,0.12)] px-5 pt-4 pb-3 flex flex-col`}
+      className={`w-[270px] min-w-[270px] rounded-[26px] border ${style.border} ${style.bg} shadow-[0_8px_24px_rgba(0,0,0,0.12)] px-5 pt-4 pb-3 flex flex-col transition-all duration-300 ease-in-out hover:-translate-y-1 hover:shadow-xl hover:scale-[1.02]`}
     >
       {/* Tag */}
       <div

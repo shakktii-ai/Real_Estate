@@ -7,10 +7,10 @@ import { useAuth } from "@/lib/context/AuthContext";
 const Footer = () => {
   const { user } = useAuth();
   return (
-    <footer className="bg-footer-gradient py-4 px-4 lg:px-16 text-black relative">
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-12">
+    <footer className="bg-footer-gradient py-4 px-4 lg:px-4 text-black relative">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-8 md:gap-10">
         {/* Brand */}
-        <div className="lg:col-span-1">
+        <div className="lg:col-span-1 flex flex-col items-center ">
           <div className="mb-6 relative w-[219px] h-[111px]">
             <Image
               src="/piinggaksha.png"
@@ -20,8 +20,8 @@ const Footer = () => {
               sizes="219px"
             />
           </div>
-          <p className="font-bold mb-4 text-md">Piinggaksha</p>
-          <p className="text-[14px] leading-relaxed uppercase mb-8">
+          {/* <p className="font-bold mb-2 text-sm">Piinggaksha</p> */}
+          <p className="text-[10px] md:text-[12px] leading-relaxed uppercase ">
             ILESEUM CO-WORKING SPACE, GANGA GLITZ, KAD NAGAR, UNDRI, PUNE,
             MAHARASHTRA 411060
           </p>
@@ -29,10 +29,10 @@ const Footer = () => {
 
         {/* Quick Links */}
         <div>
-          <h3 className="text-2xl font-bold text-[#742E85] mb-1">
+          <h3 className="text-md md:text-xl font-bold text-[#742E85] mb-1">
             Quick Links
           </h3>
-          <ul className="space-y-3 text-[18px]">
+          <ul className="space-y-2 text-[12px] md:text-[14px]">
             <li>
               <Link href="/" className="hover:text-[#E61E8C]">
                 Home
@@ -69,10 +69,10 @@ const Footer = () => {
 
         {/* Legal */}
         <div>
-          <h3 className="text-2xl font-bold text-[#742E85] mb-1">
+          <h3 className=" text-md md:text-xl font-bold text-[#742E85] mb-1">
             Legal
           </h3>
-          <ul className="space-y-3 text-[18px]">
+          <ul className="space-y-2 text-[12px] md:text-[14px]">
             <li>
               <Link href="/terms" className="hover:text-[#E61E8C]">
                 Terms & Conditions
@@ -88,10 +88,10 @@ const Footer = () => {
 
         {/* Property Types */}
         <div>
-          <h3 className="text-2xl font-bold text-[#742E85] mb-1">
+          <h3 className=" text-md md:text-xl font-bold text-[#742E85] mb-1">
             Property
           </h3>
-          <ul className="space-y-3 text-[18px]">
+          <ul className="space-y-2 text-[12px] md:text-[14px]">
             <li>
 
               Affordable
@@ -117,10 +117,10 @@ const Footer = () => {
 
         {/* Contact */}
         <div>
-          <h3 className="text-2xl font-bold text-[#742E85] mb-1">
+          <h3 className=" text-md md:text-xl font-bold text-[#742E85] mb-1">
             Contact Us
           </h3>
-          <ul className="space-y-4 text-[18px]">
+          <ul className="space-y-3 text-[12px] md:text-[14px]">
             <li className="flex items-center gap-2">
               <svg
                 className="w-5 h-5 flex-shrink-0"
@@ -167,29 +167,29 @@ const Footer = () => {
           <div className="flex gap-4 mt-8">
             <a
               href="#"
-              className="w-10 h-10 rounded-full border border-[#742E85] flex items-center justify-center text-[#742E85] hover:bg-[#742E85] hover:text-white transition-all shadow-sm"
+              className="w-8 h-8 rounded-full border border-[#742E85] flex items-center justify-center text-[#742E85] hover:bg-[#742E85] hover:text-white transition-all shadow-sm"
             >
-              <FaFacebookF size={20} />
+              <FaFacebookF size={16} />
             </a>
             <a
               href="#"
-              className="w-10 h-10 rounded-full border border-[#742E85] flex items-center justify-center text-[#742E85] hover:bg-[#742E85] hover:text-white transition-all shadow-sm"
+              className="w-8 h-8 rounded-full border border-[#742E85] flex items-center justify-center text-[#742E85] hover:bg-[#742E85] hover:text-white transition-all shadow-sm"
             >
-              <FaInstagram size={20} />
+              <FaInstagram size={16} />
             </a>
             <a
               href="#"
-              className="w-10 h-10 rounded-full border border-[#742E85] flex items-center justify-center text-[#742E85] hover:bg-[#742E85] hover:text-white transition-all shadow-sm"
+              className="w-8 h-8 rounded-full border border-[#742E85] flex items-center justify-center text-[#742E85] hover:bg-[#742E85] hover:text-white transition-all shadow-sm"
             >
-              <FaWhatsapp size={20} />
+              <FaWhatsapp size={16} />
             </a>
           </div>
         </div>
       </div>
 
-      <div className="mt-4 pt-8 border-t border-zinc-400 text-center font-inter text-sm lg:text-[18px]">
+      <div className="mt-2 pt-2 border-t border-zinc-400 text-center font-inter text-xs md:text-sm lg:text-[14px]">
         <p className="font-bold">© 2026 PIINGGAKSHA. All rights reserved. | RERA Registration Pending</p>
-        <p className="mt-2 text-black text-[15px]">
+        <p className="mt-2 text-black text-[12px] md:text-[13px]">
           All projects displayed are RERA registered. Please verify RERA
           details before making any decision.
         </p>

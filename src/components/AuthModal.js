@@ -13,7 +13,7 @@ import { X, Loader2, Mail, Phone, Eye, EyeOff, ArrowLeft } from "lucide-react";
 import Link from "next/link";
 import { toast } from "react-toastify";
 
-export default function AuthModal({ onClose }) {
+export default function AuthModal({ onClose, onAuthSuccess }) {
     const [purpose, setPurpose] = useState("");
     const [profileData, setProfileData] = useState({
         fullName: "",
@@ -140,7 +140,11 @@ export default function AuthModal({ onClose }) {
 
             if (data.exists && data.profileCompleted) {
                 toast.success("Welcome back!");
-                onClose();
+                if (onAuthSuccess) {
+                    onAuthSuccess();
+                } else {
+                    onClose();
+                }
             } else {
                 toast.success("Phone verified! Let's set up your profile.");
                 setStep("PROFILE");
@@ -221,7 +225,11 @@ export default function AuthModal({ onClose }) {
 
                 if (data.exists && data.profileCompleted) {
                     toast.success(`Welcome back, ${cred.user.displayName || "User"}!`);
-                    onClose();
+                    if (onAuthSuccess) {
+                        onAuthSuccess();
+                    } else {
+                        onClose();
+                    }
                 } else {
                     toast.success("Logged in! Let's complete your profile.");
                     setStep("PROFILE");
@@ -301,7 +309,11 @@ export default function AuthModal({ onClose }) {
             }
 
             toast.success("Profile saved! Welcome aboard 🎉");
-            onClose();
+            if (onAuthSuccess) {
+                onAuthSuccess();
+            } else {
+                onClose();
+            }
         } catch (error) {
             console.error("Profile Submit Error:", error);
             toast.error(error.message || "Failed to save profile");

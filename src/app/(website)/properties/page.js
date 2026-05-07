@@ -122,7 +122,7 @@ function PropertiesContent() {
 
 
             {/* Filter Section */}
-            <div className="max-w-7xl px-4 mx-auto border-y border-black bg-white">
+            <div className="max-w-7xl  mx-auto border-y border-black bg-white">
                 <div className="grid grid-cols-1 lg:grid-cols-4 gap-8 px-6 py-8">
                     {/* Budget */}
                     <div className="border-r border-gray-300 pr-6">
@@ -258,7 +258,7 @@ function PropertiesContent() {
             </div>
 
             {/* Heading + Right Side Controls */}
-            <div className="max-w-7xl mx-auto px-6 py-8">
+            <div className="max-full mx-auto px-6 py-8">
                 <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-5 mb-8">
                     <div>
                         <h1 className="text-[40px] leading-none font-bold text-[#742E85]">
@@ -311,7 +311,7 @@ function PropertiesContent() {
           ))}
         </div> */}
                 <div className={viewMode === "grid"
-                    ? "grid grid-cols-1 md:grid-cols-3 gap-8"
+                    ? "grid grid-cols-1 md:grid-cols-5 gap-2"
                     : "flex flex-col gap-6"
                 }>
                     {filteredProjects.map((project) => (

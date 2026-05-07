@@ -837,7 +837,7 @@ export default function WebsitePage() {
             </section>
 
             {/* Featured Projects Section */}
-            <div className='mt-36'>
+            <div className='mt-12'>
                 <div className="px-4">
                     <h2 className="text-3xl sm:text-4xl md:text-6xl font-semibold text-[#742E85] mb-3 text-center">Featured Projects</h2>
                     <p className="text-center text-black text-base md:text-lg lg:text-xl max-w-3xl mx-auto mb-4 leading-relaxed">Hand-picked developments with verified details and instant transparency</p>
@@ -860,10 +860,10 @@ export default function WebsitePage() {
                     <Link href="/properties" className="inline-flex items-center justify-center bg-[#ffffff] text-black px-6 py-3 rounded-lg text-sm font-semibold border border-[#969393]">Load More Projects</Link>
                 </div>
 
-                <hr className='h-4 text-gray-500 mx-24 my-8' />
+                <hr className='h-4 text-gray-500 mx-2 my-2' />
 
                 {/* Search Filters & Layout List */}
-                <div className='grid grid-cols-1 lg:grid-cols-12 gap-8 mx-4 my-8'>
+                <div className='grid grid-cols-1 lg:grid-cols-12 gap-2 mx-2 my-2'>
                     <div className='lg:col-span-4 space-y-8 border p-4 rounded-lg shadow-md'>
                         <div className="border-gray-300">
                             <h3 className="text-[15px] font-medium text-black mb-4">BHK TYPE</h3>
@@ -907,7 +907,7 @@ export default function WebsitePage() {
 
                     {/* Filtered Track Results Row */}
                     <div className="lg:col-span-8 relative overflow-hidden pt-16" onMouseEnter={() => setIsHovered(true)} onMouseLeave={() => setIsHovered(false)}>
-                        <div className="flex gap-0 md:gap-4 transition-transform duration-700 ease-in-out" style={{ transform: `translateX(-${index * (100 / itemsPerView)}%)` }}>
+                        <div className="flex gap-0 md:gap-2 transition-transform duration-700 ease-in-out" style={{ transform: `translateX(-${index * (100 / itemsPerView)}%)` }}>
                             {[...filteredProjects, ...filteredProjects].map((project, i) => (
                                 <div key={i} className={`flex-shrink-0 ${getItemWidths()}`}>
                                     <PropertyCard project={project} onTourClick={handleTourClick} />
@@ -923,10 +923,10 @@ export default function WebsitePage() {
 
                 {/* Map Integration wrapper layout block */}
                 <h2 className="text-3xl sm:text-4xl md:text-6xl font-semibold text-[#742E85] mb-3 text-center">Explore Properties on Map</h2>
-                <section className="max-w-7xl mx-auto px-8 py-4">
+                <section className="max-w-7xl mx-auto px-4 py-4">
                     <motion.div initial={{ opacity: 0, y: 30 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.5 }} className="w-full h-[424px] overflow-hidden shadow-lg border border-gray-400">
-                        <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3785.123456789!2d73.912345!3d18.456789!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x0%3A0x0!2zMTjCsDI3JzI0LjQiTiA3M8KwNTQnNDQuNCJF!5e0!3m2!1sen!2sin!4v1234567890123" width="100%" height="100%" style={{ border: 0 }} allowFullScreen="" loading="lazy" referrerPolicy="no-referrer-when-downgrade" title="Piinggaksha Office Location" />
-                    </motion.div>
+                        <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3784.513447079499!2d73.91246457334937!3d18.460387771013473!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3bc2eb291d95088b%3A0xbfae7509b6f71b86!2sPIINGGAKSHA!5e0!3m2!1sen!2sin!4v1778153416410!5m2!1sen!2sin" width="100%" height="100%" style={{border:0}} allowFullScreen="" loading="lazy" referrerPolicy="no-referrer-when-downgrade"></iframe>
+                 </motion.div>
                 </section>
             </div>
 

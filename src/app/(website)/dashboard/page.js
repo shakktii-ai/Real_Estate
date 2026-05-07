@@ -213,6 +213,17 @@ export default function WebsitePage() {
         setActiveTourProject(project);
         setShowSelectionModal(true);
     };
+    const [livingIndex, setLivingIndex] = useState(0);
+    const [isLivingHovered, setIsLivingHovered] = useState(false);
+    useEffect(() => {
+        if (isLivingHovered || cards.length <= 1) return;
+
+        const interval = setInterval(() => {
+            setLivingIndex((prev) => (prev + 1) % cards.length);
+        }, 2500); // pause time
+
+        return () => clearInterval(interval);
+    }, [cards.length, isLivingHovered]);
  if (loading) return null;
     return (
         <div className='bg-white max-h-full'>
@@ -226,13 +237,39 @@ export default function WebsitePage() {
                                     <h2 className="text-3xl md:text-6xl font-extrabold text-[#742E85] drop-shadow-md mb-2">Choose Your Living Style</h2>
                                     <p className="text-black text-sm md:text-xl max-w-2xl mx-auto font-medium opacity-90">Find a home that matches your lifestyle, comfort, and aspirations.</p>
                                 </div>
-                                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8 w-full justify-items-center">
-                                    {cards.map((card) => (
-                                        <div key={card._id}>
-                                            <LivingStyleCard card={card} />
-                                        </div>
-                                    ))}
-                                </div>
+                               <div className="w-full">
+                               
+                                                       {/*Mobile Slider */}
+                                                       <div
+                                                           className="sm:hidden overflow-hidden relative "
+                                                           onMouseEnter={() => setIsLivingHovered(true)}
+                                                           onMouseLeave={() => setIsLivingHovered(false)}
+                               
+                                                       >
+                                                           <div
+                                                               className="flex transition-transform duration-500 ease-in-out"
+                                                               style={{
+                                                                   transform: `translateX(-${livingIndex * 100}%)`,
+                                                               }}
+                                                           >
+                                                               {cards.map((card) => (
+                                                                   <div key={card._id} className="min-w-full flex justify-center">
+                                                                       <LivingStyleCard card={card} />
+                                                                   </div>
+                                                               ))}
+                                                           </div>
+                                                       </div>
+                               
+                                                       {/*Desktop Grid */}
+                                                       <div className="hidden sm:grid sm:grid-cols-2 lg:grid-cols-4 gap-8 w-full justify-items-center">
+                                                           {cards.map((card) => (
+                                                               <div key={card._id}>
+                                                                   <LivingStyleCard card={card} />
+                                                               </div>
+                                                           ))}
+                                                       </div>
+                               
+                                                   </div>
                             </div>
                         </section>
             

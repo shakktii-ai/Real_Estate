@@ -83,11 +83,11 @@ export default function ContactPage() {
 
       <main>
         {/* Header Section */}
-        <section className="py-16 text-center bg-[#F4F3F3]">
+        <section className="py-4 text-center bg-[#F4F3F3]">
           <motion.h1 
             initial={{ opacity: 0, y: -20 }}
             animate={{ opacity: 1, y: 0 }}
-            className="text-[40px] font-bold text-[#742E85] uppercase tracking-wide"
+            className="text-2xl md:text-4xl font-bold text-[#742E85] uppercase tracking-wide"
           >
             CONTACT US
           </motion.h1>
@@ -102,7 +102,7 @@ export default function ContactPage() {
         </section>
 
         <div>
-          <section className="max-w-7xl mx-auto px-6 py-16 grid grid-cols-1 lg:grid-cols-2 gap-16">
+          <section className="max-w-7xl mx-auto px-6 py-4 grid grid-cols-1 lg:grid-cols-2 gap-4">
           {/* Left Column: Get In Touch */}
           <motion.div 
             initial={{ opacity: 0, x: -30 }}
@@ -110,7 +110,7 @@ export default function ContactPage() {
             transition={{ delay: 0.3 }}
             className="space-y-10"
           >
-            <h2 className="text-[32px] font-bold text-black border-b-4 border-[#E61E8C] w-fit pb-2">Get In Touch</h2>
+            <h2 className="text-xl md:text-2xl font-bold text-black border-b-4 border-[#E61E8C] w-fit pb-2">Get In Touch</h2>
             
             <div className="space-y-8">
               {/* Call Us */}
@@ -193,9 +193,9 @@ export default function ContactPage() {
                 boxShadow: "0px 2px 8px rgba(0, 0, 0, 0.2)",
                 borderRadius: "29px",
               }}
-              className="bg-white p-8 md:p-12 w-full max-w-[679px] mx-auto min-h-[648px]"
+              className="bg-white p-4 md:p-6 w-full max-w-[679px] mx-auto min-h-[648px]"
             >
-              <h2 className="text-[32px] font-medium text-center mb-10">Send a Message</h2>
+              <h2 className="text-xl md:text-2xl font-medium text-center mb-10">Send a Message</h2>
               
               <form onSubmit={handleSubmit} className="space-y-6">
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -331,16 +331,8 @@ export default function ContactPage() {
             transition={{ delay: 0.5 }}
             className="w-full h-[424px] rounded-xl overflow-hidden shadow-lg border border-gray-100"
           >
-            <iframe 
-              src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3785.123456789!2d73.912345!3d18.456789!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x0%3A0x0!2zMTjCsDI3JzI0LjQiTiA3M8KwNTQnNDQuNCJF!5e0!3m2!1sen!2sin!4v1234567890123" 
-              width="100%" 
-              height="100%" 
-              style={{ border: 0 }} 
-              allowFullScreen="" 
-              loading="lazy" 
-              referrerPolicy="no-referrer-when-downgrade"
-            title="Piinggaksha Office Location"
-          />
+            <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3784.513447079499!2d73.91246457334937!3d18.460387771013473!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3bc2eb291d95088b%3A0xbfae7509b6f71b86!2sPIINGGAKSHA!5e0!3m2!1sen!2sin!4v1778153416410!5m2!1sen!2sin" width="100%" height="100%" style={{border:0}} allowFullScreen="" loading="lazy" referrerPolicy="no-referrer-when-downgrade"></iframe>
+                
         </motion.div>
       </section>
     </div>

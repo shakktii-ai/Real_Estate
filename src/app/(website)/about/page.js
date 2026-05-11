@@ -12,6 +12,7 @@ import About from "@/components/about";
 export default function AboutUs() {
   const [activeIndex, setActiveIndex] = useState(0);
   const scrollRef = useRef(null);
+  const [isPaused, setIsPaused] = useState(false);
   const awards = [65, 71, 60, 61];
 
   const handleScroll = (index) => {
@@ -28,13 +29,27 @@ export default function AboutUs() {
     }
   };
 
+
+  // 1. Auto-slide Logic
+  useEffect(() => {
+    if (isPaused) return; // Stop timer if user is hovering
+
+    const interval = setInterval(() => {
+      setActiveIndex((prev) => (prev + 1) % awards.length);
+    }, 1000); // Slides every 3 seconds
+
+    return () => clearInterval(interval);
+  }, [isPaused, awards.length]);
+
+  // 2. Center Active Award in Scroll View
+ 
   useEffect(() => {
     handleScroll(activeIndex);
   }, [activeIndex]);
 
   return (
     <div className="flex flex-col min-h-screen bg-white font-roboto-condensed text-black">
-     
+
 
       <main>
         {/* Hero Section */}
@@ -247,103 +262,127 @@ export default function AboutUs() {
           </div>
         </section>
 
-        <section className="bg-footer-bg py-20 px-6 lg:px-16 overflow-hidden">
-          <h2 className="text-4xl lg:text-[40px] font-bold text-primary-purple mb-12">
-            Awards & Rewards
-          </h2>
-          <div
-            ref={scrollRef}
-            className="flex gap-12 overflow-hidden pb-10 items-center justify-start lg:justify-center px-20"
-          >
-            {awards.map((id, index) => {
-              const isTall = id === 71;
-              const isActive = index === activeIndex;
-              return (
-                <motion.div
-                  key={id}
-                  layout
-                  initial={{ opacity: 0.6, scale: 0.95, grayscale: 1 }}
-                  animate={{ 
-                    opacity: isActive ? 1 : 0.6, 
-                    scale: isActive ? 1.1 : 0.95,
-                    filter: isActive ? "grayscale(0%)" : "grayscale(50%)",
-                    zIndex: isActive ? 10 : 1
-                  }}
-                  transition={{ type: "spring", stiffness: 300, damping: 25 }}
-                  className="relative flex-shrink-0 cursor-pointer"
-                  onClick={() => setActiveIndex(index)}
-                  style={{
-                    width: isTall ? "306px" : "307px",
-                    height: isTall ? "450px" : "307px",
-                  }}
+        <section
+          className="bg-footer-bg py-16 lg:py-20 px-4 sm:px-6 lg:px-8"
+          onMouseEnter={() => setIsPaused(true)}
+          onMouseLeave={() => setIsPaused(false)}
+        >
+          {/* Container */}
+          <div className="max-w-7xl mx-auto w-full">
+
+            {/* Heading */}
+            <h2 className="text-3xl sm:text-4xl lg:text-[40px] font-bold text-primary-purple mb-10 text-center lg:text-left">
+              Awards & Rewards
+            </h2>
+
+            {/* Scroll Area */}
+            <div
+              ref={scrollRef}
+              className="
+        flex gap-6 sm:gap-8 lg:gap-12
+        overflow-x-auto lg:overflow-visible
+        pb-10 pt-6
+        items-center
+        snap-x snap-mandatory
+        scroll-px-4 sm:scroll-px-6
+        no-scrollbar
+      "
+            >
+              {awards.map((id, index) => {
+                const isTall = id === 71;
+                const isActive = index === activeIndex;
+
+                return (
+                  <motion.div
+                    key={id}
+                    layout
+                    initial={{ opacity: 0.6, scale: 0.95 }}
+                    animate={{
+                      opacity: isActive ? 1 : 0.5,
+                      scale: isActive ? 1.1 : 0.9,
+                      filter: isActive ? "grayscale(0%)" : "grayscale(80%)",
+                      zIndex: isActive ? 10 : 1,
+                    }}
+                    transition={{ type: "spring", stiffness: 200, damping: 20 }}
+                    onClick={() => setActiveIndex(index)}
+                    className="
+              relative flex-shrink-0 cursor-pointer snap-center w-full min-w-full px-2 sm:w-auto sm:min-w-[260px] lg:min-w-[300px]
+            "
+                  >
+                    {/* Responsive Card */}
+                    <div
+                      className={`
+            relative rounded-[20px] shadow-xl overflow-hidden mx-auto my-auto
+
+            /* MOBILE HEIGHT */
+            h-[260px]
+
+            /* TABLET */
+            sm:h-[300px]
+
+            /* DESKTOP */
+            lg:h-[320px]
+
+            ${isTall ? "lg:h-[400px]" : ""}
+          `}
+                    >
+                      <Image
+                        src={`/image-${id}.png`}
+                        alt={`Award ${id}`}
+                        fill
+                        className="object-cover"
+                        sizes="(max-width: 640px) 220px,
+                       (max-width: 1024px) 260px,
+                       300px"
+                      />
+                    </div>
+                  </motion.div>
+                );
+              })}
+            </div>
+
+            {/* Controls */}
+            <div className="flex justify-center gap-4 sm:gap-6 mt-6">
+              <motion.button
+                whileHover={{ scale: 1.1 }}
+                whileTap={{ scale: 0.9 }}
+                onClick={() =>
+                  setActiveIndex((prev) =>
+                    prev === 0 ? awards.length - 1 : prev - 1
+                  )
+                }
+                className="w-12 h-12 sm:w-14 sm:h-14 rounded-full flex items-center justify-center bg-primary-purple text-white shadow-lg"
+              >
+                <svg
+                  className="w-6 h-6 sm:w-8 sm:h-8 rotate-180"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
                 >
-                  <Image
-                    src={`/image-${id}.png`}
-                    alt={`Award ${id}`}
-                    fill
-                    className="object-cover rounded-[17px]"
-                    sizes="307px"
-                  />
-                </motion.div>
-              );
-            })}
-          </div>
-          <div className="flex justify-center gap-6 mt-[-40px] relative z-20">
-            <motion.button
-              whileHover={{ scale: activeIndex > 0 ? 1.1 : 1 }}
-              whileTap={{ scale: activeIndex > 0 ? 0.9 : 1 }}
-              onClick={() => activeIndex > 0 && setActiveIndex(activeIndex - 1)}
-              disabled={activeIndex === 0}
-              className={`w-14 h-14 rounded-full flex items-center justify-center transition-colors ${
-                activeIndex === 0
-                  ? "bg-zinc-100 text-zinc-300 cursor-not-allowed opacity-40"
-                  : "bg-primary-purple text-white hover:bg-opacity-90 active:scale-95"
-              }`}
-            >
-              <svg
-                className="w-8 h-8 rotate-180"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M9 5l7 7-7 7" />
+                </svg>
+              </motion.button>
+
+              <motion.button
+                whileHover={{ scale: 1.1 }}
+                whileTap={{ scale: 0.9 }}
+                onClick={() =>
+                  setActiveIndex((prev) => (prev + 1) % awards.length)
+                }
+                className="w-12 h-12 sm:w-14 sm:h-14 rounded-full flex items-center justify-center bg-primary-purple text-white shadow-lg"
               >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth="2.5"
-                  d="M9 5l7 7-7 7"
-                />
-              </svg>
-            </motion.button>
-            <motion.button
-              whileHover={{ scale: activeIndex < awards.length - 1 ? 1.1 : 1 }}
-              whileTap={{ scale: activeIndex < awards.length - 1 ? 0.9 : 1 }}
-              onClick={() =>
-                activeIndex < awards.length - 1 && setActiveIndex(activeIndex + 1)
-              }
-              disabled={activeIndex === awards.length - 1}
-              className={`w-14 h-14 rounded-full flex items-center justify-center transition-colors ${
-                activeIndex === awards.length - 1
-                  ? "bg-zinc-100 text-zinc-300 cursor-not-allowed opacity-40"
-                  : "bg-primary-purple text-white hover:bg-opacity-90"
-              }`}
-            >
-              <svg
-                className="w-8 h-8"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth="2.5"
-                  d="M9 5l7 7-7 7"
-                />
-              </svg>
-            </motion.button>
+                <svg
+                  className="w-6 h-6 sm:w-8 sm:h-8"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M9 5l7 7-7 7" />
+                </svg>
+              </motion.button>
+            </div>
           </div>
         </section>
-
         {/* Certification */}
         <section className="px-6 py-20 lg:px-16">
           <h2 className="text-4xl lg:text-[40px] font-bold text-primary-purple mb-12">
@@ -403,7 +442,7 @@ export default function AboutUs() {
         <About showOn="about" />
       </main>
 
-    
+
     </div>
   );
 }

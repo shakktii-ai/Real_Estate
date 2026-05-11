@@ -40,8 +40,9 @@ export default function LivingStyleCard({ card, onEdit, onDelete }) {
   const style = colorMap[card.cardColor] || colorMap.blue;
 
   return (
+    /* Added h-full and min-h-[520px] to ensure vertical consistency */
     <div
-      className={`w-[270px] min-w-[270px] rounded-[26px] border ${style.border} ${style.bg} shadow-[0_8px_24px_rgba(0,0,0,0.12)] px-5 pt-4 pb-3 flex flex-col transition-all duration-300 ease-in-out hover:-translate-y-1 hover:shadow-xl hover:scale-[1.02]`}
+      className={`w-[270px] min-w-[270px] h-full min-h-[520px] rounded-[26px] border ${style.border} ${style.bg} shadow-[0_8px_24px_rgba(0,0,0,0.12)] px-5 pt-4 pb-5 flex flex-col transition-all duration-300 ease-in-out hover:-translate-y-1 hover:shadow-xl hover:scale-[1.02]`}
     >
       {/* Tag */}
       <div
@@ -50,32 +51,29 @@ export default function LivingStyleCard({ card, onEdit, onDelete }) {
         {card.categoryTag} Housing
       </div>
 
-      {/* Heading */}
+      {/* Heading Group */}
       <div className="flex items-center gap-3 mb-1">
         <img
           src={style.icon}
           alt={card.title}
-          className="w-7 h-7 object-contain "
+          className="w-7 h-7 object-contain"
         />
-
-        <div>
-          <h3 className="text-[18px] leading-[22px] font-semibold text-black">
-            {card.title}
-          </h3>
-
-          
-        </div>
+        <h3 className="text-[18px] leading-[22px] font-bold text-black">
+          {card.title}
+        </h3>
       </div>
-<p className="text-[12px] leading-[18px] text-[#3F3F3F] mt-2 mb-2">
-            {card.pricingRange}
-          </p>
-      {/* Description */}
-      <p className="text-[12px] leading-[18px] text-[#000000]  mb-4">
+
+      <p className="text-[12px] leading-[18px] text-[#3F3F3F] mt-2 mb-2 font-medium">
+        {card.pricingRange}
+      </p>
+
+      {/* Description - Added min-h to keep text alignment similar */}
+      <p className="text-[12px] leading-[18px] text-[#000000] mb-4 min-h-[36px]">
         {card.description}
       </p>
 
-      {/* Features */}
-      <div className="space-y-3 mb-5 flex-1">
+      {/* Features - flex-grow pushes the image and button down */}
+      <div className="space-y-3 mb-5 flex-grow">
         {card.features?.map(
           (feature, i) =>
             feature && (
@@ -93,8 +91,8 @@ export default function LivingStyleCard({ card, onEdit, onDelete }) {
         )}
       </div>
 
-      {/* Image */}
-      <div className="rounded-[14px] overflow-hidden h-[110px] mt-2 mb-4">
+      {/* Image Section - Locked height */}
+      <div className="rounded-[14px] overflow-hidden h-[110px] w-full mb-5 shrink-0">
         <img
           src={card.image}
           alt={card.title}
@@ -102,9 +100,9 @@ export default function LivingStyleCard({ card, onEdit, onDelete }) {
         />
       </div>
 
-      {/* Button */}
+      {/* Button - mt-auto ensures it stays at the very bottom */}
       <Link href={`/properties?category=${card.categoryTag}`}
-        className={`mt-auto h-[44px] rounded-[12px] border ${style.buttonBorder} ${style.text} bg-white font-semibold text-[13px] flex items-center justify-center gap-2 hover:scale-[1.01] transition-all`}
+        className={`mt-auto h-[46px] w-full rounded-[12px] border ${style.buttonBorder} ${style.text} bg-white font-bold text-[13px] flex items-center justify-center gap-2 hover:bg-white/80 transition-all shadow-sm`}
       >
         View {card.categoryTag} Homes
         <ArrowRight size={15} />

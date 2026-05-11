@@ -35,10 +35,10 @@ export default function HeartButton({ propertyId, userId, initialIsWishlisted, o
   };
 
   return (
-    <button onClick={toggleWishlist} className="p-2 transition-colors">
+    <button onClick={toggleWishlist} className="p-1.5 transition-colors">
       <Heart
-        size={24}
-        className={isWishlisted ? "fill-red-500 text-red-500" : "text-gray-400"}
+        size={12}
+        className={isWishlisted ? "fill-red-500 text-red-500" : "text-gray-700"}
       />
     </button>
   );

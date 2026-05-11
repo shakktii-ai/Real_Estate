@@ -443,8 +443,8 @@ export default function WebsitePage() {
                 </div>
 
                 {/* Map Integration wrapper layout block */}
-                <h2 className="text-3xl sm:text-4xl md:text-6xl font-semibold text-[#742E85] mb-3 text-center">Explore Properties on Map</h2>
-                <section className="max-w-7xl mx-auto px-4 py-4">
+                <h2 className="text-3xl sm:text-4xl md:text-6xl font-semibold text-[#742E85] my-8 text-center">Explore Properties on Map</h2>
+                <section className="max-w-8xl mx-auto px-4 py-4">
                     <motion.div initial={{ opacity: 0, y: 30 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.5 }} className="w-full h-[424px] overflow-hidden shadow-lg border border-gray-400">
                         <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3784.513447079499!2d73.91246457334937!3d18.460387771013473!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3bc2eb291d95088b%3A0xbfae7509b6f71b86!2sPIINGGAKSHA!5e0!3m2!1sen!2sin!4v1778153416410!5m2!1sen!2sin" width="100%" height="100%" style={{border:0}} allowFullScreen="" loading="lazy" referrerPolicy="no-referrer-when-downgrade"></iframe>
                    </motion.div>

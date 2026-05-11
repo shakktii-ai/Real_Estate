@@ -22,13 +22,15 @@ const PropertyCard = ({ project, isWishlisted, onToggleWishlist, onTourClick }) 
     <div className="bg-white rounded-2xl border border-gray-300 overflow-hidden relative transition-all duration-300 ease-in-out hover:-translate-y-1 hover:shadow-xl hover:scale-[1.02] h-full mx-2 flex flex-col justify-between">
       {/* Top Image Section */}
       <div className="w-full">
-        <Link href={`/properties/${project.slug}`}>
+        
           <div className="relative h-48 sm:h-52 md:h-56 w-full">
+            <Link href={`/properties/${project.slug}`}>
             <img
               src={project.mainImage}
               alt={project.projectName}
               className="w-full h-full object-cover rounded-t-2xl"
             />
+            </Link>
             <div className="absolute top-3 left-3 flex flex-wrap gap-1.5 max-w-[80%]">
               {project.tags
                 ?.filter((tag) => tag !== "RERA Verified")
@@ -60,7 +62,7 @@ const PropertyCard = ({ project, isWishlisted, onToggleWishlist, onTourClick }) 
               </div>
             )}
           </div>
-        </Link>
+        
 
         {/* Content Section */}
         <div className="p-2 flex-col">

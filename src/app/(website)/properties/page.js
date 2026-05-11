@@ -7,6 +7,10 @@ import PropertyCard from "@/components/PropertyCard";
 import { Grid2X2, List, Map } from "lucide-react";
 import PropertyCardHori from "@/components/PropertyCardHori";
 import { useAuth } from "@/lib/context/AuthContext";
+import TourSelectionModal from '@/components/TourSelectionModal';
+import BookSiteVisitModal from '@/components/BookSiteVisitModal';
+import BookVirtualTourModal from '@/components/BookVirtualTourModal';
+import MapModal from "@/components/map";
 function PropertiesContent() {
     const searchParams = useSearchParams();
     const categoryParam = searchParams.get("category");
@@ -20,6 +24,16 @@ function PropertiesContent() {
     const [viewMode, setViewMode] = useState("grid");
     const { user } = useAuth(); // Access current user
     const [wishlist, setWishlist] = useState([]);
+    const [activeTourProject, setActiveTourProject] = useState(null);
+    const [showSelectionModal, setShowSelectionModal] = useState(false); // New state to separate selection display from project state
+    const [showSiteVisitModal, setShowSiteVisitModal] = useState(false);
+    const [showVirtualTourModal, setShowVirtualTourModal] = useState(false);
+    const [isMapOpen, setIsMapOpen] = useState(false);
+
+    const officeDetails = {
+        name: "PIINGGAKSHA Team Office",
+        address: "ILESEUM CO-WORKING Space, GANGA GLITZ, Kad Nagar, Undri, Pune, Maharashtra 411060"
+    };
     const handleToggleWishlist = (propertyId, isNowWishlisted) => {
         if (isNowWishlisted) {
             // Add to wishlist array
@@ -116,7 +130,10 @@ function PropertiesContent() {
         selectedArea,
         selectedCategory,
     ]);
-
+    const handleTourClick = (project) => {
+        setActiveTourProject(project);
+        setShowSelectionModal(true);
+    };
     return (
         <main className="min-h-screen bg-gray-50 ">
 
@@ -297,10 +314,17 @@ function PropertiesContent() {
                             </button>
                         </div>
 
-                        <button className="flex items-center gap-2 px-6 py-3 border border-gray-300 rounded-xl bg-white text-[16px] text-black">
+                        <button onClick={() => setIsMapOpen(true)} className="flex items-center gap-2 px-6 py-3 border border-gray-300 rounded-xl bg-white text-[16px] text-black">
                             <Map size={18} />
                             Map
                         </button>
+                        <MapModal
+                            isOpen={isMapOpen}
+                            onClose={() => setIsMapOpen(false)}
+                            locationName={officeDetails.name}
+                            address={officeDetails.address}
+                            iframeSrc="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3784.513447079499!2d73.91246457334937!3d18.460387771013473!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3bc2eb291d95088b%3A0xbfae7509b6f71b86!2sPIINGGAKSHA!5e0!3m2!1sen!2sin!4v1778153416410!5m2!1sen!2sin" width="100%" height="100%" style={{border:0}} allowFullScreen="" loading="lazy" referrerPolicy="no-referrer-when-downgrade"
+                        />
                     </div>
                 </div>
 
@@ -316,10 +340,57 @@ function PropertiesContent() {
                 }>
                     {filteredProjects.map((project) => (
                         viewMode === "grid"
-                            ? <PropertyCard key={project._id} project={project} isWishlisted={wishlist.includes(project._id)} onToggleWishlist={handleToggleWishlist} />
-                            : <PropertyCardHori key={project._id} project={project} isWishlisted={wishlist.includes(project._id)} onToggleWishlist={handleToggleWishlist} />
+                            ? <PropertyCard key={project._id} project={project} isWishlisted={wishlist.includes(project._id)} onToggleWishlist={handleToggleWishlist} onTourClick={handleTourClick} />
+                            : <PropertyCardHori key={project._id} project={project} isWishlisted={wishlist.includes(project._id)} onToggleWishlist={handleToggleWishlist} onTourClick={handleTourClick} />
                     ))}
                 </div>
+                <TourSelectionModal
+                    isOpen={showSelectionModal}
+                    onClose={() => setShowSelectionModal(false)}
+                    onSelectSiteVisit={() => {
+                        setShowSelectionModal(false); // Close type selector
+                        setShowSiteVisitModal(true);  // Mount visit form (activeTourProject is preserved)
+                    }}
+                    onSelectVirtualTour={() => {
+                        setShowSelectionModal(false); // Close type selector
+                        setShowVirtualTourModal(true); // Mount tour form (activeTourProject is preserved)
+                    }}
+                />
+
+                {/* 2. Site Visit Form Screen Panel */}
+                {showSiteVisitModal && activeTourProject && (
+                    <div className="fixed inset-0 z-[99999] flex items-center justify-center bg-black/50 backdrop-blur-sm p-4 w-screen h-screen top-0 left-0">
+                        <div className="w-full max-w-[420px] mx-4 relative z-[100000]">
+                            <BookSiteVisitModal
+                                propertyId={activeTourProject._id}
+                                propertyName={activeTourProject.projectName}
+                                onClose={() => {
+                                    setShowSiteVisitModal(false);
+                                    setActiveTourProject(null); // Now safe to wipe out the data context reference!
+                                }}
+                                embedded={true}
+                            />
+                        </div>
+                    </div>
+                )}
+
+                {/* 3. Virtual Tour Form Screen Panel */}
+                {showVirtualTourModal && activeTourProject && (
+                    <div className="fixed inset-0 z-[99999] flex items-center justify-center bg-black/50 backdrop-blur-sm p-4 w-screen h-screen top-0 left-0">
+                        <div className="w-full max-w-[420px] mx-4 relative z-[100000]">
+                            <BookVirtualTourModal
+                                propertyId={activeTourProject._id}
+                                propertyName={activeTourProject.projectName}
+                                onClose={() => {
+                                    setShowVirtualTourModal(false);
+                                    setActiveTourProject(null); // Now safe to wipe out the data context reference!
+                                }}
+                                embedded={true}
+                            />
+                        </div>
+                    </div>
+                )}
+
             </div>
         </main>
     );

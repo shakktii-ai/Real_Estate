@@ -1,28 +1,31 @@
 import Link from "next/link";
-import { MapPin, Calendar, Home,Heart } from "lucide-react";
+import { MapPin, Calendar, Home, Heart } from "lucide-react";
 import { useState } from "react";
 import HeartButton from "@/components/HeartButton"
 import { useAuth } from "@/lib/context/AuthContext";
-export default function ProjectListCard({ project , isWishlisted, onToggleWishlist}) {
-    const {user} = useAuth();
-     const [showAllAmenities, setShowAllAmenities] = useState(false);
-      const categoryColors = {
-        Premium: "bg-[#009966]",
-        Luxury: "bg-[#F97316]",
-        Affordable: "bg-[#1447EA]",
-        Holiday: "bg-[#1DA2B3]",
-      };
+export default function ProjectListCard({ project, isWishlisted, onToggleWishlist, onTourClick }) {
+  const { user } = useAuth();
+  const [showAllAmenities, setShowAllAmenities] = useState(false);
+  const categoryColors = {
+    Premium: "bg-[#009966]",
+    Luxury: "bg-[#F97316]",
+    Affordable: "bg-[#1447EA]",
+    Holiday: "bg-[#1DA2B3]",
+    Featured:"bg-[#A566B8]",
+  };
   return (
     <div className="bg-white rounded-3xl border border-gray-100 shadow-sm hover:shadow-md transition-all flex flex-col md:flex-row overflow-hidden h-auto md:h-[350px]">
-      
+
       {/* Left Image Section */}
       <div className="relative w-full md:w-[45%] h-60 md:h-full">
-        <img 
-          src={project.mainImage} 
-          className="w-full h-full object-cover" 
-          alt={project.projectName} 
+          <Link href={`/properties/${project.slug}`}>
+        <img
+          src={project.mainImage}
+          className="w-full h-full object-cover"
+          alt={project.projectName}
         />
-       <div className="absolute top-3 left-3 flex flex-wrap gap-2 max-w-[80%]">
+        </Link>
+        <div className="absolute top-3 left-3 flex flex-wrap gap-2 max-w-[80%]">
 
 
           {project.tags
@@ -37,14 +40,19 @@ export default function ProjectListCard({ project , isWishlisted, onToggleWishli
               </span>
             ))}
         </div>
-        <span className="absolute top-3 right-3 bg-white/50 rounded-full">
-                 <HeartButton
-                 propertyId={project._id}  // Make sure this matches your project object ID
-                 userId={user?.uid}        // Pass the UID from your auth object
-                 initialIsWishlisted={isWishlisted}
-                 onToggle={onToggleWishlist}
-                 />
-             </span>
+           {user && (
+                      <span
+                        className="absolute top-3 right-3 bg-white/50 rounded-full"
+                        onClick={(e) => e.stopPropagation()}
+                      >
+                        <HeartButton
+                          propertyId={project._id}
+                          userId={user?.uid}
+                          initialIsWishlisted={isWishlisted}
+                          onToggle={onToggleWishlist}
+                        />
+                      </span>
+                    )}s
         {project.tags?.includes("RERA Verified") && (
           <div className="absolute bottom-3 left-3 bg-[#DBFCE7] px-2 py-1 rounded-full flex items-center gap-1 text-[10px] text-[#009318] font-bold border border-green-200">
             RERA Verified
@@ -87,13 +95,13 @@ export default function ProjectListCard({ project , isWishlisted, onToggleWishli
             <span>{project.constructionProgress}% Complete</span>
           </div>
           <div className="w-full h-1.5 bg-gray-100 rounded-full overflow-hidden">
-            <div 
-              className="h-full bg-green-500 transition-all duration-1000" 
+            <div
+              className="h-full bg-green-500 transition-all duration-1000"
               style={{ width: `${project.constructionProgress}%` }}
             />
           </div>
         </div>
-{project.amenities?.length > 0 && (
+        {project.amenities?.length > 0 && (
           <div className="my-2 flex flex-wrap gap-2">
             {(showAllAmenities
               ? project.amenities
@@ -119,16 +127,37 @@ export default function ProjectListCard({ project , isWishlisted, onToggleWishli
           </div>
         )}
         {/* Footer Buttons */}
-        <div className="mt-6 flex gap-3">
-          <Link 
-            href={`/properties/${project.slug}`}
-            className="flex-1 bg-blue-600 text-white text-center py-2.5 rounded-lg font-bold text-sm hover:bg-blue-700 transition-all"
+      <div className="p-4 pt-0 w-full">
+        <div className="flex gap-2 w-full">
+          <button
+            type="button"
+            onClick={(e) => {
+              e.preventDefault();
+              e.stopPropagation();
+              if (onTourClick) onTourClick(project);
+            }}
+            className="flex-1 px-3 sm:px-4 py-2 border border-gray-300 bg-[#742E85] rounded-md text-xs sm:text-sm font-semibold text-white hover:bg-[#A566B8] transition whitespace-nowrap text-center"
           >
-            View Details
-          </Link>
-        <button className="px-4 py-2 border border-gray-300 rounded-md text-sm font-semibold text-gray-700">Get Price</button>
-       
+            Tour
+          </button>
+          <button
+            type="button"
+            onClick={(e) => {
+              e.preventDefault();
+              e.stopPropagation();
+
+              const companyPhoneNumber = "919284429197";
+              const message = `Hello Piinggaksha Team, I am interested in *${project.projectName}* by ${project.builderName} located in ${project.address?.area || 'Pune'}. Please share the current pricing, floor plans, and layout options for ${project.configuration?.join(", ") || 'this project'}.`;
+
+              const encodedMessage = encodeURIComponent(message);
+              window.open(`https://wa.me/${companyPhoneNumber}?text=${encodedMessage}`, '_blank');
+            }}
+            className="flex-1 px-3 sm:px-4 py-2 bg-[#1AA34A] hover:bg-[#20ba5a] text-white rounded-md text-xs sm:text-sm font-semibold flex items-center justify-center gap-1.5 transition border border-transparent shadow-sm whitespace-nowrap text-center"
+          >
+            Live Chat
+          </button>
         </div>
+      </div>
       </div>
     </div>
   );

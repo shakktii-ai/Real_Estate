@@ -60,6 +60,11 @@ const ProjectSchema = new mongoose.Schema(
       type: [String], // ["Clubhouse", "Gym", "Swimming Pool"]
       default: []
     },
+    usp:{
+      type:[String],
+      default:[]
+    },
+
 
     // Media & Files
   

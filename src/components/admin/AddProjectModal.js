@@ -79,7 +79,8 @@ export default function AddProjectModal({ isOpen, onClose, refreshData }) {
                 amenities: data.amenities
                     ? data.amenities.split(",").map((i) => i.trim())
                     : [],
-                priceDrop : {
+                usp: data.usp ? data.usp.split(",").map((i) => i.trim()) : [],
+                priceDrop: {
                     isEnabled: data.priceDrop?.isEnabled,
                     oldPrice: convertToRupees(
                         data.priceDrop?.oldPrice,
@@ -251,8 +252,15 @@ export default function AddProjectModal({ isOpen, onClose, refreshData }) {
                                     <option value="Late Possession">Late Possession</option>
                                 </select>
                             </div>
-
                         </div>
+                         <div className="space-y-1 mt-2">
+                                <label className="text-xs font-medium">USP's of Project</label>
+                                <textarea
+                                    {...register("usp")}
+                                    placeholder=""
+                                    className="w-full border rounded-lg p-2.5 text-sm bg-gray-50 outline-none focus:ring-1 focus:ring-purple-500"
+                                />
+                            </div>
                     </section>
 
                     {/* Price Drop Feature */}

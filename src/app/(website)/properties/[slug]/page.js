@@ -2,13 +2,13 @@
 "use client";
 import { useEffect, useState } from "react";
 import { useParams } from "next/navigation";
-import { Download, FileText, MapPin, CheckCircle, ArrowLeft } from "lucide-react";
+import { Download, FileText, MapPin, ArrowLeft } from "lucide-react";
 import Link from "next/link";
-import Navbar from "@/components/Navbar";
 import BookSiteVisitModal from "@/components/BookSiteVisitModal";
 import BookVirtualTourModal from "@/components/BookVirtualTourModal";
 import { useAuth } from "@/lib/context/AuthContext";
 import { toast } from "react-toastify";
+import { BsDash } from "react-icons/bs";
 export default function ProjectDetails() {
   const { user } = useAuth();
   const { slug } = useParams();
@@ -304,17 +304,18 @@ const dropAmount = oldPrice - newPrice;
           <div className="bg-white border border-gray-100 rounded-2xl p-8 shadow-sm">
             <h3 className="text-lg font-bold mb-6">Amenities</h3>
 
-            <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-              {project.amenities?.map((item, index) => (
-                <div
-                  key={index}
-                  className="flex items-center gap-3 border rounded-xl p-2"
-                >
-                  <CheckCircle size={18} className="text-green-600" />
-                  <span>{item}</span>
-                </div>
-              ))}
-            </div>
+            {project.amenities?.length > 0 ? (
+              <ul className="grid grid-cols-1 md:grid-cols-2 gap-3 list-disc list-inside text-gray-700">
+                {project.amenities.map((item, index) => (
+                  <li key={index} className="flex items-start gap-3">
+                    <BsDash size={18} className="mt-1 text-[#000000]" />
+                    <span>{item}</span>
+                  </li>
+                ))}
+              </ul>
+            ) : (
+              <p className="text-gray-500">No amenities listed for this project.</p>
+            )}
           </div>
         )}
 
@@ -366,17 +367,18 @@ const dropAmount = oldPrice - newPrice;
           <div className="bg-white border border-gray-100 rounded-2xl p-8 shadow-sm">
             <h3 className="text-lg font-bold mb-6">USP's of Project</h3>
 
-            <div className="space-y-4">
-              {(project.tags || []).map((tag, index) => (
-                <div
-                  key={index}
-                  className="flex items-center gap-3 border rounded-xl p-4"
-                >
-                  <CheckCircle size={18} className="text-[#D81B60]" />
-                  <span>{tag}</span>
-                </div>
-              ))}
-            </div>
+            {project.usp?.length > 0 ? (
+              <ul className="space-y-3 list-disc list-inside text-gray-700">
+                {project.usp.map((item, index) => (
+                  <li key={index} className="flex items-start gap-3">
+                    <BsDash size={18} className="mt-1 text-[#000000]" />
+                    <span>{item}</span>
+                  </li>
+                ))}
+              </ul>
+            ) : (
+              <p className="text-gray-500">No USPs have been added for this project yet.</p>
+            )}
           </div>
         )}
       </div>    </div>

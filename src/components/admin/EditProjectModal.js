@@ -11,7 +11,7 @@ export default function EditProjectModal({
   project,
 }) {
   const [loading, setLoading] = useState(false);
-  
+
   const [formData, setFormData] = useState({
     projectName: "",
     builderName: "",
@@ -22,6 +22,8 @@ export default function EditProjectModal({
     pricingRange: "",
     configuration: "",
     description: "",
+    amenities: "",
+    usp: "",
     oldPrice: "",
     newPrice: "",
     progress: 0,
@@ -49,23 +51,23 @@ export default function EditProjectModal({
 
     return { value: price / 100000, unit: "L" };
   };
- const toggleTag = (tag) => {
-  setFormData((prev) => {
-    const exists = prev.tags.includes(tag);
+  const toggleTag = (tag) => {
+    setFormData((prev) => {
+      const exists = prev.tags.includes(tag);
 
-    return {
-      ...prev,
-      tags: exists
-        ? prev.tags.filter((t) => t !== tag) // remove
-        : [...prev.tags, tag], // add
-    };
-  });
-};
+      return {
+        ...prev,
+        tags: exists
+          ? prev.tags.filter((t) => t !== tag) // remove
+          : [...prev.tags, tag], // add
+      };
+    });
+  };
   // ✅ Prefill
   useEffect(() => {
     if (project) {
-       const old = convertFromRupees(project.priceDrop?.oldPrice);
-  const newP = convertFromRupees(project.priceDrop?.newPrice);
+      const old = convertFromRupees(project.priceDrop?.oldPrice);
+      const newP = convertFromRupees(project.priceDrop?.newPrice);
       setFormData({
         projectName: project.projectName || "",
         builderName: project.builderName || "",
@@ -88,7 +90,10 @@ export default function EditProjectModal({
         newPriceUnit: newP.unit,
         priceDrop: project.priceDrop?.isEnabled || false,
 
-       tags: project.tags || [],
+        tags: project.tags || [],
+
+        amenities: project.amenities?.join(", ") || "",
+        usp: project.usp?.join(", ") || "",
 
         description: project.description || "",
       });
@@ -157,6 +162,12 @@ export default function EditProjectModal({
 
         tags: formData.tags || [],
 
+        amenities: formData.amenities
+          ? formData.amenities.split(",").map((i) => i.trim())
+          : [],
+
+        usp: formData.usp ? formData.usp.split(",").map((i) => i.trim()) : [],
+
         description: formData.description,
 
         mainImage: img || project.mainImage,
@@ -188,9 +199,9 @@ export default function EditProjectModal({
       onClose();
 
     } catch (err) {
-      console.error("Update Error Details:", err); 
+      console.error("Update Error Details:", err);
       toast.update(toastId, {
-        render: err.message || "Update failed", 
+        render: err.message || "Update failed",
         type: "error",
         isLoading: false,
         autoClose: 3000,
@@ -285,7 +296,15 @@ export default function EditProjectModal({
               <input value={formData.configuration} onChange={(e) => setFormData({ ...formData, configuration: e.target.value })} placeholder="Configuration" className="w-full border rounded-lg p-2.5 text-sm outline-none focus:ring-1 focus:ring-purple-500 bg-gray-50" />
             </div>
           </div>
+          <div>
+            <label className="text-xs font-bold mb-2 block">Amenities</label>
+            <input value={formData.amenities} onChange={(e) => setFormData({ ...formData, amenities: e.target.value })} placeholder="Amenities (comma separated)" className="w-full border rounded-lg p-2.5 text-sm outline-none focus:ring-1 focus:ring-purple-500 bg-gray-50" />
+          </div>
 
+          <div>
+            <label className="text-xs font-bold mb-2 block">USP</label>
+            <input value={formData.usp} onChange={(e) => setFormData({ ...formData, usp: e.target.value })} placeholder="USP (comma separated)" className="w-full border rounded-lg p-2.5 text-sm outline-none focus:ring-1 focus:ring-purple-500 bg-gray-50" />
+          </div>
           {/* PRICE DROP */}
           <div className="border p-4 rounded-xl flex items-center justify-between">
             <span className="text-sm font-semibold">Enable Price Drop</span>
@@ -316,35 +335,35 @@ export default function EditProjectModal({
                     <option value="L">Lakh</option>
                     <option value="Cr">Cr</option>
                   </select>
-                </div>  
                 </div>
+              </div>
               <div>
-                
+
                 <div>
-  <label className="text-sm font-semibold mb-2 block">New Price</label>
+                  <label className="text-sm font-semibold mb-2 block">New Price</label>
 
-  <div className="flex gap-2">
-    <input
-      type="number"
-      value={formData.newPrice}
-      onChange={(e) =>
-        setFormData({ ...formData, newPrice: e.target.value })
-      }
-      className="border p-2.5 rounded-lg text-sm w-full"
-    />
+                  <div className="flex gap-2">
+                    <input
+                      type="number"
+                      value={formData.newPrice}
+                      onChange={(e) =>
+                        setFormData({ ...formData, newPrice: e.target.value })
+                      }
+                      className="border p-2.5 rounded-lg text-sm w-full"
+                    />
 
-    <select
-      value={formData.newPriceUnit}
-      onChange={(e) =>
-        setFormData({ ...formData, newPriceUnit: e.target.value })
-      }
-      className="border p-2.5 rounded-lg text-sm"
-    >
-      <option value="L">Lakh</option>
-      <option value="Cr">Cr</option>
-    </select>
-  </div>
-</div> </div>
+                    <select
+                      value={formData.newPriceUnit}
+                      onChange={(e) =>
+                        setFormData({ ...formData, newPriceUnit: e.target.value })
+                      }
+                      className="border p-2.5 rounded-lg text-sm"
+                    >
+                      <option value="L">Lakh</option>
+                      <option value="Cr">Cr</option>
+                    </select>
+                  </div>
+                </div> </div>
             </div>
           )}
 
@@ -370,7 +389,7 @@ export default function EditProjectModal({
                 <button
                   type="button"
                   key={tag}
-                   onClick={() => toggleTag(tag)}
+                  onClick={() => toggleTag(tag)}
                   className={`px-3 py-1 rounded-full text-sm ${formData.tags.includes(tag)
                     ? "bg-[#E5097F] text-white"
                     : "bg-gray-100"

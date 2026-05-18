@@ -83,6 +83,13 @@ export async function POST(req) {
           )
           : body.amenities.split(",").map((item) => item.trim())
         : [],
+        usp: body.usp
+        ? Array.isArray(body.usp)
+          ? body.usp.flatMap((item) =>
+            item.split(",").map((i) => i.trim())
+          )
+          : body.usp.split(",").map((item) => item.trim())
+        : [],
     };
 
     const newProject = await Project.create(projectData);

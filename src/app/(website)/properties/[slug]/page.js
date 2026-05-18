@@ -63,6 +63,12 @@ const dropAmount = oldPrice - newPrice;
   if (loading) return <div className="p-10 text-center text-black">Loading Project Details...</div>;
   if (!project) return <div className="p-10 text-center">Project not found.</div>;
 
+  const handleDownload = (fileUrl, fileName) => {
+    if (!fileUrl) return;
+    const downloadUrl = `/api/download?url=${encodeURIComponent(fileUrl)}&name=${encodeURIComponent(fileName)}`;
+    window.location.href = downloadUrl;
+  };
+
   return (
 
     <div className="max-w-full mx-auto p-4 md:p-8 bg-[#F8F9FA] min-h-screen text-black">
@@ -100,24 +106,20 @@ const dropAmount = oldPrice - newPrice;
 
         <div className="flex flex-wrap gap-2">
           {project.brochureUrl && (
-            <Link
-              href={project.brochureUrl}
-              target="_blank"
-              rel="noreferrer noopener"
-              className="flex items-center gap-2 px-4 py-2 border bg-white rounded-lg text-sm font-bold shadow-sm"
+            <button
+              onClick={() => handleDownload(project.brochureUrl, `${project.projectName}-Brochure.pdf`)}
+              className="flex items-center gap-2 px-4 py-2 border bg-white rounded-lg text-sm font-bold shadow-sm hover:bg-gray-50"
             >
               <Download size={16} /> Brochure
-            </Link>
+            </button>
           )}
           {project.priceSheetUrl && (
-            <Link
-              href={project.priceSheetUrl}
-              target="_blank"
-              rel="noreferrer noopener"
-              className="flex items-center gap-2 px-4 py-2 border bg-white rounded-lg text-sm font-bold shadow-sm"
+            <button
+              onClick={() => handleDownload(project.priceSheetUrl, `${project.projectName}-PriceSheet.pdf`)}
+              className="flex items-center gap-2 px-4 py-2 border bg-white rounded-lg text-sm font-bold shadow-sm hover:bg-gray-50"
             >
               <FileText size={16} /> Price Sheet
-            </Link>
+            </button>
           )}
           <button onClick={() => {
             if (!user) {
@@ -287,14 +289,13 @@ const dropAmount = oldPrice - newPrice;
               )}
 
               {project.priceSheetUrl && (
-                <a
-                  href={project.priceSheetUrl}
-                  target="_blank"
-                  className="inline-flex items-center gap-2 mt-2 px-4 py-3 bg-[#742E85] text-white rounded-xl w-fit"
+                <button
+                  onClick={() => handleDownload(project.priceSheetUrl, `${project.projectName}-PriceSheet.pdf`)}
+                  className="inline-flex items-center gap-2 mt-2 px-4 py-3 bg-[#742E85] text-white rounded-xl w-fit hover:bg-[#5a246a]"
                 >
                   <FileText size={18} />
                   Download Price Sheet
-                </a>
+                </button>
               )}
             </div>
           </div>

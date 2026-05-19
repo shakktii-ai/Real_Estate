@@ -74,19 +74,19 @@ const PropertyCard = ({ project, isWishlisted, onToggleWishlist, onTourClick }) 
           </div>
           <p className="text-xs sm:text-sm text-black mb-2 line-clamp-1 truncate">{project.builderName}</p>
 
-          <p className="text-lg sm:text-xl font-bold text-[#1447EA] mb-3 whitespace-nowrap">
+          <p className="text-sm md:text-md font-bold text-[#1447EA] mb-3 whitespace-nowrap">
             {project.pricing.displayPrice}
             <span className='ml-1.5 font-normal text-xs sm:text-sm text-black'>onwards</span>
           </p>
 
           <div className="space-y-2 mb-4 text-xs text-black">
-            <div className="flex items-center gap-2 line-clamp-1 truncate">
+            <div className="flex items-center gap-2">
               <MapPin size={14} className="flex-shrink-0" /> {project.address?.area}, {project.address?.city}
             </div>
-            <div className="flex items-center gap-2 line-clamp-1 truncate">
+            <div className="flex items-center gap-2 ">
               <Calendar size={14} className="flex-shrink-0" /> Possession: {project.possessionDate}
             </div>
-            <div className="flex items-center gap-2 line-clamp-1 truncate">
+            <div className="flex items-center gap-2 ">
               <Home size={14} className="flex-shrink-0" /> {project.configuration?.join(", ")}
             </div>
           </div>
@@ -107,14 +107,14 @@ const PropertyCard = ({ project, isWishlisted, onToggleWishlist, onTourClick }) 
           </div>
 
           {project.amenities?.length > 0 && (
-            <div className="my-2 flex flex-wrap gap-1.5 max-h-[28px] overflow-hidden">
-              {(showAllAmenities ? project.amenities : project.amenities.slice(0, 2)).map((amenity) => (
+            <div className="my-4 flex flex-wrap gap-1.5 max-h-[28px] ">
+              {(showAllAmenities ? project.amenities : project.amenities.slice(0, 1)).map((amenity) => (
                 <span key={amenity} className="px-2.5 py-0.5 rounded-full bg-[#D9D9D9] text-black text-[10px] sm:text-[11px] font-medium whitespace-nowrap">
                   {amenity}
                 </span>
               ))}
 
-              {project.amenities.length > 2 && !showAllAmenities && (
+              {project.amenities.length > 1 && !showAllAmenities && (
                 <button
                   type="button"
                   onClick={(e) => {
@@ -124,7 +124,7 @@ const PropertyCard = ({ project, isWishlisted, onToggleWishlist, onTourClick }) 
                   }}
                   className="px-2.5 py-0.5 rounded-full bg-[#D9D9D9] text-black text-[10px] sm:text-[11px] font-medium hover:bg-gray-200 transition whitespace-nowrap"
                 >
-                  +{project.amenities.length - 2}
+                  +{project.amenities.length - 1}
                 </button>
               )}
             </div>

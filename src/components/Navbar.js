@@ -258,7 +258,7 @@ const Navbar = () => {
     <Link
       href="/contact"
       onClick={() => setIsMobileMenuOpen(false)}
-      className="py-3 font-medium "
+      className="py-3 font-medium text-[#333]"
     >
       Contact Us
     </Link>

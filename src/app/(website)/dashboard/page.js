@@ -24,24 +24,24 @@ import PropertySlider from '@/components/PropertySlidder';
 export default function WebsitePage() {
     const [cards, setCards] = useState([]);
     const [projects, setProjects] = useState([]);
-    const [budget, setBudget] = useState(200);
+    const [budget, setBudget] = useState(3000);
     const [selectedConfig, setSelectedConfig] = useState("");
     const [selectedStatus, setSelectedStatus] = useState("");
-    const [selectedCity, setSelectedCity] = useState("");
-    const [selectedArea, setSelectedArea] = useState("");
+    const [selectedCity, setSelectedCity] = useState("Pune");
     const [selectedCategory, setSelectedCategory] = useState("");
     const { user, loading } = useAuth();
     const [wishlist, setWishlist] = useState([]);
     const [priceDropCount, setPriceDropCount] = useState(0);
-    
+
     const [index, setIndex] = useState(0);
+    const [isTransitioning, setIsTransitioning] = useState(true);
     const [itemsPerView, setItemsPerView] = useState(4);
     const [isHovered, setIsHovered] = useState(false);
-        const [activeTourProject, setActiveTourProject] = useState(null);
+    const [activeTourProject, setActiveTourProject] = useState(null);
     const [showSelectionModal, setShowSelectionModal] = useState(false); // New state to separate selection display from project state
     const [showSiteVisitModal, setShowSiteVisitModal] = useState(false);
     const [showVirtualTourModal, setShowVirtualTourModal] = useState(false);
-     const containerRef = useRef(null);
+    const containerRef = useRef(null);
     const handleToggleWishlist = (propertyId, isNowWishlisted) => {
         if (isNowWishlisted) {
             // Add to wishlist array
@@ -144,24 +144,41 @@ export default function WebsitePage() {
     }, []);
     const cities = useMemo(() => [
         ...new Set(projects.map((p) => p.address?.city).filter(Boolean)),
-    
+
     ], [projects]);
 
-    const areas = useMemo(()=> [
-        ...new Set(projects.map((p) => p.address?.area).filter(Boolean)),
-    ],[projects]);
-   const filteredProjects = useMemo(() => {
+
+    const extractMinPriceInLakhs = (priceStr) => {
+        if (!priceStr) return 0;
+        const regex = /([\d\.]+)\s*(cr|lakhs|lakh|l|k)?/gi;
+        let match;
+        let minLakhs = Infinity;
+        while ((match = regex.exec(priceStr)) !== null) {
+            let val = parseFloat(match[1]);
+            let unit = match[2] ? match[2].toLowerCase() : '';
+            if (unit.startsWith('cr')) val *= 100;
+            else if (unit === 'k') val /= 100;
+            else if (!unit && val > 1000) val /= 100000;
+
+            if (val > 0 && val < minLakhs) minLakhs = val;
+        }
+        return minLakhs === Infinity ? 0 : minLakhs;
+    };
+    const filteredProjects = useMemo(() => {
         return projects.filter((project) => {
-            const matchesBudget = (project.pricing?.maxPrice || 0) / 100000 <= budget;
+            const projectPriceInLakhs = project.pricing?.displayPrice
+                ? extractMinPriceInLakhs(project.pricing.displayPrice)
+                : 0;
+
+            const matchesBudget = projectPriceInLakhs <= budget;
             const matchesConfig = !selectedConfig || project.configuration?.includes(selectedConfig);
             const matchesStatus = !selectedStatus || project.status === selectedStatus;
             const matchesCity = !selectedCity || project.address?.city === selectedCity;
-            const matchesArea = !selectedArea || project.address?.area === selectedArea;
             const matchesCategory = !selectedCategory || project.tags?.includes(selectedCategory);
 
-            return matchesBudget && matchesConfig && matchesStatus && matchesCity && matchesArea && matchesCategory;
+            return matchesBudget && matchesConfig && matchesStatus && matchesCity && matchesCategory;
         });
-    }, [projects, budget, selectedConfig, selectedStatus, selectedCity, selectedArea, selectedCategory]);
+    }, [projects, budget, selectedConfig, selectedStatus, selectedCity, selectedCategory]);
 
     useEffect(() => {
         const updateItems = () => {
@@ -192,24 +209,34 @@ export default function WebsitePage() {
     };
 
     useEffect(() => {
-        if (isHovered) return;
+        if (isHovered || projects.length === 0) return;
         const interval = setInterval(() => {
-            setIndex((prev) => {
-                if (prev >= projects.length - itemsPerView) return 0;
-                return prev + 1;
-            });
+            setIsTransitioning(true);
+            setIndex((prev) => prev + 1);
         }, 3000);
         return () => clearInterval(interval);
-    }, [projects.length, itemsPerView, isHovered]);
+    }, [projects.length, isHovered]);
+
+    useEffect(() => {
+        if (index >= projects.length && projects.length > 0) {
+            const timeout = setTimeout(() => {
+                setIsTransitioning(false);
+                setIndex(0);
+            }, 700);
+            return () => clearTimeout(timeout);
+        }
+    }, [index, projects.length]);
 
     const nextSlide = () => {
-        setIndex((prev) => prev >= projects.length - itemsPerView ? 0 : prev + 1);
+        setIsTransitioning(true);
+        setIndex((prev) => prev + 1);
     };
 
     const prevSlide = () => {
-        setIndex((prev) => prev <= 0 ? projects.length - itemsPerView : prev - 1);
+        setIsTransitioning(true);
+        setIndex((prev) => prev <= 0 ? projects.length - 1 : prev - 1);
     };
-     const handleTourClick = (project) => {
+    const handleTourClick = (project) => {
         setActiveTourProject(project);
         setShowSelectionModal(true);
     };
@@ -224,55 +251,55 @@ export default function WebsitePage() {
 
         return () => clearInterval(interval);
     }, [cards.length, isLivingHovered]);
- if (loading) return null;
+    if (loading) return null;
     return (
         <div className='bg-white max-h-full'>
-             <section className="relative min-h-screen w-full flex flex-col items-center justify-start md:justify-center py-12 md:py-20">
-                            <div className="absolute inset-0 z-0">
-                                <img src='/banner.png' alt='banner image' className="w-full h-full object-cover object-center rounded-b-[2rem]" />
-                                <div className="absolute inset-0 " />
+            <section className="relative min-h-screen w-full flex flex-col items-center justify-start md:justify-center py-12 md:py-20">
+                <div className="absolute inset-0 z-0">
+                    <img src='/banner.png' alt='banner image' className="w-full h-full object-cover object-center rounded-b-[2rem]" />
+                    <div className="absolute inset-0 " />
+                </div>
+                <div className="relative z-10 w-full max-w-[1200px] mx-auto px-4 md:px-12 flex flex-col items-center">
+                    <div className="text-center mb-8 md:mb-12">
+                        <h2 className="text-3xl md:text-6xl font-extrabold text-[#742E85] drop-shadow-md mb-2">Choose Your Living Style</h2>
+                        <p className="text-black text-sm md:text-xl max-w-2xl mx-auto font-medium opacity-90">Find a home that matches your lifestyle, comfort, and aspirations.</p>
+                    </div>
+                    <div className="w-full">
+
+                        {/*Mobile Slider */}
+                        <div
+                            className="sm:hidden overflow-hidden relative "
+                            onMouseEnter={() => setIsLivingHovered(true)}
+                            onMouseLeave={() => setIsLivingHovered(false)}
+
+                        >
+                            <div
+                                className="flex transition-transform duration-500 ease-in-out"
+                                style={{
+                                    transform: `translateX(-${livingIndex * 100}%)`,
+                                }}
+                            >
+                                {cards.map((card) => (
+                                    <div key={card._id} className="min-w-full flex justify-center">
+                                        <LivingStyleCard card={card} />
+                                    </div>
+                                ))}
                             </div>
-                            <div className="relative z-10 w-full max-w-[1200px] mx-auto px-4 md:px-12 flex flex-col items-center">
-                                <div className="text-center mb-8 md:mb-12">
-                                    <h2 className="text-3xl md:text-6xl font-extrabold text-[#742E85] drop-shadow-md mb-2">Choose Your Living Style</h2>
-                                    <p className="text-black text-sm md:text-xl max-w-2xl mx-auto font-medium opacity-90">Find a home that matches your lifestyle, comfort, and aspirations.</p>
+                        </div>
+
+                        {/*Desktop Grid */}
+                        <div className="hidden sm:grid sm:grid-cols-2 lg:grid-cols-4 gap-8 w-full justify-items-center">
+                            {cards.map((card) => (
+                                <div key={card._id}>
+                                    <LivingStyleCard card={card} />
                                 </div>
-                               <div className="w-full">
-                               
-                                                       {/*Mobile Slider */}
-                                                       <div
-                                                           className="sm:hidden overflow-hidden relative "
-                                                           onMouseEnter={() => setIsLivingHovered(true)}
-                                                           onMouseLeave={() => setIsLivingHovered(false)}
-                               
-                                                       >
-                                                           <div
-                                                               className="flex transition-transform duration-500 ease-in-out"
-                                                               style={{
-                                                                   transform: `translateX(-${livingIndex * 100}%)`,
-                                                               }}
-                                                           >
-                                                               {cards.map((card) => (
-                                                                   <div key={card._id} className="min-w-full flex justify-center">
-                                                                       <LivingStyleCard card={card} />
-                                                                   </div>
-                                                               ))}
-                                                           </div>
-                                                       </div>
-                               
-                                                       {/*Desktop Grid */}
-                                                       <div className="hidden sm:grid sm:grid-cols-2 lg:grid-cols-4 gap-8 w-full justify-items-center">
-                                                           {cards.map((card) => (
-                                                               <div key={card._id}>
-                                                                   <LivingStyleCard card={card} />
-                                                               </div>
-                                                           ))}
-                                                       </div>
-                               
-                                                   </div>
-                            </div>
-                        </section>
-            
+                            ))}
+                        </div>
+
+                    </div>
+                </div>
+            </section>
+
             <section className='mt-[8rem] mx-4'>
                 {user && (
                     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mt-10">
@@ -358,15 +385,15 @@ export default function WebsitePage() {
                     </div>
                 )}
             </section>
-             <div className='mt-12'>
+            <div className='mt-12'>
                 <div className="px-4">
                     <h2 className="text-3xl sm:text-4xl md:text-6xl font-semibold text-[#742E85] mb-3 text-center">Featured Projects</h2>
                     <p className="text-center text-black text-base md:text-lg lg:text-xl max-w-3xl mx-auto mb-4 leading-relaxed">Hand-picked developments with verified details and instant transparency</p>
                 </div>
                 <div className="relative overflow-hidden px-0 sm:px-6 md:px-8 lg:px-2 py-12 md:py-16 mx-2 md:mx-0" onMouseEnter={() => setIsHovered(true)} onMouseLeave={() => setIsHovered(false)}>
-                    <div ref={containerRef} className="flex gap-0 md:gap-4 transition-transform duration-700 ease-in-out" style={{ transform: `translateX(-${index * (100 / itemsPerView)}%)` }}>
-                        {projects.map((project) => (
-                            <div key={project._id} className={`flex-shrink-0 ${getItemWidth()}`}>
+                    <div ref={containerRef} className={`flex gap-0 md:gap-4 ${isTransitioning ? "transition-transform duration-700 ease-in-out" : ""}`} style={{ transform: `translateX(-${index * (100 / itemsPerView)}%)` }}>
+                        {[...projects, ...projects].map((project, i) => (
+                            <div key={i} className={`flex-shrink-0 ${getItemWidth()}`}>
                                 <PropertyCard project={project} onTourClick={handleTourClick} />
                             </div>
                         ))}
@@ -380,9 +407,9 @@ export default function WebsitePage() {
                 <div className="flex justify-center m-8">
                     <Link href="/properties" className="inline-flex items-center justify-center bg-[#ffffff] text-black px-6 py-3 rounded-lg text-sm font-semibold border border-[#969393]">Load More Projects</Link>
                 </div>
-                
+
                 <hr className='h-4 text-gray-500 mx-2 my-2' />
-                
+
                 {/* Search Filters & Layout List */}
                 <div className='grid grid-cols-1 lg:grid-cols-12 gap-2 mx-2 my-2'>
                     <div className='lg:col-span-4 space-y-8 border p-4 rounded-lg shadow-md'>
@@ -395,18 +422,14 @@ export default function WebsitePage() {
                             </div>
                         </div>
                         <h3 className="text-[15px] font-medium uppercase text-black mb-4">Location</h3>
-                        <select value={selectedCity} onChange={(e) => { setSelectedCity(e.target.value); setSelectedArea(""); }} className="w-full border border-gray-300 rounded-md px-4 py-3 text-[14px] text-black outline-none">
+                        <select value={selectedCity} onChange={(e) => { setSelectedCity(e.target.value); }} className="w-full border border-gray-300 rounded-md px-4 py-3 text-[14px] text-black outline-none">
                             <option value="">City</option>
                             {cities.map((city) => <option key={city} value={city}>{city}</option>)}
                         </select>
-                        <select value={selectedArea} onChange={(e) => setSelectedArea(e.target.value)} className="w-full border border-gray-300 rounded-md px-4 py-3 text-[14px] text-black outline-none">
-                            <option value="">Area</option>
-                            {areas.map((area) => <option key={area} value={area}>{area}</option>)}
-                        </select>
                         <div>
-                            <h3 className="text-[15px] font-medium text-black mb-4">Budget (₹ Lakhs)</h3>
-                            <input type="range" min="0" max="200" value={budget} onChange={(e) => setBudget(Number(e.target.value))} className="w-full accent-[#742E85]" />
-                            <div className="mt-3 text-[15px] text-black font-medium">₹0L - ₹{budget}L</div>
+                            <h3 className="text-[15px] font-medium text-black mb-4">Budget</h3>
+                            <input type="range" min="0" max="3000" value={budget} onChange={(e) => setBudget(Number(e.target.value))} className="w-full accent-[#742E85]" />
+                            <div className="mt-3 text-[15px] text-black font-medium">₹0 - {budget >= 100 ? `₹${(budget / 100).toFixed(2)} Cr` : `₹${budget} L`}</div>
                         </div>
                         <div className="border-gray-300">
                             <h3 className="text-[15px] font-medium text-black mb-4">Status</h3>
@@ -420,7 +443,7 @@ export default function WebsitePage() {
                             <div className="space-y-3">
                                 <div className="flex-1 flex flex-col sm:flex-row gap-2">
                                     <button className="flex-1 bg-[#742E85] text-white rounded-md text-[14px] font-medium py-3 hover:bg-[#5f256d] transition">Apply</button>
-                                    <button onClick={() => { setBudget(200); setSelectedConfig(""); setSelectedStatus(""); setSelectedCity(""); setSelectedArea(""); }} className="flex-1 border border-gray-300 rounded-md text-[14px] text-black py-3 hover:bg-gray-100 transition">Reset</button>
+                                    <button onClick={() => { setBudget(3000); setSelectedConfig(""); setSelectedStatus(""); setSelectedCity("Pune"); }} className="flex-1 border border-gray-300 rounded-md text-[14px] text-black py-3 hover:bg-gray-100 transition">Reset</button>
                                 </div>
                             </div>
                         </div>
@@ -428,7 +451,7 @@ export default function WebsitePage() {
 
                     {/* Filtered Track Results Row */}
                     <div className="lg:col-span-8 relative overflow-hidden pt-16" onMouseEnter={() => setIsHovered(true)} onMouseLeave={() => setIsHovered(false)}>
-                        <div className="flex gap-0 md:gap-2 transition-transform duration-700 ease-in-out" style={{ transform: `translateX(-${index * (100 / itemsPerView)}%)` }}>
+                        <div className={`flex gap-0 md:gap-2 ${isTransitioning ? "transition-transform duration-700 ease-in-out" : ""}`} style={{ transform: `translateX(-${index * (100 / itemsPerView)}%)` }}>
                             {[...filteredProjects, ...filteredProjects].map((project, i) => (
                                 <div key={i} className={`flex-shrink-0 ${getItemWidths()}`}>
                                     <PropertyCard project={project} onTourClick={handleTourClick} />
@@ -446,8 +469,8 @@ export default function WebsitePage() {
                 <h2 className="text-3xl sm:text-4xl md:text-6xl font-semibold text-[#742E85] my-8 text-center">Explore Properties on Map</h2>
                 <section className="max-w-8xl mx-auto px-4 py-4">
                     <motion.div initial={{ opacity: 0, y: 30 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.5 }} className="w-full h-[424px] overflow-hidden shadow-lg border border-gray-400">
-                        <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3784.513447079499!2d73.91246457334937!3d18.460387771013473!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3bc2eb291d95088b%3A0xbfae7509b6f71b86!2sPIINGGAKSHA!5e0!3m2!1sen!2sin!4v1778153416410!5m2!1sen!2sin" width="100%" height="100%" style={{border:0}} allowFullScreen="" loading="lazy" referrerPolicy="no-referrer-when-downgrade"></iframe>
-                   </motion.div>
+                        <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3784.513447079499!2d73.91246457334937!3d18.460387771013473!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3bc2eb291d95088b%3A0xbfae7509b6f71b86!2sPIINGGAKSHA!5e0!3m2!1sen!2sin!4v1778153416410!5m2!1sen!2sin" width="100%" height="100%" style={{ border: 0 }} allowFullScreen="" loading="lazy" referrerPolicy="no-referrer-when-downgrade"></iframe>
+                    </motion.div>
                 </section>
             </div>
 
@@ -490,8 +513,8 @@ export default function WebsitePage() {
                     </Link>
                 </div>
             </section>
- {/* ================= GLOBAL MODAL ENGINE LAYER ================= */}
-            
+            {/* ================= GLOBAL MODAL ENGINE LAYER ================= */}
+
             {/* 1. Type Selection Screen Panel */}
             <TourSelectionModal
                 isOpen={showSelectionModal}

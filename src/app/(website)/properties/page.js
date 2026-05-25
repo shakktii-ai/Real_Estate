@@ -14,11 +14,13 @@ import MapModal from "@/components/map";
 function PropertiesContent() {
     const searchParams = useSearchParams();
     const categoryParam = searchParams.get("category");
-    const [budget, setBudget] = useState(200);
+    const builderParam = searchParams.get("builder");
+    const locationParam = searchParams.get("location");
+    const queryParam = searchParams.get("q");
+    const [budget, setBudget] = useState(3000);
     const [selectedConfig, setSelectedConfig] = useState("");
     const [selectedStatus, setSelectedStatus] = useState("");
-    const [selectedCity, setSelectedCity] = useState("");
-    const [selectedArea, setSelectedArea] = useState("");
+    const [selectedCity, setSelectedCity] = useState(locationParam || builderParam || queryParam ? "" : "Pune");
     const [selectedCategory, setSelectedCategory] = useState(categoryParam || "");
     const [projects, setProjects] = useState([]);
     const [viewMode, setViewMode] = useState("grid");
@@ -82,19 +84,40 @@ function PropertiesContent() {
         if (categoryParam) {
             setSelectedCategory(categoryParam);
         }
-    }, [categoryParam]);
+        if (locationParam || builderParam || queryParam) {
+            setSelectedCity("");
+        }
+    }, [categoryParam, locationParam, builderParam, queryParam]);
 
     const cities = [
         ...new Set(projects.map((p) => p.address?.city).filter(Boolean)),
     ];
 
-    const areas = [
-        ...new Set(projects.map((p) => p.address?.area).filter(Boolean)),
-    ];
+
+    const extractMinPriceInLakhs = (priceStr) => {
+        if (!priceStr) return 0;
+        const regex = /([\d\.]+)\s*(cr|lakhs|lakh|l|k)?/gi;
+        let match;
+        let minLakhs = Infinity;
+        while ((match = regex.exec(priceStr)) !== null) {
+            let val = parseFloat(match[1]);
+            let unit = match[2] ? match[2].toLowerCase() : '';
+            if (unit.startsWith('cr')) val *= 100;
+            else if (unit === 'k') val /= 100;
+            else if (!unit && val > 1000) val /= 100000;
+
+            if (val > 0 && val < minLakhs) minLakhs = val;
+        }
+        return minLakhs === Infinity ? 0 : minLakhs;
+    };
+
     const filteredProjects = useMemo(() => {
         return projects.filter((project) => {
-            const matchesBudget =
-                (project.pricing?.maxPrice || 0) / 100000 <= budget;
+            const projectPriceInLakhs = project.pricing?.displayPrice
+                ? extractMinPriceInLakhs(project.pricing.displayPrice)
+                : 0;
+
+            const matchesBudget = projectPriceInLakhs <= budget;
 
             const matchesConfig =
                 !selectedConfig ||
@@ -106,19 +129,33 @@ function PropertiesContent() {
             const matchesCity =
                 !selectedCity || project.address?.city === selectedCity;
 
-            const matchesArea =
-                !selectedArea || project.address?.area === selectedArea;
-
             const matchesCategory =
                 !selectedCategory || project.tags?.includes(selectedCategory);
+
+            const qLower = queryParam?.toLowerCase();
+            const matchesQuery = !queryParam || (
+                project.projectName?.toLowerCase().includes(qLower) ||
+                project.builderName?.toLowerCase().includes(qLower) ||
+                project.address?.city?.toLowerCase().includes(qLower) ||
+                project.address?.area?.toLowerCase().includes(qLower)
+            );
+
+            const matchesBuilder = !builderParam || project.builderName?.toLowerCase() === builderParam.toLowerCase();
+            
+            const matchesLocation = !locationParam || (
+                project.address?.city?.toLowerCase() === locationParam.toLowerCase() ||
+                project.address?.area?.toLowerCase() === locationParam.toLowerCase()
+            );
 
             return (
                 matchesBudget &&
                 matchesConfig &&
                 matchesStatus &&
                 matchesCity &&
-                matchesArea &&
-                matchesCategory
+                matchesCategory &&
+                matchesQuery &&
+                matchesBuilder &&
+                matchesLocation
             );
         });
     }, [
@@ -127,8 +164,10 @@ function PropertiesContent() {
         selectedConfig,
         selectedStatus,
         selectedCity,
-        selectedArea,
         selectedCategory,
+        queryParam,
+        builderParam,
+        locationParam
     ]);
     const handleTourClick = (project) => {
         setActiveTourProject(project);
@@ -144,20 +183,20 @@ function PropertiesContent() {
                     {/* Budget */}
                     <div className="border-r border-gray-300 pr-6">
                         <h3 className="text-[15px] font-medium text-black mb-4">
-                            Budget (₹ Lakhs)
+                            Budget
                         </h3>
 
                         <input
                             type="range"
                             min="0"
-                            max="200"
+                            max="3000"
                             value={budget}
                             onChange={(e) => setBudget(Number(e.target.value))}
                             className="w-full accent-[#742E85]"
                         />
 
                         <div className="mt-3 text-[15px] text-black font-medium">
-                            ₹0L - ₹{budget}L
+                            ₹0 - {budget >= 100 ? `₹${(budget / 100).toFixed(2)} Cr` : `₹${budget} L`}
                         </div>
                     </div>
 
@@ -226,7 +265,6 @@ function PropertiesContent() {
                                 value={selectedCity}
                                 onChange={(e) => {
                                     setSelectedCity(e.target.value);
-                                    setSelectedArea("");
                                 }}
                                 className="w-full border border-gray-300 rounded-md px-4 py-3 text-[14px] text-black outline-none"
                             >
@@ -237,18 +275,6 @@ function PropertiesContent() {
                                     </option>
                                 ))}
                             </select>
-                            <select
-                                value={selectedArea}
-                                onChange={(e) => setSelectedArea(e.target.value)}
-                                className="w-full border border-gray-300 rounded-md px-4 py-3 text-[14px] text-black outline-none"
-                            >
-                                <option value="">Area</option>
-                                {areas.map((area) => (
-                                    <option key={area} value={area}>
-                                        {area}
-                                    </option>
-                                ))}
-                            </select>
                             <div className="flex gap-2">
 
 
@@ -256,16 +282,15 @@ function PropertiesContent() {
                                     Apply
                                 </button>
 
-                                <button
-                                    onClick={() => {
-                                        setBudget(200);
-                                        setSelectedConfig("");
-                                        setSelectedStatus("");
-                                        setSelectedCity("");
-                                        setSelectedArea("");
-                                    }}
-                                    className="px-6 py-2 border border-gray-300 rounded-md text-[14px] text-black"
-                                >
+                                    <button
+                                        onClick={() => {
+                                            setBudget(3000);
+                                            setSelectedConfig("");
+                                            setSelectedStatus("");
+                                            setSelectedCity("Pune");
+                                        }}
+                                        className="px-6 py-2 border border-gray-300 rounded-md text-[14px] text-black"
+                                    >
                                     Reset
                                 </button>
                             </div>
@@ -323,7 +348,7 @@ function PropertiesContent() {
                             onClose={() => setIsMapOpen(false)}
                             locationName={officeDetails.name}
                             address={officeDetails.address}
-                            iframeSrc="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3784.513447079499!2d73.91246457334937!3d18.460387771013473!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3bc2eb291d95088b%3A0xbfae7509b6f71b86!2sPIINGGAKSHA!5e0!3m2!1sen!2sin!4v1778153416410!5m2!1sen!2sin" width="100%" height="100%" style={{border:0}} allowFullScreen="" loading="lazy" referrerPolicy="no-referrer-when-downgrade"
+                            iframeSrc="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3784.513447079499!2d73.91246457334937!3d18.460387771013473!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3bc2eb291d95088b%3A0xbfae7509b6f71b86!2sPIINGGAKSHA!5e0!3m2!1sen!2sin!4v1778153416410!5m2!1sen!2sin" width="100%" height="100%" style={{ border: 0 }} allowFullScreen="" loading="lazy" referrerPolicy="no-referrer-when-downgrade"
                         />
                     </div>
                 </div>

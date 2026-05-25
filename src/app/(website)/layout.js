@@ -5,6 +5,7 @@ import 'react-toastify/dist/ReactToastify.css';
 import Navbar from "@/components/Navbar"; // 1. Import your Navbar
 import { AuthProvider } from "@/lib/context/AuthContext";
 import Footer from "@/components/Footer";
+import SimpleChatbot from "@/components/chatbot/SimpleChatbot";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -56,6 +57,7 @@ export default function RootLayout({ children }) {
           toastClassName="!rounded-xl !shadow-lg !text-sm !font-medium"
           bodyClassName="!p-3"
         />
+        {/* <SimpleChatbot /> */}
         </AuthProvider>
       </body>
     </html>

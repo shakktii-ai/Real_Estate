@@ -107,9 +107,7 @@ const Navbar = () => {
       <div className="flex items-center justify-between px-2 sm:px-4 py-2 sm:py-3 xl:hidden border-b border-gray-200 gap-2">
         {/* LEFT: Burger (Mobile) & Logo */}
         <div className="flex items-center gap-1 sm:gap-2 shrink-0">
-          <button className="p-1.5 sm:p-2 rounded-full bg-[#742E85] text-white hover:bg-[#5f256a]" onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}>
-            {isMobileMenuOpen ? <X size={20} /> : <Menu size={20} />}
-          </button>
+        
 
           <Link href="/" className="flex items-center">
             <div className="relative w-[70px] h-[35px] sm:w-[90px] sm:h-[45px] shrink-0">
@@ -123,9 +121,46 @@ const Navbar = () => {
           <SearchBar className="w-full" inputClassName="text-[11px] sm:text-xs" onSearchComplete={() => setIsMobileMenuOpen(false)} />
         </div>
 
-        {/* RIGHT: SignUp */}
-        <button onClick={() => setShowModal(true)} className="bg-[#E5097F] text-white px-2.5 py-1.5 sm:px-4 sm:py-2 text-xs sm:text-sm rounded-lg hover:cursor-pointer shrink-0">SignUp</button>
-      </div>
+        {/* RIGHT section*/}
+         {user && (
+            <>
+              <div className="relative" ref={dropdownRef}>
+                <button onClick={() => setOpen(!open)} className="relative p-2 text-black hover:text-[#742E85]">
+                  <Bell size={20} />
+                  {unreadCount > 0 && <span className="absolute top-0 right-0 bg-red-500 text-white text-[10px] w-4 h-4 flex items-center justify-center rounded-full">{unreadCount}</span>}
+                </button>
+                {open && (
+                  <div className="absolute right-0 md:right-0 mt-2 w-[220px] md:w-80 bg-white border border-gray-100 rounded-xl shadow-xl z-50 max-h-[70vh] overflow-y-auto">
+                    <div className="p-3 border-b font-bold text-[#742E85] sticky top-0 bg-white">Notifications</div>
+                    {notifications.length === 0 ? (
+                      <p className="p-4 text-sm text-gray-500 text-center">No new notifications</p>
+                    ) : (
+                      notifications.map((n) => (
+                        <div
+                          key={n._id}
+                          onClick={() => handleNotificationClick(n._id)}
+                          className={`p-3 border m-2 rounded hover:bg-gray-50 cursor-pointer transition-colors ${!n.isRead ? 'bg-purple-100 ' : ''}`}
+                        >
+                          <div className="flex justify-between items-start">
+                            <p className="text-sm font-semibold text-black">{n.title}</p>
+                            <span className="text-[10px] text-gray-400 whitespace-nowrap ml-2">
+                              {formatTimeAgo(n.createdAt)}
+                            </span>
+                          </div>
+                          <p className="text-xs text-gray-500 mt-1">{n.message}</p>
+                        </div>
+                      ))
+                    )}
+                  </div>
+                )}
+              </div>
+
+            </>
+          ) }
+            <button className="p-1.5 sm:p-2 rounded-full  text-black hover:bg-[#5f256a]" onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}>
+            {isMobileMenuOpen ? <X size={20} /> : <Menu size={20} />}
+          </button>
+          </div>
 
       <div className="hidden xl:flex items-center justify-between px-4 py-3 gap-2">
         <div className="flex items-center gap-4 xl:gap-8">
@@ -204,19 +239,68 @@ const Navbar = () => {
 
 
 
+      
       {/* Mobile Drawer */}
-      {isMobileMenuOpen && (
-        <div className="absolute top-full left-0 w-full bg-white flex flex-col p-4 shadow-xl xl:hidden">
-          {navLinks.map((link) => (
-            <Link key={link.href} href={link.href} onClick={() => setIsMobileMenuOpen(false)} className="py-3 font-medium text-[#333]">
-              {link.name}
-            </Link>
-          ))}
-          <Link href="/contact" onClick={() => setIsMobileMenuOpen(false)} className="py-3 font-medium text-[#742E85]">Contact Us</Link>
-          <button onClick={handleLogout} className="text-left py-3 text-red-600 font-bold">Logout</button>
-        </div>
-      )}
+{isMobileMenuOpen && (
+  <div className="absolute top-full left-0 w-full bg-white flex flex-col p-4 shadow-xl xl:hidden border-t border-gray-100">
+    
+    {navLinks.map((link) => (
+      <Link
+        key={link.href}
+        href={link.href}
+        onClick={() => setIsMobileMenuOpen(false)}
+        className="py-3 font-medium text-[#333]"
+      >
+        {link.name}
+      </Link>
+    ))}
 
+    <Link
+      href="/contact"
+      onClick={() => setIsMobileMenuOpen(false)}
+      className="py-3 font-medium "
+    >
+      Contact Us
+    </Link>
+
+    {user ? (
+      <>
+        <Link
+          href="/profile"
+          onClick={() => setIsMobileMenuOpen(false)}
+          className="py-3 font-medium text-[#333]"
+        >
+          Profile
+        </Link>
+
+        <Link
+          href="/wishlist"
+          onClick={() => setIsMobileMenuOpen(false)}
+          className="py-3 font-medium text-[#333]"
+        >
+          Wishlist
+        </Link>
+
+        <button
+          onClick={handleLogout}
+          className="text-left py-3 text-red-600 font-semibold"
+        >
+          Logout
+        </button>
+      </>
+    ) : (
+      <button
+        onClick={() => {
+          setShowModal(true);
+          setIsMobileMenuOpen(false);
+        }}
+        className="mt-2 bg-[#E5097F] text-white px-4 py-3 rounded-xl font-medium"
+      >
+        SignUp
+      </button>
+    )}
+  </div>
+)}
       {showModal && <AuthModal onClose={() => setShowModal(false)} />}
     </nav>
   );

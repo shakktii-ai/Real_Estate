@@ -7,26 +7,22 @@ import ReviewCard from "@/components/ReviewCard";
 export default function ReviewsPage() {
   const [reviews, setReviews] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [startIndex, setStartIndex] = useState(0);
-  const [cardsPerPage, setCardsPerPage] = useState(5);
+  const [index, setIndex] = useState(0);
+  const [itemsPerView, setItemsPerView] = useState(5);
   const [isHovering, setIsHovering] = useState(false);
+  const [isTransitioning, setIsTransitioning] = useState(true);
 
   useEffect(() => {
-    const updateCardsPerPage = () => {
-      if (window.innerWidth < 640) {
-        setCardsPerPage(1); // mobile
-      } else {
-        setCardsPerPage(5); // desktop
-      }
+    const updateItems = () => {
+      if (window.innerWidth < 640) setItemsPerView(1);
+      else if (window.innerWidth < 768) setItemsPerView(2);
+      else if (window.innerWidth < 1024) setItemsPerView(3);
+      else setItemsPerView(5);
     };
 
-    updateCardsPerPage();
-
-    window.addEventListener("resize", updateCardsPerPage);
-
-    return () => {
-      window.removeEventListener("resize", updateCardsPerPage);
-    };
+    updateItems();
+    window.addEventListener("resize", updateItems);
+    return () => window.removeEventListener("resize", updateItems);
   }, []);
 
   useEffect(() => {
@@ -42,39 +38,42 @@ export default function ReviewsPage() {
       });
   }, []);
 
-  // Auto-scroll functionality
   useEffect(() => {
-    if (reviews.length <= cardsPerPage || isHovering) return;
-
+    if (reviews.length === 0 || isHovering) return;
     const interval = setInterval(() => {
-      setStartIndex((prevIndex) => {
-        const nextIndex = prevIndex + 1;
-        if (nextIndex + cardsPerPage > reviews.length) {
-          return 0; // Loop back to start
-        }
-        return nextIndex;
-      });
-    }, 3000); // Change every 2 seconds
-
+      setIsTransitioning(true);
+      setIndex((prev) => prev + 1);
+    }, 3000);
     return () => clearInterval(interval);
-  }, [reviews.length, cardsPerPage, isHovering]);
+  }, [reviews.length, isHovering]);
+
+  useEffect(() => {
+    if (index >= reviews.length && reviews.length > 0) {
+      const timeout = setTimeout(() => {
+        setIsTransitioning(false);
+        setIndex(0);
+      }, 700); // matches duration-700
+      return () => clearTimeout(timeout);
+    }
+  }, [index, reviews.length]);
 
   const handleNext = () => {
-    if (startIndex + cardsPerPage < reviews.length) {
-      setStartIndex(startIndex + cardsPerPage);
-    }
+    setIsTransitioning(true);
+    setIndex((prev) => prev + 1);
   };
 
   const handlePrev = () => {
-    if (startIndex - cardsPerPage >= 0) {
-      setStartIndex(startIndex - cardsPerPage);
-    }
+    setIsTransitioning(true);
+    setIndex((prev) => (prev <= 0 ? reviews.length - 1 : prev - 1));
   };
 
-  const visibleReviews = reviews.slice(
-    startIndex,
-    startIndex + cardsPerPage
-  );
+  const getItemWidthClass = () => {
+    if (itemsPerView === 1) return "w-full";
+    if (itemsPerView === 2) return "w-1/2";
+    if (itemsPerView === 3) return "w-1/3";
+    if (itemsPerView === 4) return "w-1/4";
+    return "w-1/5";
+  };
 
   if (loading) {
     return (
@@ -84,22 +83,33 @@ export default function ReviewsPage() {
     );
   }
 
+  // To make the infinite loop seamless, we duplicate the array
+  const displayReviews = [...reviews, ...reviews];
+
   return (
-    <section className="py-20 px-4 md:px-6">
-      <div className="max-w-7xl mx-auto" onMouseEnter={() => setIsHovering(true)} onMouseLeave={() => setIsHovering(false)}>
-        {visibleReviews.length > 0 ? (
-          <div
-            className={`grid gap-6  ${
-              cardsPerPage === 1
-                ? "grid-cols-1"
-                : "grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 xl:grid-cols-5"
-            }`}
-          >
-            {visibleReviews.map((review) => (
-        
-               <ReviewCard key={review._id} review={review} />
-             
-            ))}
+    <section className="py-20 px-4 md:px-6 overflow-hidden">
+      <div 
+        className="max-w-7xl mx-auto relative" 
+        onMouseEnter={() => setIsHovering(true)} 
+        onMouseLeave={() => setIsHovering(false)}
+      >
+        {reviews.length > 0 ? (
+          <div className="overflow-hidden">
+            <div
+              className={`flex ${isTransitioning ? "transition-transform duration-700 ease-in-out" : ""}`}
+              style={{
+                transform: `translateX(-${index * (100 / itemsPerView)}%)`,
+              }}
+            >
+              {displayReviews.map((review, i) => (
+                <div
+                  key={`${review._id}-${i}`}
+                  className={`flex-shrink-0 px-3 ${getItemWidthClass()}`}
+                >
+                  <ReviewCard review={review} />
+                </div>
+              ))}
+            </div>
           </div>
         ) : (
           <div className="text-center py-20 text-gray-400">
@@ -107,28 +117,18 @@ export default function ReviewsPage() {
           </div>
         )}
 
-        {reviews.length > cardsPerPage && (
+        {reviews.length > itemsPerView && (
           <div className="flex items-center justify-center gap-5 mt-8">
             <button
               onClick={handlePrev}
-              disabled={startIndex === 0}
-              className={`w-12 h-12 rounded-full border flex items-center justify-center transition ${
-                startIndex === 0
-                  ? "border-gray-200 text-gray-300 cursor-not-allowed"
-                  : "border-[#742E85] text-[#742E85] hover:bg-[#742E85] hover:text-white"
-              }`}
+              className="w-12 h-12 rounded-full border flex items-center justify-center transition border-[#742E85] text-[#742E85] hover:bg-[#742E85] hover:text-white"
             >
               <ChevronLeft size={22} />
             </button>
 
             <button
               onClick={handleNext}
-              disabled={startIndex + cardsPerPage >= reviews.length}
-              className={`w-12 h-12 rounded-full border flex items-center justify-center transition ${
-                startIndex + cardsPerPage >= reviews.length
-                  ? "border-gray-200 text-gray-300 cursor-not-allowed"
-                  : "border-[#742E85] text-[#742E85] hover:bg-[#742E85] hover:text-white"
-              }`}
+              className="w-12 h-12 rounded-full border flex items-center justify-center transition border-[#742E85] text-[#742E85] hover:bg-[#742E85] hover:text-white"
             >
               <ChevronRight size={22} />
             </button>

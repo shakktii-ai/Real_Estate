@@ -57,7 +57,7 @@ export default function RootLayout({ children }) {
           toastClassName="!rounded-xl !shadow-lg !text-sm !font-medium"
           bodyClassName="!p-3"
         />
-        {/* <SimpleChatbot /> */}
+        <SimpleChatbot />
         </AuthProvider>
       </body>
     </html>

@@ -109,11 +109,11 @@ export default function AdminLoginPage() {
         <div className="bg-white rounded-[30px] shadow-[0_10px_30px_rgba(0,0,0,0.05)] p-6">
           {/* Logo Section */}
           <div className="flex flex-col items-center mb-6">
-            <div className="bg-white p-4 rounded-2xl shadow-sm border border-gray-50 mb-6">
+            <div className="bg-white p-3 rounded-2xl shadow-sm border border-gray-50 mb-4">
               <img
                 src="/piinggaksha.png"
                 alt="Logo"
-                className="h-12 object-contain"
+                className="h-9 object-contain"
               />
             </div>
             <h1 className="text-3xl font-bold text-gray-900 tracking-tight">Admin Login</h1>

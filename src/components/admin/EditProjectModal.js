@@ -33,9 +33,20 @@ export default function EditProjectModal({
     brochure: null,
     priceSheet: null,
     qrCode: null,
+    removeImage: false,
+    removeBrochure: false,
+    removePriceSheet: false,
+    removeQrCode: false,
     oldPriceUnit: "L",
     newPriceUnit: "L",
   });
+  const clearFileSelection = (field, removeFlag) => {
+    setFormData((prev) => ({
+      ...prev,
+      [field]: null,
+      [removeFlag]: true,
+    }));
+  };
   const convertToRupees = (value, unit) => {
     if (!value) return 0;
     if (unit === "Cr") return value * 10000000;
@@ -96,6 +107,10 @@ export default function EditProjectModal({
         usp: project.usp?.join(", ") || "",
 
         description: project.description || "",
+        removeImage: false,
+        removeBrochure: false,
+        removePriceSheet: false,
+        removeQrCode: false,
       });
     }
   }, [project]);
@@ -173,7 +188,7 @@ export default function EditProjectModal({
         mainImage: img || project.mainImage,
         brochureUrl: brochure || project.brochureUrl,
         priceSheetUrl: sheet || project.priceSheetUrl,
-        qrCodeUrl: qr || project.qrCodeUrl,
+        qrCodeUrl: formData.removeQrCode ? "" : qr || project.qrCodeUrl,
       };
 
       const res = await fetch(`/api/properties/${project._id}`, {
@@ -385,7 +400,7 @@ export default function EditProjectModal({
           <div>
             <label className="text-sm font-semibold mb-2 block">Tags</label>
             <div className="flex gap-2 flex-wrap">
-              {["RERA Verified", "Featured", "Luxury", "Premium", "Affordable"].map(tag => (
+              {["RERA Verified", "Residential", "Luxury", "Premium", "Affordable","Commercial"].map(tag => (
                 <button
                   type="button"
                   key={tag}
@@ -424,15 +439,43 @@ export default function EditProjectModal({
             </div>
 
             <div className="grid grid-cols-4 gap-4">
-              {["image", "brochure", "priceSheet", "qrCode"].map((field, i) => (
-                <label key={i} className="border-dashed border-2 p-4 rounded-lg text-center cursor-pointer">
+              {[
+                { field: 'image', label: 'Project Image', projectKey: 'mainImage', removeFlag: 'removeImage' },
+                { field: 'brochure', label: 'Brochure', projectKey: 'brochureUrl', removeFlag: 'removeBrochure' },
+                { field: 'priceSheet', label: 'Price Sheet', projectKey: 'priceSheetUrl', removeFlag: 'removePriceSheet' },
+                { field: 'qrCode', label: 'QR Code', projectKey: 'qrCodeUrl', removeFlag: 'removeQrCode' },
+              ].map((item, i) => (
+                <label key={i} className="border-dashed border-2 p-4 rounded-lg text-center cursor-pointer relative">
                   <Upload className="mx-auto mb-1" />
-                  <p className="text-xs capitalize">{field}</p>
+                  <p className="text-xs font-semibold mb-2">{item.label}</p>
+                  {(formData[item.field] && !formData[item.removeFlag]) ? (
+                    <p className="text-[11px] mb-2 truncate">Selected: {formData[item.field].name}</p>
+                  ) : project[item.projectKey] && !formData[item.removeFlag] ? (
+                    <p className="text-[11px] mb-2 text-green-600 truncate">Existing file attached</p>
+                  ) : null}
                   <input
                     type="file"
                     className="hidden"
-                    onChange={(e) => setFormData({ ...formData, [field]: e.target.files[0] })}
+                    onChange={(e) => {
+                      setFormData({
+                        ...formData,
+                        [item.field]: e.target.files[0],
+                        [item.removeFlag]: false,
+                      });
+                    }}
                   />
+                  {(formData[item.field] || project[item.projectKey]) && (
+                    <button
+                      type="button"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        clearFileSelection(item.field, item.removeFlag);
+                      }}
+                      className="mt-2 text-xs text-red-500 underline"
+                    >
+                      Remove
+                    </button>
+                  )}
                 </label>
               ))}
             </div>

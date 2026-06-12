@@ -17,34 +17,33 @@ export default function ReviewCard({ review }) {
 
   return (
     <>
-      <div className="bg-white text-black rounded-xl border border-gray-200 p-5 shadow-sm transition-all duration-300 ease-in-out hover:-translate-y-1 hover:shadow-xl hover:scale-[1.02] flex flex-col h-full min-h-[260px] relative">
-        <div className="flex justify-between items-start mb-4">
-          <div className="flex gap-3">
-            <div className="w-10 h-10 rounded-full bg-[#D9D9D9] flex items-center justify-center text-black font-bold text-lg flex-shrink-0">
+      <div className="bg-white text-black rounded-xl border border-gray-200 p-3.5 shadow-sm transition-all duration-300 ease-in-out hover:-translate-y-1 hover:shadow-xl hover:scale-[1.02] flex flex-col h-full min-h-[190px] relative">
+        <div className="flex justify-between items-start mb-3">
+          <div className="flex gap-2">
+            <div className="w-8 h-8 rounded-full bg-[#D9D9D9] flex items-center justify-center text-black font-bold text-sm flex-shrink-0">
               {review.customerName?.charAt(0)}
             </div>
             <div>
-              <h3 className="font-bold text-[14px] leading-tight">{review.customerName}</h3>
-              <p className="text-[11px] text-gray-400">{getTimeAgo(review.createdAt)}</p>
+              <h3 className="font-bold text-[12px] leading-tight">{review.customerName}</h3>
+              <p className="text-[10px] text-gray-400">{getTimeAgo(review.createdAt)}</p>
             </div>
           </div>
-          {/* <img src="https://upload.wikimedia.org/wikipedia/commons/c/c1/Google_Color_Icon.svg" className="w-4 h-4" alt="G" /> */}
         </div>
 
-        <div className="flex gap-0.5 mb-3">
+        <div className="flex gap-0.5 mb-2">
           {[...Array(5)].map((_, i) => (
-            <Star key={i} size={14} className={i < review.rating ? "fill-[#FBBC05] text-[#FBBC05]" : "text-gray-200"} />
+            <Star key={i} size={11} className={i < review.rating ? "fill-[#FBBC05] text-[#FBBC05]" : "text-gray-200"} />
           ))}
         </div>
       
         <div className="flex-grow">
-          <p className="text-gray-700 text-[13px] leading-relaxed line-clamp-4">
+          <p className="text-gray-700 text-[11px] leading-relaxed line-clamp-4">
             {review.reviewText}
           </p>
           {review.reviewText?.length > 100 && (
             <button 
               onClick={() => setIsOpen(true)}
-              className="text-[#4285F4] text-[13px] font-semibold mt-2 hover:underline"
+              className="text-[#4285F4] text-[10px] font-semibold mt-1.5 hover:underline"
             >
               Read more
             </button>

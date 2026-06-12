@@ -12,6 +12,8 @@ export default function ProjectListCard({ project, isWishlisted, onToggleWishlis
     Affordable: "bg-[#1447EA]",
     Holiday: "bg-[#1DA2B3]",
     Featured:"bg-[#A566B8]",
+     Residential: "bg-[#8B5CF6]",
+    Commercial: "bg-black",
   };
   return (
     <div className="bg-white rounded-3xl border border-gray-100 shadow-sm hover:shadow-md transition-all flex flex-col md:flex-row overflow-hidden h-auto md:h-[350px]">
@@ -152,7 +154,7 @@ export default function ProjectListCard({ project, isWishlisted, onToggleWishlis
               const encodedMessage = encodeURIComponent(message);
               window.open(`https://wa.me/${companyPhoneNumber}?text=${encodedMessage}`, '_blank');
             }}
-            className="flex-1 px-3 sm:px-4 py-2 bg-[#1AA34A] hover:bg-[#20ba5a] text-white rounded-md text-xs sm:text-sm font-semibold flex items-center justify-center gap-1.5 transition border border-transparent shadow-sm whitespace-nowrap text-center"
+            className="flex-1 px-3 sm:px-4 py-2 bg-white text-black rounded-md text-xs sm:text-sm font-semibold flex items-center justify-center gap-1.5 transition border border-black shadow-sm whitespace-nowrap text-center"
           >
             Live Chat
           </button>

@@ -1,6 +1,5 @@
 "use client";
 import { useState, useEffect } from "react";
-import { getAuth, onAuthStateChanged } from "firebase/auth";
 import { Calendar, Clock, CalendarCheck2, LocateIcon, Video, MapPin } from "lucide-react";
 import { toast } from "react-toastify";
 import AcceptTourModal from "@/components/AcceptTourModal";

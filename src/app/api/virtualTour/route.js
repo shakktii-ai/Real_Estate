@@ -12,7 +12,7 @@ export async function POST(req) {
     const body = await req.json();
 
     // Find the MongoDB user by Firebase uid or email
-    const user = await User.findOne({ uid: body.userId });
+    const user = await User.findById(body.userId);
 
     if (!user) {
       return NextResponse.json(

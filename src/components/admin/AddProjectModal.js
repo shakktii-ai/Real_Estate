@@ -3,7 +3,7 @@ import { useForm } from "react-hook-form";
 import { X, Upload, CheckCircle2, FileText } from "lucide-react";
 import { toast } from "react-toastify";
 export default function AddProjectModal({ isOpen, onClose, refreshData }) {
-    const { register, handleSubmit, reset, watch, formState: { errors, isSubmitting } } = useForm({
+    const { register, handleSubmit, reset, setValue, watch, formState: { errors, isSubmitting } } = useForm({
         defaultValues: { constructionProgress: 65 }
     });
     const watchedImage = watch("imageFile");
@@ -12,6 +12,7 @@ export default function AddProjectModal({ isOpen, onClose, refreshData }) {
     const watchedQrCode = watch("qrCodeUrlFile");
     const progressValue = watch("constructionProgress");
     const isPriceDropEnabled = watch("priceDrop.isEnabled");
+    const removeFile = (fieldName) => setValue(fieldName, undefined, { shouldDirty: true });
     const FileStatus = ({ fileList, label }) => {
         if (fileList && fileList.length > 0) {
             return (
@@ -338,7 +339,7 @@ export default function AddProjectModal({ isOpen, onClose, refreshData }) {
                     <div>
                         <h3 className="text-sm font-semibold mb-3 text-black">Tags</h3>
                         <div className="flex flex-wrap gap-2 text-black">
-                            {['RERA Verified', 'Featured', 'Luxury', 'Premium', 'Affordable'].map(tag => (
+                            {['RERA Verified', 'Residential', 'Luxury', 'Premium', 'Affordable', 'Commercial'].map(tag => (
                                 <label key={tag} className="cursor-pointer">
                                     <input type="checkbox" value={tag} {...register("tags")} className="hidden peer" />
                                     <span className="px-4 py-1 text-[10px] border rounded-full peer-checked:bg-[#D81B60] peer-checked:text-white peer-checked:border-[#D81B60] transition-all">
@@ -358,24 +359,72 @@ export default function AddProjectModal({ isOpen, onClose, refreshData }) {
                             <label className={`border-2 border-dashed rounded-2xl p-4 flex flex-col items-center justify-center gap-2 cursor-pointer transition-all ${watchedImage?.length > 0 ? 'border-green-500 bg-green-50' : 'border-gray-200 hover:border-[#D81B60]'}`}>
                                 <FileStatus fileList={watchedImage} label="Project Image" />
                                 <input type="file" accept="image/*" {...register("imageFile")} className="hidden" />
+                                {watchedImage?.length > 0 && (
+                                    <button
+                                        type="button"
+                                        onClick={(e) => {
+                                            e.stopPropagation();
+                                            removeFile("imageFile");
+                                        }}
+                                        className="mt-2 text-xs text-red-500 underline"
+                                    >
+                                        Remove
+                                    </button>
+                                )}
                             </label>
 
                             {/* Brochure */}
                             <label className={`border-2 border-dashed rounded-2xl p-4 flex flex-col items-center justify-center gap-2 cursor-pointer transition-all ${watchedBrochure?.length > 0 ? 'border-green-500 bg-green-50' : 'border-gray-200 hover:border-[#742E85]'}`}>
                                 <FileStatus fileList={watchedBrochure} label="Brochure PDF" />
                                 <input type="file" accept=".pdf" {...register("brochureFile")} className="hidden" />
+                                {watchedBrochure?.length > 0 && (
+                                    <button
+                                        type="button"
+                                        onClick={(e) => {
+                                            e.stopPropagation();
+                                            removeFile("brochureFile");
+                                        }}
+                                        className="mt-2 text-xs text-red-500 underline"
+                                    >
+                                        Remove
+                                    </button>
+                                )}
                             </label>
 
                             {/* Price Sheet */}
                             <label className={`border-2 border-dashed rounded-2xl p-4 flex flex-col items-center justify-center gap-2 cursor-pointer transition-all ${watchedPriceSheet?.length > 0 ? 'border-green-500 bg-green-50' : 'border-gray-200 hover:border-[#00A76F]'}`}>
                                 <FileStatus fileList={watchedPriceSheet} label="Price Sheet" />
                                 <input type="file" accept=".pdf" {...register("priceSheetFile")} className="hidden" />
+                                {watchedPriceSheet?.length > 0 && (
+                                    <button
+                                        type="button"
+                                        onClick={(e) => {
+                                            e.stopPropagation();
+                                            removeFile("priceSheetFile");
+                                        }}
+                                        className="mt-2 text-xs text-red-500 underline"
+                                    >
+                                        Remove
+                                    </button>
+                                )}
                             </label>
 
                             {/* QR Code */}
                             <label className={`border-2 border-dashed rounded-2xl p-4 flex flex-col items-center justify-center gap-2 cursor-pointer transition-all ${watchedQrCode?.length > 0 ? 'border-green-500 bg-green-50' : 'border-gray-200 hover:border-blue-500'}`}>
                                 <FileStatus fileList={watchedQrCode} label="QR Code" />
                                 <input type="file" accept=".pdf,image/*" {...register("qrCodeUrlFile")} className="hidden" />
+                                {watchedQrCode?.length > 0 && (
+                                    <button
+                                        type="button"
+                                        onClick={(e) => {
+                                            e.stopPropagation();
+                                            removeFile("qrCodeUrlFile");
+                                        }}
+                                        className="mt-2 text-xs text-red-500 underline"
+                                    >
+                                        Remove
+                                    </button>
+                                )}
                             </label>
                         </div>
                     </div>

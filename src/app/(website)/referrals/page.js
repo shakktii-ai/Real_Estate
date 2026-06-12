@@ -1,38 +1,46 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
-import Navbar from "@/components/Navbar";
-import Footer from "@/components/Footer";
+import AuthModal from "@/components/AuthModal";
+import { useAuth } from "@/lib/context/AuthContext";
 import { motion } from "framer-motion";
 import { Copy, Share2 } from "lucide-react";
-import { auth } from "@/lib/firebase";
+import { SlUserFollow } from "react-icons/sl";
+import Link from "next/link";
 export default function ReferralsPage() {
+  const { user } = useAuth();
   const [copied, setCopied] = useState(false);
+  const [showModal, setShowModal] = useState(false);
+
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [referralCode, setReferralCode] = useState("");
   const [stats, setStats] = useState({
     referralCount: 0,
     rewardPoints: 0,
   });
-useEffect(() => {
-  const unsubscribe = auth.onAuthStateChanged(async (user) => {
-    if (!user) return;
+  useEffect(() => {
+    let mounted = true;
+    const load = async () => {
+      if (!user) return;
+      try {
+        const res = await fetch(`/api/user/profile?id=${user._id || ""}&uid=${user.uid || ""}`);
+        const data = await res.json();
+        if (!mounted) return;
+        setReferralCode(data.user?.referralCode || "");
+        setStats({
+          referralCount: data.user?.referralCount || 0,
+          rewardPoints: data.user?.rewardPoints || 0,
+        });
+      } catch (error) {
+        console.error("Failed to fetch referral data", error);
+      }
+    };
 
-    try {
-      const res = await fetch(`/api/user/profile/${user.uid}`);
-      const data = await res.json();
+    load();
+    return () => { mounted = false; };
+  }, [user]);
 
-      setReferralCode(data.referralCode || "");
-      setStats({
-        referralCount: data.referralCount || 0,
-        rewardPoints: data.rewardPoints || 0,
-      });
-    } catch (error) {
-      console.error("Failed to fetch referral data", error);
-    }
-  });
-
-  return () => unsubscribe();
-}, []);  const copyToClipboard = () => {
+  const copyToClipboard = () => {
     navigator.clipboard.writeText(referralCode);
     setCopied(true);
     setTimeout(() => setCopied(false), 2000);
@@ -43,22 +51,18 @@ useEffect(() => {
     window.open(`https://wa.me/?text=${encodeURIComponent(text)}`, "_blank");
   };
 
-  const commonCardStyle = {
-    boxShadow: "0px 0px 21.5px rgba(0, 0, 0, 0.14)",
-    borderRadius: "10px",
-  };
 
   return (
-    <div className="min-h-screen bg-white font-roboto-condensed text-black overflow-x-hidden">
+    <div className="min-h-screen text-black overflow-x-hidden">
 
 
-      <main className="max-w-[1270px] mx-auto px-4 md:px-12 py-12">
+      <main className=" mx-auto">
         {/* Header */}
-        <div className="text-left mb-10 pl-4 md:pl-0">
+        <div className=" text-left my-4 px-6">
           <motion.h1
             initial={{ opacity: 0, y: -20 }}
             animate={{ opacity: 1, y: 0 }}
-            className="text-[32px] font-bold text-gray-900 mb-2"
+            className="text-[25px] md:text-[25px] font-bold text-gray-900 mb-1"
           >
             Refer & Earn
           </motion.h1>
@@ -66,77 +70,125 @@ useEffect(() => {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ delay: 0.1 }}
-            className="text-gray-600 text-[18px]"
+            className="text-black text-[14px] md:text-[15px]"
           >
-            Invite friends and earn rewards when they book a site visit
+            Invite friends and earn rewards when they book a site visit.
           </motion.p>
         </div>
-
-        {/* Hero Section: Referral Code Card (Rectangle 4742) */}
-        <motion.div
-          initial={{ opacity: 0, scale: 0.95 }}
-          animate={{ opacity: 1, scale: 1 }}
-          style={{
-            ...commonCardStyle,
-            background: "linear-gradient(96.73deg, #742E85 -6.2%, #E5097F 100%)",
-          }}
-          className="w-full min-h-[326px] py-10 flex flex-col justify-center items-center text-center text-white mb-[40px] md:mb-[76px] relative px-6"
-        >
-          <p className="text-white/90 text-[16px] md:text-[18px] mb-4">Your Referral Code</p>
-          <h2 className="text-[12px] md:text-[36px] font-bold tracking-wider mb-8 md:mb-10">{referralCode}</h2>
-
-          <div className="flex flex-col sm:flex-row gap-6 justify-center items-center">
-            <button
-              onClick={copyToClipboard}
-              className="flex items-center gap-3 bg-white/20 hover:bg-white/30 px-10 py-4 rounded-xl font-bold transition-all border border-white/30 min-w-[200px] justify-center"
-            >
-              <Copy size={20} />
-              {copied ? "Copied!" : "Copy Code"}
-            </button>
-            <button
-              onClick={shareViaWhatsApp}
-              className="flex items-center gap-3 bg-white/20 hover:bg-white/30 px-10 py-4 rounded-xl font-bold transition-all border border-white/30 min-w-[200px] justify-center"
-            >
-              <Share2 size={20} />
-              Share via WhatsApp
-            </button>
-          </div>
-        </motion.div>
-
         {/* How it works Section (Rectangle 4745) */}
-        <section className="mb-[40px] md:mb-[76px]">
-          <div
-            style={{
-              ...commonCardStyle,
-            }}
-            className="bg-white w-full min-h-[342px] py-10 flex flex-col justify-center items-center text-center p-6 md:p-10"
-          >
-            <h3 className="text-2xl font-bold mb-12">How it works</h3>
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-12 w-full">
-              {/* Step 1 */}
-              <div className="flex flex-col items-center">
-                <div className="w-12 h-12 bg-gray-100 rounded-full flex items-center justify-center text-[#742E85] font-bold text-xl mb-6">1</div>
-                <h4 className="font-bold mb-3 text-lg">Share Your Code</h4>
-                <p className="text-gray-500 text-[15px] max-w-[220px]">Share your referral code with friends & family</p>
-              </div>
-              {/* Step 2 */}
-              <div className="flex flex-col items-center">
-                <div className="w-12 h-12 bg-gray-100 rounded-full flex items-center justify-center text-[#742E85] font-bold text-xl mb-6">2</div>
-                <h4 className="font-bold mb-3 text-lg">Friend Signs Up</h4>
-                <p className="text-gray-500 text-[15px] max-w-[220px]">Your friend registers using your code</p>
-              </div>
-              {/* Step 3 */}
-              <div className="flex flex-col items-center">
-                <div className="w-12 h-12 bg-gray-100 rounded-full flex items-center justify-center text-[#742E85] font-bold text-xl mb-6">3</div>
-                <h4 className="font-bold mb-3 text-lg">Earn Rewards</h4>
-                <p className="text-gray-500 text-[15px] max-w-[220px]">Get rewards when they book a site visit</p>
+        <div className="bg-[radial-gradient(circle,_#FFFFFF_0%,_#D9C5DD_100%)]">
+          <section >
+            <div
+
+              className=" w-full min-h-[342px] py-10 flex flex-col justify-center items-center text-center p-6 md:p-10"
+            >
+              <h3 className="text-2xl text-[#742E85] font-bold mb-12">How it works</h3>
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-12 w-full">
+                {/* Step 1 */}
+                <div className="flex flex-col items-center">
+                  <div className="w-14 h-14 bg-white rounded-md flex items-center justify-center mb-6 overflow-hidden p-2 shadow-sm">
+                    <img
+                      src="/1.png"
+                      alt="Logo"
+                      className="w-50% h-50% object-cover m-1 "
+                    />
+                  </div>
+                  <h4 className="font-medium text-[#742E85] mb-3 text-lg">Share Your Code</h4>
+                  <p className="text-[#6F6F6F] text-[15px] max-w-[220px]">Share your referral code with friends & family</p>
+                </div>
+                {/* Step 2 */}
+                <div className="flex flex-col items-center">
+                  <div className="w-14 h-14 bg-white rounded-md flex items-center justify-center mb-6 overflow-hidden p-2 shadow-sm">
+                    <img
+                      src="/2.png"
+                      alt="Logo"
+                      className="w-50% h-50% object-cover m-1 "
+                    />
+                  </div>
+                  <h4 className="font-medium text-[#742E85] mb-3 text-lg">Friend Signs Up</h4>
+                  <p className="text-[#6F6F6F] text-[15px] max-w-[220px]">Your friend registers using your code</p>
+                </div>
+                {/* Step 3 */}
+                <div className="flex flex-col items-center">
+                  <div className="w-14 h-14 bg-white rounded-md flex items-center justify-center mb-6 overflow-hidden p-2 shadow-sm">
+                    <img
+                      src="/3.png"
+                      alt="Logo"
+                      className="w-50% h-50% object-cover m-1 "
+                    />
+                  </div>
+                  <h4 className="font-medium text-[#742E85] mb-3 text-lg">Earn Rewards</h4>
+                  <p className="text-[#6F6F6F] text-[15px] max-w-[220px]">Get rewards when they book a site visit</p>
+                </div>
               </div>
             </div>
-          </div>
-        </section>
+          </section>
+          {/* Hero Section: Referral Code Card (Rectangle 4742) */}
+          <motion.div
+            initial={{ opacity: 0, scale: 0.95 }}
+            animate={{ opacity: 1, scale: 1 }}
+
+            className="w-full min-h-[300px] py-10 flex flex-col justify-center items-center text-center text-white relative px-6"
+          >
+            <div className="bg-white rounded-2xl p-4 md:p-10 text-black">
+              {user ? (
+                <>
+                  <div>
+                    {/* Label for context */}
+                    <p className=" text-[18px] mb-1">
+                      Your Referral Code
+                    </p>
+                    <p className="text-sm text-gray-500">Share this code with your friends and start earning rewards! </p>
+                    {/* Display code using prominent header styling */}
+                    <h2 className="text-xl md:text-3xl font-semibold tracking-wider bg-black/10 mt-8 mb-8 py-3 px-6 rounded-lg">
+                      {referralCode}
+                    </h2>
+                  </div>
+                  <div className="flex flex-col sm:flex-row gap-6 justify-center items-center">
+                    <button
+                      onClick={copyToClipboard}
+                      className="flex items-center gap-3 bg-white/30 hover:bg-white/30 px-10 py-4 rounded-xl font-semibold transition-all border border-black/30 min-w-full md:min-w-[200px]  justify-center"
+                    >
+                      <Copy size={20} />
+                      {copied ? "Copied!" : "Copy Code"}
+                    </button>
+                    <button
+                      onClick={shareViaWhatsApp}
+                      className="flex items-center gap-3 bg-white/30 hover:bg-white/30 px-10 py-4 rounded-xl font-semibold transition-all border border-black/30 min-w-full md:min-w-[200px] justify-center"
+                    >
+                      <Share2 size={20} />
+                      Share via WhatsApp
+                    </button>
+                  </div>
+                </>
+              ) : (
+                /* Standard interactive Signup Button linking to your auth page */
+                <div>
+                  <p className=" text-[18px] mb-1">
+                    Your Referral Code
+                  </p>
+                  <p className="text-sm text-gray-500">Signup now to unlock your unique referral code and start earning! </p>
+                  <button
+                    onClick={() => {
+                      setShowModal(true);
+                      setIsMobileMenuOpen(false);
+                    }}
+                    className="my-6 bg-gradient-to-r from-[#E5097F] to-[#742E85] px-4 py-4 text-white text-[14px] md:text-[18px] rounded-xl font-medium w-full flex items-center justify-center gap-3 hover:cursor-pointer"
+                  >
+                    <SlUserFollow size={20} />
+                    <span>SignUp to Get Referral Code</span>
+                  </button>
+                </div>
+              )}
+
+
+            </div>
+          </motion.div>
+        </div>
+
 
         {/* Reward Structure Section (Rectangle 4746) */}
-        <section className="mb-[40px] md:mb-[76px]">
+        {/* <section className="mb-[40px] md:mb-[76px]">
           <div
             style={{
               ...commonCardStyle,
@@ -160,10 +212,10 @@ useEffect(() => {
               ))}
             </div>
           </div>
-        </section>
+        </section> */}
 
         {/* Referral Stats Section (Rectangle 4750) */}
-        <section className="mb-[40px] md:mb-[76px]">
+        {/* <section className="mb-[40px] md:mb-[76px]">
           <div
             style={{
               ...commonCardStyle,
@@ -173,9 +225,9 @@ useEffect(() => {
             <h3 className="text-2xl font-bold mb-10 pl-2">Your Referral Stats</h3>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6 md:gap-8">
               <div className="bg-[#EFF6FF] p-6 md:p-8 rounded-2xl text-center border border-blue-100 flex flex-col justify-center h-[120px] md:h-[140px]">
-       <p className="text-[32px] md:text-[40px] font-bold text-blue-600 mb-1">
-  {stats.referralCount}
-</p>
+                <p className="text-[32px] md:text-[40px] font-bold text-blue-600 mb-1">
+                  {stats.referralCount}
+                </p>
                 <p className="text-blue-900 font-medium text-xs md:text-sm">Total Referrals</p>
               </div>
               <div className="bg-[#F0FDF4] p-6 md:p-8 rounded-2xl text-center border border-green-100 flex flex-col justify-center h-[120px] md:h-[140px]">
@@ -188,10 +240,10 @@ useEffect(() => {
               </div>
             </div>
           </div>
-        </section>
+        </section> */}
 
         {/* Terms & Conditions Section */}
-        <section className="mb-24 px-6 md:px-0 ">
+        {/* <section className="mb-24 px-6 md:px-0 ">
           <h3 className="text-[24px] md:text-[24px]  font-medium text-black mb-6 md:mb-8 leading-tight">Terms & Conditions</h3>
           <ul
             className="space-y-4 list-disc marker:text-[#E5097F] max-w-full  md:max-w-[725px]"
@@ -213,10 +265,10 @@ useEffect(() => {
               </li>
             ))}
           </ul>
-        </section>
+        </section> */}
       </main>
 
-
+      {showModal && <AuthModal onClose={() => setShowModal(false)} onAuthSuccess={() => setShowModal(false)} />}
     </div>
   );
 }

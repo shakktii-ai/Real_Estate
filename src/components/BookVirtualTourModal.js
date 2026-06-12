@@ -9,7 +9,7 @@ import {
     Clock3,
 } from "lucide-react";
 import { toast } from "react-toastify";
-import { getAuth } from "firebase/auth";
+import { useAuth } from "@/lib/context/AuthContext";
 const TIME_SLOTS = [
     "9:00 AM - 10:00 AM",
     "10:00 AM - 11:00 AM",
@@ -35,6 +35,7 @@ export default function BookVirtualTourModal({
         phone: "",
         email: "",
     });
+    const { user } = useAuth();
 
     const handleNextFromStep2 = () => {
         if (!formData.date) {
@@ -51,67 +52,70 @@ export default function BookVirtualTourModal({
     };
 
     const handleSubmit = async () => {
-        if (!formData.name.trim()) {
-            toast.error("Please enter your full name");
+    if (!formData.name.trim()) {
+        toast.error("Please enter your full name");
+        return;
+    }
+
+    if (formData.name.trim().length < 3) {
+        toast.error("Name must be at least 3 characters");
+        return;
+    }
+
+    if (!formData.phone.trim()) {
+        toast.error("Please enter phone number");
+        return;
+    }
+
+    if (!/^\d{10}$/.test(formData.phone)) {
+        toast.error("Please enter valid 10 digit phone number");
+        return;
+    }
+
+    if (
+        formData.email &&
+        !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email)
+    ) {
+        toast.error("Please enter a valid email address");
+        return;
+    }
+
+    try {
+        if (!user) {
+            toast.error("Please login to book");
             return;
         }
 
-        if (formData.name.trim().length < 3) {
-            toast.error("Name must be at least 3 characters");
-            return;
+        setLoading(true);
+
+        const bookingPayload = {
+            ...formData,
+            userId: user?._id || user?.id,
+            userEmail: user?.email,
+        };
+
+        const res = await fetch("/api/virtualTour", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify(bookingPayload),
+        });
+
+        const data = await res.json();
+
+        if (!res.ok) {
+            throw new Error(data.error || "Failed to book visit");
         }
 
-        if (!formData.phone.trim()) {
-            toast.error("Please enter phone number");
-            return;
-        }
-
-        if (!/^\d{10}$/.test(formData.phone)) {
-            toast.error("Please enter valid 10 digit phone number");
-            return;
-        }
-
-        if (
-            formData.email &&
-            !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email)
-        ) {
-            toast.error("Please enter a valid email address");
-            return;
-        }
-
-        try {
-
-            const auth = getAuth();
-            const user = auth.currentUser;
-            setLoading(true);
-            const bookingPayload = {
-                ...formData,
-                userId: user.uid, // Sending the unique user ID
-                userEmail: user.email // Optional: helpful for admin reference
-            };
-            const res = await fetch("/api/virtualTour", {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json",
-                },
-                body: JSON.stringify(bookingPayload),
-            });
-
-            const data = await res.json();
-
-            if (!res.ok) {
-                throw new Error(data.error || "Failed to book visit");
-            }
-
-            toast.success("Virtul Project Tour booked successfully!");
-            onClose();
-        } catch (error) {
-            toast.error(error.message || "Something went wrong");
-        } finally {
-            setLoading(false);
-        }
-    };
-
+        toast.success("Virtual Project Tour booked successfully!");
+        onClose();
+    } catch (error) {
+        toast.error(error.message || "Something went wrong");
+    } finally {
+        setLoading(false);
+    }
+};
     return (
         <div className="fixed inset-0 z-[100] bg-black/50 flex items-center justify-center p-4">
             <div className="bg-white w-full max-w-[420px] rounded-2xl shadow-2xl relative p-6">

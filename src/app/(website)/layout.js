@@ -58,6 +58,7 @@ export default function RootLayout({ children }) {
           bodyClassName="!p-3"
         />
         <SimpleChatbot />
+      
         </AuthProvider>
       </body>
     </html>

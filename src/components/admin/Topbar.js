@@ -246,7 +246,7 @@ export default function Header({ toggleSidebar }) {
                     <Menu size={24} className="text-gray-600" />
                 </button>
 
-                <img src="/piinggaksha.png" alt="Logo" className="h-10 md:h-14 w-auto object-contain" />
+                <img src="/piinggaksha.png" alt="Logo" className="h-8 md:h-10 w-auto object-contain" />
                 
                 <div className="hidden lg:block h-8 w-px bg-gray-200 mx-2"></div>
 

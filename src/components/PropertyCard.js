@@ -15,6 +15,8 @@ const PropertyCard = ({ project, isWishlisted, onToggleWishlist, onTourClick }) 
     Affordable: "bg-[#1447EA]",
     Holiday: "bg-[#1DA2B3]",
     Featured:"bg-[#A566B8]",
+     Residential: "bg-[#8B5CF6]",
+    Commercial: "bg-black",
 
   };
 
@@ -66,33 +68,33 @@ const PropertyCard = ({ project, isWishlisted, onToggleWishlist, onTourClick }) 
 
         {/* Content Section */}
         <div className="p-2 flex-col">
-          <div className="font-bold text-sm md:text-md text-black">
+          <div className="font-bold text-sm md:text-[14px] text-black">
             {project.projectName}
-            <h4 className='ml-1 font-normal text-xs sm:text-sm text-gray-600 max-w-[120px] vertical-middle'>
+            <h4 className='ml-1 font-normal text-xs sm:text-[12px] text-gray-600 max-w-[120px] vertical-middle'>
               ({project.reraNumber})
             </h4>
           </div>
-          <p className="text-xs sm:text-sm text-black mb-2 line-clamp-1 truncate">{project.builderName}</p>
+          <p className="text-xs sm:text-[12px] text-black mb-2 line-clamp-1 truncate">{project.builderName}</p>
 
-          <p className="text-sm md:text-md font-bold text-[#1447EA] mb-3 whitespace-nowrap">
+          <p className="text-[10px] md:text-[12px] font-bold text-[#1447EA] mb-1 whitespace-nowrap">
             {project.pricing.displayPrice}
             <span className='ml-1.5 font-normal text-xs sm:text-sm text-black'>onwards</span>
           </p>
 
-          <div className="space-y-2 mb-4 text-xs text-black">
+          <div className="space-y-1 mb-2 text-[10px] text-black">
             <div className="flex items-center gap-2">
-              <MapPin size={14} className="flex-shrink-0" /> {project.address?.area}, {project.address?.city}
+              <MapPin size={10} className="flex-shrink-0" /> {project.address?.area}, {project.address?.city}
             </div>
             <div className="flex items-center gap-2 ">
-              <Calendar size={14} className="flex-shrink-0" /> Possession: {project.possessionDate}
+              <Calendar size={10} className="flex-shrink-0" /> Possession: {project.possessionDate}
             </div>
             <div className="flex items-center gap-2 ">
-              <Home size={14} className="flex-shrink-0" /> {project.configuration?.join(", ")}
+              <Home size={10} className="flex-shrink-0" /> {project.configuration?.join(", ")}
             </div>
           </div>
 
           {/* Construction Progress */}
-          <div className="mb-4">
+          <div className="mb-1">
             <div className="flex justify-between text-[10px] text-[#6F6F6F] mb-1 whitespace-nowrap">
               <span>Construction</span>
               <span>{project.constructionProgress}% Complete</span>
@@ -105,7 +107,7 @@ const PropertyCard = ({ project, isWishlisted, onToggleWishlist, onTourClick }) 
               />
             </div>
           </div>
-
+{/* 
           {project.amenities?.length > 0 && (
             <div className="my-4 flex flex-wrap gap-1.5 max-h-[28px] ">
               {(showAllAmenities ? project.amenities : project.amenities.slice(0, 1)).map((amenity) => (
@@ -128,7 +130,7 @@ const PropertyCard = ({ project, isWishlisted, onToggleWishlist, onTourClick }) 
                 </button>
               )}
             </div>
-          )}
+          )} */}
         </div>
       </div>
 
@@ -152,13 +154,13 @@ const PropertyCard = ({ project, isWishlisted, onToggleWishlist, onTourClick }) 
               e.preventDefault();
               e.stopPropagation();
 
-              const companyPhoneNumber = "919284429197";
+              const companyPhoneNumber = "919172400250";
               const message = `Hello Piinggaksha Team, I am interested in *${project.projectName}* by ${project.builderName} located in ${project.address?.area || 'Pune'}. Please share the current pricing, floor plans, and layout options for ${project.configuration?.join(", ") || 'this project'}.`;
 
               const encodedMessage = encodeURIComponent(message);
               window.open(`https://wa.me/${companyPhoneNumber}?text=${encodedMessage}`, '_blank');
             }}
-            className="flex-1 px-3 sm:px-4 py-2 bg-[#1AA34A] hover:bg-[#20ba5a] text-white rounded-md text-xs sm:text-sm font-semibold flex items-center justify-center gap-1.5 transition border border-transparent shadow-sm whitespace-nowrap text-center"
+            className="flex-1 px-3 sm:px-4 py-2 bg-white text-black rounded-md text-xs sm:text-sm font-semibold flex items-center justify-center gap-1.5 transition border border-black shadow-sm whitespace-nowrap text-center"
           >
             Live Chat
           </button>

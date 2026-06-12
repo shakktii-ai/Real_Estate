@@ -1,568 +1,913 @@
 "use client";
-import { useMemo, useState, useEffect, useRef } from 'react';
+import { useMemo, useState, useEffect, useRef, useCallback } from 'react';
 import LivingStyleCard from '@/components/admin/LivingStyleCard';
 import PropertyCard from '@/components/PropertyCard';
 import Link from 'next/link';
-import { motion } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
 import WhyChooseUs from '@/components/WhyChoose';
 import About from '@/components/about';
 import Review from '@/components/Review';
 import WhyPiingkasha from '@/components/WhyPiingkasha';
 import Counter from '@/components/Counter';
 import { useAuth } from '@/lib/context/AuthContext';
+import { useRouter } from 'next/navigation';
 import TourSelectionModal from '@/components/TourSelectionModal';
 import BookSiteVisitModal from '@/components/BookSiteVisitModal';
 import BookVirtualTourModal from '@/components/BookVirtualTourModal';
 import {
-    CalendarDays,
-    TrendingDown,
-    Gift,
-    User,
-    ChevronRight, ArrowBigRight, ArrowRight
+  CalendarDays,
+  TrendingDown,
+  Gift,
+  User,
+  ChevronRight, ArrowRight, ChevronDown
 } from "lucide-react";
-import PropertySlider from '@/components/PropertySlidder';
-export default function WebsitePage() {
-    const [cards, setCards] = useState([]);
-    const [projects, setProjects] = useState([]);
-    const [budget, setBudget] = useState(3000);
-    const [selectedConfig, setSelectedConfig] = useState("");
-    const [selectedStatus, setSelectedStatus] = useState("");
-    const [selectedCity, setSelectedCity] = useState("Pune");
-    const [selectedCategory, setSelectedCategory] = useState("");
-    const { user, loading } = useAuth();
-    const [wishlist, setWishlist] = useState([]);
-    const [priceDropCount, setPriceDropCount] = useState(0);
 
-    const [index, setIndex] = useState(0);
-    const [isTransitioning, setIsTransitioning] = useState(true);
-    const [itemsPerView, setItemsPerView] = useState(4);
-    const [isHovered, setIsHovered] = useState(false);
-    const [activeTourProject, setActiveTourProject] = useState(null);
-    const [showSelectionModal, setShowSelectionModal] = useState(false); // New state to separate selection display from project state
-    const [showSiteVisitModal, setShowSiteVisitModal] = useState(false);
-    const [showVirtualTourModal, setShowVirtualTourModal] = useState(false);
-    const containerRef = useRef(null);
-    const handleToggleWishlist = (propertyId, isNowWishlisted) => {
-        if (isNowWishlisted) {
-            // Add to wishlist array
-            setWishlist((prev) => [...prev, propertyId]);
-        } else {
-            // Remove from wishlist array
-            setWishlist((prev) => prev.filter((id) => id !== propertyId));
-        }
-    };
-    useEffect(() => {
-        if (!user) return;
+// Step-scroll row: uses the same carousel mechanism as the Google Reviews section
+const WHY_SLIDES = [
+  {
+    bg: "/Galaxy-04_1.png",
+    badge: "No Brokerage Policy",
+    icon: "/img1.png",
+    points: [
+      "Stop Answering Multiple Calls, Compare Top South Pune Projects in One Place.",
+      "Buy your dream home without paying brokerage.",
+      "Get expert guidance, project comparison",
+    ],
+  },
+  {
+    bg: "/Galaxy-04_2.png",
+    badge: "Transparent Bottom-Line Pricing",
+    icon: "/img4.png",
+    points: [
+      "Exclusive Pre-Launch Pricing & Early Access Benefits",
+      "Direct Developer Pricing with Zero Brokerage Charges.",
+      "Transparent Best-Value Pricing with No Negotiation Required",
+    ],
+  },
+  {
+    bg: "/Galaxy-04_3.png",
+    badge: "Virtual & On-Site Project Tours Explore",
+    icon: "/img3.png",
+    points: [
+      "Explore Properties Through Immersive Virtual Presentations & 3D Walkthroughs",
+      "Experience Personalised On-Site Visits with Expert Property Guidance",
+      "Make Informed Decisions with Interactive Virtual Tours and Site Inspections",
+    ],
+  },
+  {
+    bg: "/Galaxy-04_4.png",
+    badge: "100% Trusted Platform with End-to-End Support",
+    icon: "/img2.png",
+    points: [
+      "Looking for a Home in South Pune? Explore Verified Properties Across NIBM, Undri, Mohammadwadi, Handewadi & Beyond—Without the Hassle of Multiple Sales Calls.",
+    ],
+  },
+];
 
-        const fetchPriceDrops = async () => {
-            try {
-                const res = await fetch(`/api/notifications?userId=${user.uid}&role=user`);
-                const data = await res.json();
+// ─── Filter Bar ───────────────────────────────────────────────────────────────
+function PropertyFilterBar({ projects, onFilteredProjects }) {
+  const [selectedCity, setSelectedCity] = useState("Pune");
+  const [selectedCategory, setSelectedCategory] = useState("");
+  const [budget, setBudget] = useState(99);
+  const [selectedStatus, setSelectedStatus] = useState("");
+  const router = useRouter();
 
-                const count = data.filter(
-                    (n) => n.type === "priceDrop"
-                ).length;
-
-                setPriceDropCount(count);
-            } catch (err) {
-                console.error("Price drop fetch error:", err);
-            }
-        };
-
-        fetchPriceDrops();
-    }, [user]);
-    useEffect(() => {
-        if (!user) return;
-
-        // Inside your PropertiesContent component
-        const fetchWishlist = async () => {
-            try {
-                const res = await fetch(`/api/wishlist/get?userId=${user.uid}`);
-                const data = await res.json();
-
-                // CHANGE THIS: 
-                // Instead of mapping the whole object, map just the ID.
-                // Since you populated, item.propertyId is an object, so we access ._id
-                setWishlist(data.map(item => item.propertyId._id));
-
-            } catch (error) {
-                console.error("Failed to fetch wishlist", error);
-            }
-        };
-
-        fetchWishlist();
-    }, [user]);
-    const [bookingData, setBookingData] = useState({
-        siteVisit: [],
-        virtualTour: [],
+  const applyFilters = () => {
+    const filtered = projects.filter((project) => {
+      const matchesBudget = (project.pricing?.maxPrice || 0) / 100000 <= budget;
+      const matchesCity = !selectedCity || project.address?.city === selectedCity;
+      const matchesCategory = !selectedCategory || project.tags?.includes(selectedCategory);
+      const matchesStatus = !selectedStatus || project.status === selectedStatus;
+      return matchesBudget && matchesCity && matchesCategory && matchesStatus;
     });
-    useEffect(() => {
-        if (!user) return;
+    onFilteredProjects(filtered);
 
-        const fetchBookings = async () => {
-            try {
-                const [res1, res2] = await Promise.all([
-                    fetch(`/api/sitevisit?userId=${user.uid}`),
-                    fetch(`/api/virtualTour?userId=${user.uid}`),
-                ]);
+    try {
+      const params = new URLSearchParams();
+      if (selectedCategory) params.set('category', selectedCategory);
+      if (selectedCity) params.set('location', selectedCity);
+      if (selectedStatus) params.set('status', selectedStatus);
+      if (budget) params.set('budget', String(budget));
+      params.set('fromHome', '1');
+      const q = params.toString();
+      router.push(`/properties${q ? `?${q}` : ''}`);
+    } catch (err) {
+      console.error('Failed to navigate to properties', err);
+    }
+  };
 
-                const siteVisitData = await res1.json();
-                const virtualTourData = await res2.json();
+  const cities = [...new Set(projects.map(p => p.address?.city).filter(Boolean))];
 
-                setBookingData({
-                    siteVisit: siteVisitData,
-                    virtualTour: virtualTourData,
-                });
-            } catch (error) {
-                console.error("Booking fetch error:", error);
-            }
-        };
+  const selectClass =
+    "appearance-none w-full text-sm text-gray-800 font-semibold bg-transparent outline-none pr-6 cursor-pointer rounded-none border-0 focus:ring-0";
 
-        fetchBookings();
-    }, [user]);
-    const siteVisitCount = bookingData.siteVisit.length + bookingData.virtualTour.length;
-    useEffect(() => {
-        fetch('/api/living-styles')
-            .then(res => res.json())
-            .then(data => {
-                setCards(data);
+  return (
+    <div className="bg-white text-[15px] rounded-2xl shadow-2xl px-4 py-4 flex flex-wrap md:flex-nowrap items-center gap-3 md:gap-0 w-full max-w-6xl mx-auto">
+      {/* Location */}
+      <div className="flex flex-col flex-1 min-w-[110px] md:border-r border-gray-200 md:pr-4">
+        <span className=" font-semibold text-[#742E85] uppercase tracking-widest mb-1">Location</span>
+        <div className="relative">
+          <select
+            value={selectedCity}
+            onChange={(e) => setSelectedCity(e.target.value)}
+            className={selectClass}
+            style={{ WebkitAppearance: "none", MozAppearance: "none" }}
+          >
+            <option value="Pune">Pune</option>
+            {cities.filter(c => c !== "Pune").map(city => (
+              <option key={city} value={city}>{city}</option>
+            ))}
+          </select>
+          <ChevronDown className="absolute right-0 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400 pointer-events-none" />
+        </div>
+      </div>
 
-            });
-    }, []);
-    useEffect(() => {
-        const fetchProjects = async () => {
-            try {
-                const res = await fetch("/api/properties");
-                const data = await res.json();
-                setProjects(data);
-            } catch (error) {
-                console.error("Failed to fetch projects", error);
-            }
-        };
+      {/* Property */}
+      <div className="flex flex-col flex-1 min-w-[190px] md:border-r border-gray-200 md:px-4">
+        <span className=" font-semibold text-[#742E85] uppercase tracking-widest mb-1">Property</span>
+        <div className="relative">
+          <select
+            value={selectedCategory}
+            onChange={(e) => setSelectedCategory(e.target.value)}
+            className={selectClass}
+            style={{ WebkitAppearance: "none", MozAppearance: "none" }}
+          >
+            <option value="">All</option>
+            <option value="Residential">Residential</option>
+            <option value="Commercial">Commercial</option>
+          </select>
+          <ChevronDown className="absolute right-0 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400 pointer-events-none" />
+        </div>
+      </div>
 
-        fetchProjects();
-    }, []);
-    const cities = useMemo(() => [
-        ...new Set(projects.map((p) => p.address?.city).filter(Boolean)),
+      {/* Budget */}
+      <div className="flex flex-col flex-1 min-w-[140px] md:border-r border-gray-200 md:px-4">
+        <span className=" font-semibold text-[#742E85] uppercase tracking-widest mb-1">Budget</span>
+        <input
+          type="range" min="50" max="400" step="1" value={budget}
+          onChange={(e) => setBudget(Number(e.target.value))}
+          className="w-full accent-[#742E85] mt-1"
+        />
+        <span className="text-xs text-gray-600 mt-0.5 font-medium">
+          ₹50L - ₹{budget >= 400 ? "4Cr" : `${budget}L`}
+        </span>
+      </div>
 
-    ], [projects]);
+      {/* Status */}
+      <div className="flex flex-col flex-1 min-w-[120px] md:border-r border-gray-200 md:px-4">
+        <span className="font-semibold text-[#742E85] uppercase tracking-widest mb-1">Status</span>
+        <div className="relative">
+          <select
+            value={selectedStatus}
+            onChange={(e) => setSelectedStatus(e.target.value)}
+            className={selectClass}
+            style={{ WebkitAppearance: "none", MozAppearance: "none" }}
+          >
+            <option value="">All</option>
+            <option value="Ready">Ready</option>
+            <option value="Under Construction">Under Construction</option>
+            <option value="Late Possession">Late Possession</option>
+          </select>
+          <ChevronDown className="absolute right-0 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400 pointer-events-none" />
+        </div>
+      </div>
 
+      {/* Apply */}
+      <div className="md:pl-4">
+        <button
+          onClick={applyFilters}
+          className="bg-black text-white text-sm font-bold px-8 py-3 rounded-xl hover:bg-gray-900 transition whitespace-nowrap"
+        >
+          Apply
+        </button>
+      </div>
+    </div>
+  );
+}
 
-    const extractMinPriceInLakhs = (priceStr) => {
-        if (!priceStr) return 0;
-        const regex = /([\d\.]+)\s*(cr|lakhs|lakh|l|k)?/gi;
-        let match;
-        let minLakhs = Infinity;
-        while ((match = regex.exec(priceStr)) !== null) {
-            let val = parseFloat(match[1]);
-            let unit = match[2] ? match[2].toLowerCase() : '';
-            if (unit.startsWith('cr')) val *= 100;
-            else if (unit === 'k') val /= 100;
-            else if (!unit && val > 1000) val /= 100000;
+// ─── Hero Why Choose Us Slider ────────────────────────────────────────────────
+function HeroWhyChooseUs({ projects, onFilteredProjects }) {
+  const [current, setCurrent] = useState(0);
+  const timerRef = useRef(null);
 
-            if (val > 0 && val < minLakhs) minLakhs = val;
-        }
-        return minLakhs === Infinity ? 0 : minLakhs;
-    };
-    const filteredProjects = useMemo(() => {
-        return projects.filter((project) => {
-            const projectPriceInLakhs = project.pricing?.displayPrice
-                ? extractMinPriceInLakhs(project.pricing.displayPrice)
-                : 0;
+  const startTimer = () => {
+    clearInterval(timerRef.current);
+    timerRef.current = setInterval(() => {
+      setCurrent((prev) => (prev + 1) % WHY_SLIDES.length);
+    }, 3000);
+  };
 
-            const matchesBudget = projectPriceInLakhs <= budget;
-            const matchesConfig = !selectedConfig || project.configuration?.includes(selectedConfig);
-            const matchesStatus = !selectedStatus || project.status === selectedStatus;
-            const matchesCity = !selectedCity || project.address?.city === selectedCity;
-            const matchesCategory = !selectedCategory || project.tags?.includes(selectedCategory);
+  useEffect(() => {
+    startTimer();
+    return () => clearInterval(timerRef.current);
+  }, []);
 
-            return matchesBudget && matchesConfig && matchesStatus && matchesCity && matchesCategory;
-        });
-    }, [projects, budget, selectedConfig, selectedStatus, selectedCity, selectedCategory]);
+  const slide = WHY_SLIDES[current];
 
-    useEffect(() => {
-        const updateItems = () => {
-            if (window.innerWidth < 640) setItemsPerView(1);
-            else if (window.innerWidth < 768) setItemsPerView(2);
-            else if (window.innerWidth < 1024) setItemsPerView(3);
-            else setItemsPerView(4);
-        };
-        updateItems();
-        window.addEventListener("resize", updateItems);
-        return () => window.removeEventListener("resize", updateItems);
-    }, []);
+  return (
+    <section className="relative w-full overflow-hidden" style={{ minHeight: "92vh" }}>
 
-    const getItemWidth = () => {
-        if (itemsPerView === 1) return 'w-full';
-        if (itemsPerView === 2) return 'w-1/2';
-        if (itemsPerView === 3) return 'w-1/3';
-        if (itemsPerView === 4) return 'w-1/5';
-        return 'w-full';
-    };
-
-    const getItemWidths = () => {
-        if (itemsPerView === 1) return 'w-full';
-        if (itemsPerView === 2) return 'w-1/2';
-        if (itemsPerView === 3) return 'w-1/3';
-        if (itemsPerView === 4) return 'w-1/3';
-        return 'w-full';
-    };
-
-    useEffect(() => {
-        if (isHovered || projects.length === 0) return;
-        const interval = setInterval(() => {
-            setIsTransitioning(true);
-            setIndex((prev) => prev + 1);
-        }, 3000);
-        return () => clearInterval(interval);
-    }, [projects.length, isHovered]);
-
-    useEffect(() => {
-        if (index >= projects.length && projects.length > 0) {
-            const timeout = setTimeout(() => {
-                setIsTransitioning(false);
-                setIndex(0);
-            }, 700);
-            return () => clearTimeout(timeout);
-        }
-    }, [index, projects.length]);
-
-    const nextSlide = () => {
-        setIsTransitioning(true);
-        setIndex((prev) => prev + 1);
-    };
-
-    const prevSlide = () => {
-        setIsTransitioning(true);
-        setIndex((prev) => prev <= 0 ? projects.length - 1 : prev - 1);
-    };
-    const handleTourClick = (project) => {
-        setActiveTourProject(project);
-        setShowSelectionModal(true);
-    };
-    const [livingIndex, setLivingIndex] = useState(0);
-    const [isLivingHovered, setIsLivingHovered] = useState(false);
-    useEffect(() => {
-        if (isLivingHovered || cards.length <= 1) return;
-
-        const interval = setInterval(() => {
-            setLivingIndex((prev) => (prev + 1) % cards.length);
-        }, 2500); // pause time
-
-        return () => clearInterval(interval);
-    }, [cards.length, isLivingHovered]);
-    if (loading) return null;
-    return (
-        <div className='bg-white max-h-full'>
-            <section className="relative min-h-screen w-full flex flex-col items-center justify-start md:justify-center py-12 md:py-20">
-                <div className="absolute inset-0 z-0">
-                    <img src='/banner.png' alt='banner image' className="w-full h-full object-cover object-center rounded-b-[2rem]" />
-                    <div className="absolute inset-0 " />
-                </div>
-                <div className="relative z-10 w-full max-w-[1200px] mx-auto px-4 md:px-12 flex flex-col items-center">
-                    <div className="text-center mb-8 md:mb-12">
-                        <h2 className="text-3xl md:text-6xl font-extrabold text-[#742E85] drop-shadow-md mb-2">Choose Your Living Style</h2>
-                        <p className="text-black text-sm md:text-xl max-w-2xl mx-auto font-medium opacity-90">Find a home that matches your lifestyle, comfort, and aspirations.</p>
-                    </div>
-                    <div className="w-full">
-
-                        {/*Mobile Slider */}
-                        <div
-                            className="sm:hidden overflow-hidden relative "
-                            onMouseEnter={() => setIsLivingHovered(true)}
-                            onMouseLeave={() => setIsLivingHovered(false)}
-
-                        >
-                            <div
-                                className="flex transition-transform duration-500 ease-in-out"
-                                style={{
-                                    transform: `translateX(-${livingIndex * 100}%)`,
-                                }}
-                            >
-                                {cards.map((card) => (
-                                    <div key={card._id} className="min-w-full flex justify-center">
-                                        <LivingStyleCard card={card} />
-                                    </div>
-                                ))}
-                            </div>
-                        </div>
-
-                        {/*Desktop Grid */}
-                        <div className="hidden sm:grid sm:grid-cols-2 lg:grid-cols-4 gap-8 w-full justify-items-center">
-                            {cards.map((card) => (
-                                <div key={card._id}>
-                                    <LivingStyleCard card={card} />
-                                </div>
-                            ))}
-                        </div>
-
-                    </div>
-                </div>
-            </section>
-
-            <section className='mt-[8rem] mx-4'>
-                {user && (
-                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mt-10">
-                        <Link
-                            href="/myvisit"
-                            className="bg-white rounded-3xl shadow-sm border border-gray-100 p-6 flex items-center justify-between hover:shadow-md transition"
-                        >
-                            <div className="flex items-center gap-5">
-                                <div className="w-14 h-14 rounded-full bg-blue-100 flex items-center justify-center">
-                                    <CalendarDays className="text-blue-600" size={28} />
-                                </div>
-
-                                <div>
-                                    <p className="text-black text-sm">Site Visits</p>
-                                    <h3 className="text-xl font-semibold text-black">
-                                        {siteVisitCount} Scheduled
-                                    </h3>
-                                </div>
-                            </div>
-
-                            <ChevronRight className="text-black" size={30} />
-                        </Link>
-
-                        <Link
-                            href="/priceDrop"
-                            className="bg-white rounded-3xl shadow-sm border border-gray-100 p-6 flex items-center justify-between hover:shadow-md transition"
-                        >
-                            <div className="flex items-center gap-5">
-                                <div className="w-14 h-14 rounded-full bg-red-100 flex items-center justify-center">
-                                    <TrendingDown className="text-red-500" size={28} />
-                                </div>
-
-                                <div>
-                                    <p className="text-black text-sm">Price Drops</p>
-                                    <h3 className="text-xl font-semibold text-black">
-                                        {priceDropCount > 0 ? `${priceDropCount} Alerts` : "No Alerts"}
-                                    </h3>
-                                </div>
-                            </div>
-
-                            <ChevronRight className="text-black" size={30} />
-                        </Link>
-
-                        <Link
-                            href="/referrals"
-                            className="bg-white rounded-3xl shadow-sm border border-gray-100 p-6 flex items-center justify-between hover:shadow-md transition"
-                        >
-                            <div className="flex items-center gap-5">
-                                <div className="w-14 h-14 rounded-full bg-green-100 flex items-center justify-center">
-                                    <Gift className="text-green-600" size={28} />
-                                </div>
-
-                                <div>
-                                    <p className="text-black text-sm">Referrals</p>
-                                    <h3 className="text-xl font-semibold text-black">
-                                        Earn Rewards
-                                    </h3>
-                                </div>
-                            </div>
-
-                            <ChevronRight className="text-black" size={30} />
-                        </Link>
-
-                        <Link
-                            href="/profile"
-                            className="bg-white rounded-3xl shadow-sm border border-gray-100 p-6 flex items-center justify-between hover:shadow-md transition"
-                        >
-                            <div className="flex items-center gap-5">
-                                <div className="w-14 h-14 rounded-full bg-purple-100 flex items-center justify-center">
-                                    <User className="text-purple-600" size={28} />
-                                </div>
-
-                                <div>
-                                    <p className="text-black text-sm">Profile</p>
-                                    <h3 className="text-xl font-semibold text-black">
-                                        Manage
-                                    </h3>
-                                </div>
-                            </div>
-
-                            <ChevronRight className="text-black" size={30} />
-                        </Link>
-                    </div>
-                )}
-            </section>
-            <div className='mt-12'>
-                <div className="px-4">
-                    <h2 className="text-3xl sm:text-4xl md:text-6xl font-semibold text-[#742E85] mb-3 text-center">Featured Projects</h2>
-                    <p className="text-center text-black text-base md:text-lg lg:text-xl max-w-3xl mx-auto mb-4 leading-relaxed">Hand-picked developments with verified details and instant transparency</p>
-                </div>
-                <div className="relative overflow-hidden px-0 sm:px-6 md:px-8 lg:px-2 py-12 md:py-16 mx-2 md:mx-0" onMouseEnter={() => setIsHovered(true)} onMouseLeave={() => setIsHovered(false)}>
-                    <div ref={containerRef} className={`flex gap-0 md:gap-4 ${isTransitioning ? "transition-transform duration-700 ease-in-out" : ""}`} style={{ transform: `translateX(-${index * (100 / itemsPerView)}%)` }}>
-                        {[...projects, ...projects].map((project, i) => (
-                            <div key={i} className={`flex-shrink-0 ${getItemWidth()}`}>
-                                <PropertyCard project={project} onTourClick={handleTourClick} />
-                            </div>
-                        ))}
-                    </div>
-                    <div className="absolute top-1 right-2 sm:right-4 md:right-8 lg:right-12 flex gap-4 z-20">
-                        <button onClick={prevSlide} className="bg-white shadow-md rounded-full p-1.5 sm:p-2 md:p-2.5 text-sm sm:text-base md:text-lg text-gray-800 hover:bg-gray-100 transition">←</button>
-                        <button onClick={nextSlide} className="bg-white shadow-md rounded-full p-1.5 sm:p-2 md:p-2.5 text-sm sm:text-base md:text-lg text-gray-800 hover:bg-gray-100 transition">→</button>
-                    </div>
-                </div>
-
-                <div className="flex justify-center m-8">
-                    <Link href="/properties" className="inline-flex items-center justify-center bg-[#ffffff] text-black px-6 py-3 rounded-lg text-sm font-semibold border border-[#969393]">Load More Projects</Link>
-                </div>
-
-                <hr className='h-4 text-gray-500 mx-2 my-2' />
-
-                {/* Search Filters & Layout List */}
-                <div className='grid grid-cols-1 lg:grid-cols-12 gap-2 mx-2 my-2'>
-                    <div className='lg:col-span-4 space-y-8 border p-4 rounded-lg shadow-md'>
-                        <div className="border-gray-300">
-                            <h3 className="text-[15px] font-medium text-black mb-4">BHK TYPE</h3>
-                            <div className="flex flex-wrap gap-2">
-                                {["1BHK", "1.5BHK", "2BHK", "2.5BHK", "3BHK", "3.5BHK", "4BHK", "4.5BHK", "5BHK"].map((item) => (
-                                    <button key={item} onClick={() => setSelectedConfig(item)} className={`px-4 py-2 rounded-md border text-[14px] font-medium transition ${selectedConfig === item ? "bg-[#E61E8C] text-white border-[#E61E8C]" : "bg-white text-black border-gray-300"}`}>{item}</button>
-                                ))}
-                            </div>
-                        </div>
-                        <h3 className="text-[15px] font-medium uppercase text-black mb-4">Location</h3>
-                        <select value={selectedCity} onChange={(e) => { setSelectedCity(e.target.value); }} className="w-full border border-gray-300 rounded-md px-4 py-3 text-[14px] text-black outline-none">
-                            <option value="">City</option>
-                            {cities.map((city) => <option key={city} value={city}>{city}</option>)}
-                        </select>
-                        <div>
-                            <h3 className="text-[15px] font-medium text-black mb-4">Budget</h3>
-                            <input type="range" min="0" max="3000" value={budget} onChange={(e) => setBudget(Number(e.target.value))} className="w-full accent-[#742E85]" />
-                            <div className="mt-3 text-[15px] text-black font-medium">₹0 - {budget >= 100 ? `₹${(budget / 100).toFixed(2)} Cr` : `₹${budget} L`}</div>
-                        </div>
-                        <div className="border-gray-300">
-                            <h3 className="text-[15px] font-medium text-black mb-4">Status</h3>
-                            <div className="flex flex-wrap gap-3">
-                                {["Ready", "Under Construction", "Late Possession"].map((item) => (
-                                    <button key={item} onClick={() => setSelectedStatus(item)} className={`px-5 py-3 rounded-md border text-[14px] font-medium transition ${selectedStatus === item ? "bg-[#742E85] text-white border-[#742E85]" : "bg-white text-black border-gray-300"}`}>{item}</button>
-                                ))}
-                            </div>
-                        </div>
-                        <div>
-                            <div className="space-y-3">
-                                <div className="flex-1 flex flex-col sm:flex-row gap-2">
-                                    <button className="flex-1 bg-[#742E85] text-white rounded-md text-[14px] font-medium py-3 hover:bg-[#5f256d] transition">Apply</button>
-                                    <button onClick={() => { setBudget(3000); setSelectedConfig(""); setSelectedStatus(""); setSelectedCity("Pune"); }} className="flex-1 border border-gray-300 rounded-md text-[14px] text-black py-3 hover:bg-gray-100 transition">Reset</button>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                    {/* Filtered Track Results Row */}
-                    <div className="lg:col-span-8 relative overflow-hidden pt-16" onMouseEnter={() => setIsHovered(true)} onMouseLeave={() => setIsHovered(false)}>
-                        <div className={`flex gap-0 md:gap-2 ${isTransitioning ? "transition-transform duration-700 ease-in-out" : ""}`} style={{ transform: `translateX(-${index * (100 / itemsPerView)}%)` }}>
-                            {[...filteredProjects, ...filteredProjects].map((project, i) => (
-                                <div key={i} className={`flex-shrink-0 ${getItemWidths()}`}>
-                                    <PropertyCard project={project} onTourClick={handleTourClick} />
-                                </div>
-                            ))}
-                        </div>
-                        <div className="absolute top-1 right-2 sm:right-4 md:right-8 lg:right-12 flex gap-4 z-20">
-                            <button onClick={prevSlide} className="bg-white shadow-md rounded-full p-1.5 sm:p-2 md:p-2.5 text-sm sm:text-base md:text-lg text-gray-800 hover:bg-gray-100 transition">←</button>
-                            <button onClick={nextSlide} className="bg-white shadow-md rounded-full p-1.5 sm:p-2 md:p-2.5 text-sm sm:text-base md:text-lg text-gray-800 hover:bg-gray-100 transition">→</button>
-                        </div>
-                    </div>
-                </div>
-
-                {/* Map Integration wrapper layout block */}
-                <h2 className="text-3xl sm:text-4xl md:text-6xl font-semibold text-[#742E85] my-8 text-center">Explore Properties on Map</h2>
-                <section className="max-w-8xl mx-auto px-4 py-4">
-                    <motion.div initial={{ opacity: 0, y: 30 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.5 }} className="w-full h-[424px] overflow-hidden shadow-lg border border-gray-400">
-                        <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3784.513447079499!2d73.91246457334937!3d18.460387771013473!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3bc2eb291d95088b%3A0xbfae7509b6f71b86!2sPIINGGAKSHA!5e0!3m2!1sen!2sin!4v1778153416410!5m2!1sen!2sin" width="100%" height="100%" style={{ border: 0 }} allowFullScreen="" loading="lazy" referrerPolicy="no-referrer-when-downgrade"></iframe>
-                    </motion.div>
-                </section>
-            </div>
-
-            <WhyChooseUs />
-            <About showOn="homepage" />
-            <h2 className="text-4xl md:text-6xl font-semibold text-[#742E85] mb-3 flex items-center justify-center">Google Reviews</h2>
-            <Review />
-
-            {/* Builder Partners Marquee Section */}
-            <section className="bg-white overflow-hidden mb-12">
-                <div className="max-w-7xl mx-auto px-4 mb-10 text-center">
-                    <h2 className="text-4xl md:text-6xl font-semibold text-[#742E85] mb-3 flex items-center justify-center">Our Builder Partners</h2>
-                </div>
-                <div className="relative overflow-hidden">
-                    <div className="absolute left-0 top-0 z-10 h-full w-20 " />
-                    <div className="absolute right-0 top-0 z-10 h-full w-20 " />
-                    <div className="flex w-max animate-marquee gap-16">
-                        {["/yooone.png", "/lodha.png", "/tribeca.png", "/kumarProperties.png", "/goelganga.png", "/majestic.png", "/shapoorji.png", "/kraheja.png", "/godrej.png", "/koltepatil.png", "/kohinoor.png", "/solitaire.png", "/nyati.png"]
-                            .concat(["/yooone.png", "/lodha.png", "/tribeca.png", "/kumarProperties.png", "/goelganga.png", "/majestic.png", "/shapoorji.png", "/kraheja.png", "/godrej.png", "/koltepatil.png", "/kohinoor.png", "/solitaire.png", "/nyati.png"])
-                            .map((logo, index) => (
-                                <div key={index} className="flex items-center justify-center min-w-[180px]">
-                                    <img src={logo} alt="Builder Partner" className="h-16 md:h-20 w-auto object-contain transition duration-300" />
-                                </div>
-                            ))}
-                    </div>
-                </div>
-            </section>
-
-            <WhyPiingkasha />
-            <Counter />
-
-            {/* CTA Layer Block */}
-            <section className='bg-[#F6F3F6] p-12'>
-                <h2 className="text-4xl md:text-5xl font-semibold text-black mb-3 flex items-center justify-center">Ready to Find Your Dream Home?</h2>
-                <p className='text-xl md:text-2xl text-black mb-3 flex items-center justify-center'>Explore verified projects in wakad with transparent pricing and expert guidance.</p>
-                <div className="flex items-center justify-center">
-                    <Link href="/properties" className="bg-[#742E85] text-white px-6 py-4 rounded-md text-lg font-medium inline-flex items-center gap-2 hover:bg-[#5e256b] transition-all duration-300">
-                        Explore Projects Now
-                        <ArrowRight size={20} />
-                    </Link>
-                </div>
-            </section>
-            {/* ================= GLOBAL MODAL ENGINE LAYER ================= */}
-
-            {/* 1. Type Selection Screen Panel */}
-            <TourSelectionModal
-                isOpen={showSelectionModal}
-                onClose={() => setShowSelectionModal(false)}
-                onSelectSiteVisit={() => {
-                    setShowSelectionModal(false); // Close type selector
-                    setShowSiteVisitModal(true);  // Mount visit form (activeTourProject is preserved)
-                }}
-                onSelectVirtualTour={() => {
-                    setShowSelectionModal(false); // Close type selector
-                    setShowVirtualTourModal(true); // Mount tour form (activeTourProject is preserved)
-                }}
+      {/* ── Background layers with dissolve ── */}
+      {WHY_SLIDES.map((s, i) => (
+        <div
+          key={i}
+          className="absolute inset-0"
+          style={{
+            opacity: i === current ? 1 : 0,
+            transition: "opacity 1s ease-in-out",
+            zIndex: 0,
+          }}
+        >
+          <div
+            className="absolute inset-0 bg-cover bg-center bg-no-repeat"
+            style={{ backgroundImage: `url('${s.bg}')` }}
+          />
+          <img
+            src={s.bg}
+            alt=""
+            className="absolute inset-0 w-full h-full object-cover md:object-center"
+            aria-hidden="true"
+          />
+          {/* Sharp cut-line overlay */}
+          <div className="absolute inset-0">
+            {/* Mobile */}
+            <div
+              className="absolute inset-0 md:hidden"
+              style={{
+                background:
+                  "linear-gradient(to bottom, rgba(0,0,0,0.85) 0%, rgba(0,0,0,0.75) 55%, rgba(0,0,0,0.25) 55%)",
+              }}
             />
 
-            {/* 2. Site Visit Form Screen Panel */}
-            {showSiteVisitModal && activeTourProject && (
-                <div className="fixed inset-0 z-[99999] flex items-center justify-center bg-black/50 backdrop-blur-sm p-4 w-screen h-screen top-0 left-0">
-                    <div className="w-full max-w-[420px] mx-4 relative z-[100000]">
-                        <BookSiteVisitModal
-                            propertyId={activeTourProject._id}
-                            propertyName={activeTourProject.projectName}
-                            onClose={() => {
-                                setShowSiteVisitModal(false);
-                                setActiveTourProject(null); // Now safe to wipe out the data context reference!
-                            }}
-                            embedded={true}
-                        />
-                    </div>
-                </div>
-            )}
-
-            {/* 3. Virtual Tour Form Screen Panel */}
-            {showVirtualTourModal && activeTourProject && (
-                <div className="fixed inset-0 z-[99999] flex items-center justify-center bg-black/50 backdrop-blur-sm p-4 w-screen h-screen top-0 left-0">
-                    <div className="w-full max-w-[420px] mx-4 relative z-[100000]">
-                        <BookVirtualTourModal
-                            propertyId={activeTourProject._id}
-                            propertyName={activeTourProject.projectName}
-                            onClose={() => {
-                                setShowVirtualTourModal(false);
-                                setActiveTourProject(null); // Now safe to wipe out the data context reference!
-                            }}
-                            embedded={true}
-                        />
-                    </div>
-                </div>
-            )}
-
+            {/* Desktop */}
+            <div
+              className="absolute inset-0 hidden md:block"
+              style={{
+                background:
+                  "linear-gradient(to right, rgba(0,0,0,0.72) 0%, rgba(0,0,0,0.72) 50%, rgba(0,0,0,0.0) 48.1%)",
+              }}
+            />
+          </div>
         </div>
-    )
+      ))}
+
+      {/* ── Content ── */}
+      <div
+        className="relative flex flex-col justify-between px-6 md:px-14 lg:px-20 pt-6 pb-4"
+        style={{ zIndex: 10, minHeight: "82vh" }}
+      >
+        <div className="flex-1 flex flex-col justify-center max-w-2xl">
+
+          <p
+            className="mb-5 font-bold uppercase tracking-[0.22em]"
+            style={{
+              color: "#ffffff",
+              fontSize: "clamp(13px, 1.6vw, 18px)",
+              letterSpacing: "0.22em",
+            }}
+          >
+            WHY CHOOSE US
+          </p>
+
+          <AnimatePresence mode="wait">
+            <motion.div
+              key={current}
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -20 }}
+              transition={{ duration: 0.5 }}
+            >
+              <div className="flex items-center gap-4 mb-6">
+                <div
+                  className="flex-shrink-0 flex items-center justify-center rounded-full"
+                  style={{
+                    width: 50,
+                    height: 50,
+                    background: "linear-gradient(135deg, #ffffff 0%, #E372FF 100%)",
+                    boxShadow: "0 4px 18px rgba(227,114,255,0.35)",
+                  }}
+                >
+                  <img
+                    src={slide.icon}
+                    alt=""
+                    style={{ width: 30, height: 30, objectFit: "contain" }}
+                  />
+                </div>
+
+                <h2
+                  className="font-bold leading-tight text-[22px] md:text-[28px] w-full md:w-[440px]"
+                  style={{
+
+                    // fontSize: "clamp(22px, 2.8vw, 36px)",
+                    background: "linear-gradient(90deg, #ffffff 0%, #E372FF 100%)",
+                    WebkitBackgroundClip: "text",
+                    WebkitTextFillColor: "transparent",
+                    backgroundClip: "text",
+                  }}
+                >
+                  {slide.badge}
+                </h2>
+              </div>
+
+              <ul className="space-y-3 w-full md:w-[500px] text-[14px] md:text-[15px]">
+                {slide.points.map((pt, i) => (
+                  <li
+                    key={i}
+                    className="flex items-start gap-3 leading-snug"
+                    style={{
+                      color: "#ffffff",
+                      fontFamily: "Poppins, sans-serif",
+                      //   fontSize: "clamp(14px, 1.4vw, 18px)",
+                      fontWeight: 400,
+                    }}
+                  >
+                    <span
+                      className="flex-shrink-0 rounded-full mt-2"
+                      style={{ width: 7, height: 7, background: "#ffffff", marginTop: 8 }}
+                    />
+                    {pt}
+                  </li>
+                ))}
+              </ul>
+            </motion.div>
+          </AnimatePresence>
+        </div>
+
+        <div className="flex flex-col items-center gap-5 mt-0">
+          <PropertyFilterBar projects={projects} onFilteredProjects={onFilteredProjects} />
+        </div>
+      </div>
+    </section>
+  );
+}
+function StepScrollRow({ projects, direction, onTourClick, showTopControls = false, showBottomControls = false }) {
+  const PAUSE_MS = 4000;
+  const TRANSITION_MS = 700;
+  const STEP_COUNT = 1;
+
+  const [index, setIndex] = useState(0);
+  const [isHovering, setIsHovering] = useState(false);
+  const [isTransitioning, setIsTransitioning] = useState(true);
+  const [cardStep, setCardStep] = useState(0);
+  const [itemsPerView, setItemsPerView] = useState(4);
+  const carouselRef = useRef(null);
+
+  useEffect(() => {
+    const updateItems = () => {
+      if (window.innerWidth < 640) setItemsPerView(1);
+      else if (window.innerWidth < 768) setItemsPerView(2);
+      else if (window.innerWidth < 1024) setItemsPerView(3);
+      else setItemsPerView(4);
+    };
+
+    updateItems();
+    window.addEventListener('resize', updateItems);
+    return () => window.removeEventListener('resize', updateItems);
+  }, []);
+
+  useEffect(() => {
+    if (!carouselRef.current) return;
+    const firstCard = carouselRef.current.querySelector(':scope > div');
+    if (!firstCard) return;
+    const gap = 12; // gap-3
+    setCardStep(Math.round(firstCard.getBoundingClientRect().width + gap));
+  }, [projects.length, itemsPerView]);
+
+  const autoDelta = STEP_COUNT;
+
+  useEffect(() => {
+    if (projects.length === 0 || isHovering || !cardStep) return;
+    const interval = setInterval(() => {
+      setIsTransitioning(true);
+      setIndex((prev) => prev + autoDelta);
+    }, PAUSE_MS);
+    return () => clearInterval(interval);
+  }, [projects.length, isHovering, autoDelta, cardStep]);
+
+  useEffect(() => {
+    if (projects.length === 0 || !cardStep) return;
+
+    if (index >= projects.length) {
+      const timeout = setTimeout(() => {
+        setIsTransitioning(false);
+        setIndex(0);
+      }, TRANSITION_MS);
+      return () => clearTimeout(timeout);
+    }
+
+    if (index < 0) {
+      const timeout = setTimeout(() => {
+        setIsTransitioning(false);
+        setIndex(Math.max(0, projects.length - STEP_COUNT));
+      }, TRANSITION_MS);
+      return () => clearTimeout(timeout);
+    }
+  }, [index, projects.length, cardStep]);
+
+  const handleNext = () => {
+    setIsTransitioning(true);
+    setIndex((prev) => prev + STEP_COUNT);
+  };
+
+  const handlePrev = () => {
+    setIsTransitioning(true);
+    setIndex((prev) => {
+      const next = prev - STEP_COUNT;
+      return next < 0 ? Math.max(0, projects.length - STEP_COUNT) : next;
+    });
+  };
+
+  const displayProjects = [...projects, ...projects];
+
+  return (
+    <div
+      className="relative overflow-hidden py-4"
+      onMouseEnter={() => setIsHovering(true)}
+      onMouseLeave={() => setIsHovering(false)}
+    >
+      {showTopControls && (
+        <div className="flex justify-end px-3 mb-3 space-x-2">
+          <button
+            type="button"
+            onClick={handlePrev}
+            className="rounded-full bg-white/95 border border-[#742E85] p-3 shadow-lg text-[#742E85] transition duration-200 hover:bg-white hover:scale-105"
+            aria-label="Previous property"
+          >
+            <ChevronRight className="h-6 w-6 rotate-180" />
+          </button>
+          <button
+            type="button"
+            onClick={handleNext}
+            className="rounded-full bg-white/95 border border-[#742E85] p-3 shadow-lg text-[#742E85] transition duration-200 hover:bg-white hover:scale-105"
+            aria-label="Next property"
+          >
+            <ChevronRight className="h-6 w-6" />
+          </button>
+        </div>
+      )}
+
+      <div className="overflow-hidden px-3">
+        <div
+          ref={carouselRef}
+          className={`${isTransitioning ? 'transition-transform duration-700 ease-in-out' : ''} flex gap-3`}
+          style={{
+            transform: `translateX(-${index * cardStep}px)`,
+          }}
+        >
+          {displayProjects.map((project, i) => (
+            <div
+              key={`${project._id ?? i}-${i}`}
+              className="flex-shrink-0 w-[280px] md:w-[320px]"
+            >
+              <PropertyCard project={project} onTourClick={onTourClick} />
+            </div>
+          ))}
+        </div>
+      </div>
+
+      {showBottomControls && (
+        <div className="flex justify-end px-3 mt-3 space-x-2">
+          <button
+            type="button"
+            onClick={handlePrev}
+            className="rounded-full bg-white/95 border border-[#742E85] p-3 shadow-lg text-[#742E85] transition duration-200 hover:bg-white hover:scale-105"
+            aria-label="Previous property"
+          >
+            <ChevronRight className="h-6 w-6 rotate-180" />
+          </button>
+          <button
+            type="button"
+            onClick={handleNext}
+            className="rounded-full bg-white/95 border border-[#742E85] p-3 shadow-lg text-[#742E85] transition duration-200 hover:bg-white hover:scale-105"
+            aria-label="Next property"
+          >
+            <ChevronRight className="h-6 w-6" />
+          </button>
+        </div>
+      )}
+    </div>
+  );
+}
+// ─── Explore Filtered Properties ──────────────────────────────────────────────
+function ExploreProperties({ projects, onTourClick }) {
+  if (!projects || projects.length === 0) return (
+    <p className="text-center text-gray-500 py-8 text-sm">No properties match your filters.</p>
+  );
+  return (
+    <div className="mt-6 px-4 max-w-7xl mx-auto">
+      <h2 className="text-xl md:text-2xl font-extrabold text-[#742E85] mb-4 text-center">Explore Properties</h2>
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+        {projects.map((project) => (
+          <PropertyCard key={project._id} project={project} onTourClick={onTourClick} />
+        ))}
+      </div>
+    </div>
+  );
+}
+export default function WebsitePage() {
+  const [cards, setCards] = useState([]);
+  const [projects, setProjects] = useState([]);
+  const { user, loading } = useAuth();
+  const [wishlist, setWishlist] = useState([]);
+  const [priceDropCount, setPriceDropCount] = useState(0);
+  const [filteredProjects, setFilteredProjects] = useState([]);
+  const [hasFiltered, setHasFiltered] = useState(false);
+  const router = useRouter();
+  const [activeTourProject, setActiveTourProject] = useState(null);
+  const [showSelectionModal, setShowSelectionModal] = useState(false); // New state to separate selection display from project state
+  const [showSiteVisitModal, setShowSiteVisitModal] = useState(false);
+  const [showVirtualTourModal, setShowVirtualTourModal] = useState(false);
+  const [livingIndex, setLivingIndex] = useState(0);
+  const [isLivingHovered, setIsLivingHovered] = useState(false);
+
+
+  const handleToggleWishlist = (propertyId, isNowWishlisted) => {
+    if (isNowWishlisted) {
+      // Add to wishlist array
+      setWishlist((prev) => [...prev, propertyId]);
+    } else {
+      // Remove from wishlist array
+      setWishlist((prev) => prev.filter((id) => id !== propertyId));
+    }
+  };
+  useEffect(() => {
+    if (!user) return;
+
+    const fetchPriceDrops = async () => {
+      try {
+        const res = await fetch(`/api/notifications?userId=${user.uid}&role=user`);
+        const data = await res.json();
+
+        const count = data.filter(
+          (n) => n.type === "priceDrop"
+        ).length;
+
+        setPriceDropCount(count);
+      } catch (err) {
+        console.error("Price drop fetch error:", err);
+      }
+    };
+
+    fetchPriceDrops();
+  }, [user]);
+  useEffect(() => {
+    if (!user) return;
+
+    // Inside your PropertiesContent component
+    const fetchWishlist = async () => {
+      try {
+        const res = await fetch(`/api/wishlist/get?userId=${user.uid}`);
+        const data = await res.json();
+
+
+        setWishlist(data.map(item => item.propertyId._id));
+
+      } catch (error) {
+        console.error("Failed to fetch wishlist", error);
+      }
+    };
+
+    fetchWishlist();
+  }, [user]);
+  const [bookingData, setBookingData] = useState({
+    siteVisit: [],
+    virtualTour: [],
+  });
+  useEffect(() => {
+    if (!user) return;
+
+    const fetchBookings = async () => {
+      try {
+        const [res1, res2] = await Promise.all([
+          fetch(`/api/sitevisit?userId=${user.uid}`),
+          fetch(`/api/virtualTour?userId=${user.uid}`),
+        ]);
+
+        const siteVisitData = await res1.json();
+        const virtualTourData = await res2.json();
+
+        setBookingData({
+          siteVisit: siteVisitData,
+          virtualTour: virtualTourData,
+        });
+      } catch (error) {
+        console.error("Booking fetch error:", error);
+      }
+    };
+
+    fetchBookings();
+  }, [user]);
+  const siteVisitCount = bookingData.siteVisit.length + bookingData.virtualTour.length;
+  useEffect(() => {
+    fetch('/api/living-styles')
+      .then(res => res.json())
+      .then(data => {
+        setCards(data);
+
+      });
+  }, []);
+  useEffect(() => {
+    const fetchProjects = async () => {
+      try {
+        const res = await fetch("/api/properties");
+        const data = await res.json();
+        setProjects(data);
+      } catch (error) {
+        console.error("Failed to fetch projects", error);
+      }
+    };
+
+    fetchProjects();
+  }, []);
+
+  useEffect(() => {
+    if (isLivingHovered || cards.length <= 1) return;
+    const interval = setInterval(() => {
+      setLivingIndex((prev) => (prev + 1) % cards.length);
+    }, 2500);
+    return () => clearInterval(interval);
+  }, [cards.length, isLivingHovered]);
+
+
+
+
+
+
+
+  const handleTourClick = (project) => {
+    setActiveTourProject(project);
+    setShowSelectionModal(true);
+  };
+
+  const handleFilteredProjects = (filtered) => {
+    setFilteredProjects(filtered);
+    setHasFiltered(true);
+  };
+
+
+
+
+  if (loading) return null;
+  return (
+    <div className='bg-white'>
+
+      <HeroWhyChooseUs projects={projects} onFilteredProjects={handleFilteredProjects} />
+
+      {/* ② Explore Filtered Results (shown after Apply) */}
+      {hasFiltered && (
+        <section className="py-8">
+          <ExploreProperties projects={filteredProjects} onTourClick={handleTourClick} />
+        </section>
+      )}
+
+      <section className='mt-[2px] mx-4'>
+        {user && (
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mt-10">
+            <Link
+              href="/myvisit"
+              className="bg-white rounded-3xl shadow-sm border border-gray-100 p-6 flex items-center justify-between hover:shadow-md transition"
+            >
+              <div className="flex items-center gap-5">
+                <div className="w-14 h-14 rounded-full bg-blue-100 flex items-center justify-center">
+                  <CalendarDays className="text-blue-600" size={28} />
+                </div>
+
+                <div>
+                  <p className="text-black text-sm">Site Visits</p>
+                  <h3 className="text-xl font-semibold text-black">
+                    {siteVisitCount} Scheduled
+                  </h3>
+                </div>
+              </div>
+
+              <ChevronRight className="text-black" size={30} />
+            </Link>
+
+            <Link
+              href="/priceDrop"
+              className="bg-white rounded-3xl shadow-sm border border-gray-100 p-6 flex items-center justify-between hover:shadow-md transition"
+            >
+              <div className="flex items-center gap-5">
+                <div className="w-14 h-14 rounded-full bg-red-100 flex items-center justify-center">
+                  <TrendingDown className="text-red-500" size={28} />
+                </div>
+
+                <div>
+                  <p className="text-black text-sm">Price Drops</p>
+                  <h3 className="text-xl font-semibold text-black">
+                    {priceDropCount > 0 ? `${priceDropCount} Alerts` : "No Alerts"}
+                  </h3>
+                </div>
+              </div>
+
+              <ChevronRight className="text-black" size={30} />
+            </Link>
+
+            <Link
+              href="/referrals"
+              className="bg-white rounded-3xl shadow-sm border border-gray-100 p-6 flex items-center justify-between hover:shadow-md transition"
+            >
+              <div className="flex items-center gap-5">
+                <div className="w-14 h-14 rounded-full bg-green-100 flex items-center justify-center">
+                  <Gift className="text-green-600" size={28} />
+                </div>
+
+                <div>
+                  <p className="text-black text-sm">Referrals</p>
+                  <h3 className="text-xl font-semibold text-black">
+                    Earn Rewards
+                  </h3>
+                </div>
+              </div>
+
+              <ChevronRight className="text-black" size={30} />
+            </Link>
+
+            <Link
+              href="/profile"
+              className="bg-white rounded-3xl shadow-sm border border-gray-100 p-6 flex items-center justify-between hover:shadow-md transition"
+            >
+              <div className="flex items-center gap-5">
+                <div className="w-14 h-14 rounded-full bg-purple-100 flex items-center justify-center">
+                  <User className="text-purple-600" size={28} />
+                </div>
+
+                <div>
+                  <p className="text-black text-sm">Profile</p>
+                  <h3 className="text-xl font-semibold text-black">
+                    Manage
+                  </h3>
+                </div>
+              </div>
+
+              <ChevronRight className="text-black" size={30} />
+            </Link>
+          </div>
+        )}
+      </section>
+      <div className='mt-8'>
+        <div className="px-4">
+          <h2 className="text-xl md:text-[35px] font-bold text-[#742E85] mb-1.5 text-center">Featured Projects</h2>
+          <p className="text-center text-black text-xs md:text-sm max-w-3xl mx-auto mb-2 leading-relaxed">Hand-picked developments with verified details and instant transparency</p>
+        </div>
+
+        {/* Row 1 — step-scroll left: top-right buttons */}
+        {projects.length > 0 && (
+          <StepScrollRow
+            projects={projects}
+            direction="left"
+            onTourClick={handleTourClick}
+            showTopControls
+          />
+        )}
+
+        {/* Row 2 — step-scroll right: bottom-right buttons */}
+        {projects.length > 0 && (
+          <StepScrollRow
+            projects={[...projects].reverse()}
+            direction="right"
+            onTourClick={handleTourClick}
+            showBottomControls
+          />
+        )}
+
+        <div className="flex justify-center m-2">
+          <Link href="/properties" className="inline-flex items-center justify-center bg-[#ffffff] text-black px-6 py-3 rounded-lg text-sm font-semibold border border-[#969393]">Load More Projects</Link>
+        </div>
+
+
+
+        {/* Choose Your Living Style Section */}
+        <section className="py-8 md:py-10  my-8 px-4 bg-[#F6F3F6]" >
+
+          <div className="w-full max-w-[1200px] mx-auto px-4 md:px-8 flex flex-col items-center">
+            <div className="text-center mb-6 md:mb-8">
+              <h2 className="text-md md:text-xl font-bold text-[#742E85] drop-shadow-md mb-1.5">Choose Your Living Style</h2>
+              <p className="text-black text-xs md:text-sm max-w-xl mx-auto font-medium opacity-80">Find a home that matches your lifestyle, comfort, and aspirations.</p>
+            </div>
+            <div className="w-full">
+              {/*Mobile Slider */}
+              <div
+                className="sm:hidden overflow-hidden relative"
+                onMouseEnter={() => setIsLivingHovered(true)}
+                onMouseLeave={() => setIsLivingHovered(false)}
+              >
+                <div
+                  className="flex transition-transform duration-500 ease-in-out"
+                  style={{
+                    transform: `translateX(-${livingIndex * 100}%)`,
+                  }}
+                >
+                  {cards.map((card) => (
+                    <div key={card._id} className="min-w-full flex justify-center">
+                      <LivingStyleCard card={card} />
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+              {/*Desktop Grid */}
+              <div className="hidden sm:grid sm:grid-cols-2 lg:grid-cols-4 gap-2 w-full justify-items-center">
+                {cards.map((card) => (
+                  <div key={card._id}>
+                    <LivingStyleCard card={card} />
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+        </section>
+      </div>
+
+      {/* <WhyChooseUs /> */}
+      <About showOn="homepage" />
+      <h2 className="text-md md:text-xl font-bold text-[#742E85]  flex items-center justify-center">Google Reviews</h2>
+      <Review />
+
+      {/* Builder Partners Marquee Section */}
+      <section className="bg-white overflow-hidden my-12">
+        <div className="max-w-7xl mx-auto px-4 mb-2 text-center">
+          <h2 className="text-md md:text-xl font-bold text-[#742E85] mb-8 flex items-center justify-center">Our Builder Partners</h2>
+        </div>
+        <div className="relative overflow-hidden">
+          <div className="absolute left-0 top-0 z-10 h-full w-20 " />
+          <div className="absolute right-0 top-0 z-10 h-full w-20 " />
+          <div className="flex w-max animate-marquee gap-4">
+            {["/yooone.png", "/lodha.png", "/tribeca.png", "/kumarProperties.png", "/goelganga.png", "/majestic.png", "/shapoorji.png", "/kraheja.png", "/godrej.png", "/koltepatil.png", "/kohinoor.png", "/solitaire.png", "/nyati.png"]
+              .concat(["/yooone.png", "/lodha.png", "/tribeca.png", "/kumarProperties.png", "/goelganga.png", "/majestic.png", "/shapoorji.png", "/kraheja.png", "/godrej.png", "/koltepatil.png", "/kohinoor.png", "/solitaire.png", "/nyati.png"])
+              .map((logo, index) => (
+                <div key={index} className="flex items-center justify-center min-w-[100px]">
+                  <img src={logo} alt="Builder Partner" className="h-9 md:h-6 w-auto object-contain transition duration-300" />
+                </div>
+              ))}
+          </div>
+        </div>
+      </section>
+
+      <WhyPiingkasha />
+      <Counter />
+
+      {/* CTA Layer Block */}
+      <section className='bg-[#F6F3F6] py-12 px-6 text-center'>
+        <h2 className="text-sm md:text-xl font-bold text-black mb-2 flex items-center justify-center">Ready to Find Your Dream Home?</h2>
+        <p className='text-sm md:text-md text-gray-700 mb-2 flex items-center justify-center'>Explore verified projects in wakad with transparent pricing and expert guidance.</p>
+        <div className="flex items-center justify-center">
+          <Link href="/properties" className="bg-[#742E85] text-white px-5 py-3 rounded-md text-sm md:text-base font-semibold inline-flex items-center gap-2 hover:bg-[#5e256b] transition-all duration-300">
+            Explore Projects Now
+            <ArrowRight size={18} />
+          </Link>
+        </div>
+      </section>
+      {/* ================= GLOBAL MODAL ENGINE LAYER ================= */}
+
+      {/* 1. Type Selection Screen Panel */}
+      <TourSelectionModal
+        isOpen={showSelectionModal}
+        onClose={() => setShowSelectionModal(false)}
+        onSelectSiteVisit={() => {
+          setShowSelectionModal(false); // Close type selector
+          setShowSiteVisitModal(true);  // Mount visit form (activeTourProject is preserved)
+        }}
+        onSelectVirtualTour={() => {
+          setShowSelectionModal(false); // Close type selector
+          setShowVirtualTourModal(true); // Mount tour form (activeTourProject is preserved)
+        }}
+      />
+
+      {/* 2. Site Visit Form Screen Panel */}
+      {showSiteVisitModal && activeTourProject && (
+        <div className="fixed inset-0 z-[50] flex items-center justify-center bg-black/50 backdrop-blur-sm p-4 ">
+          <div className="w-full max-w-[420px] mx-4">
+            <BookSiteVisitModal
+              propertyId={activeTourProject._id}
+              propertyName={activeTourProject.projectName}
+              onClose={() => {
+                setShowSiteVisitModal(false);
+                setActiveTourProject(null); // Now safe to wipe out the data context reference!
+              }}
+              embedded={true}
+            />
+          </div>
+        </div>
+      )}
+
+      {/* 3. Virtual Tour Form Screen Panel */}
+      {showVirtualTourModal && activeTourProject && (
+        <div className="fixed inset-0 z-[50] flex items-center justify-center bg-black/50 backdrop-blur-sm   p-4">
+          <div className="w-full max-w-[420px] mx-4 ">
+            <BookVirtualTourModal
+              propertyId={activeTourProject._id}
+              propertyName={activeTourProject.projectName}
+              onClose={() => {
+                setShowVirtualTourModal(false);
+                setActiveTourProject(null); // Now safe to wipe out the data context reference!
+              }}
+              embedded={true}
+            />
+          </div>
+        </div>
+      )}
+
+    </div>
+  );
 }

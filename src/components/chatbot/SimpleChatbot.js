@@ -3,6 +3,7 @@
 import { useState, useRef, useEffect } from 'react';
 import { MessageCircle, X, MapPin, Building2, IndianRupee, ShieldCheck, Sparkles } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
+import { BsWhatsapp } from 'react-icons/bs';
 
 export default function SimpleChatbot() {
   const [isOpen, setIsOpen] = useState(false);
@@ -215,7 +216,7 @@ export default function SimpleChatbot() {
           >
             {/* Main Chat Window Panel */}
             <div className="w-screen sm:w-[400px] max-w-[calc(100vw-32px)] bg-slate-50 rounded-2xl shadow-2xl flex flex-col overflow-hidden border border-slate-200 h-[560px] sm:h-[600px] max-h-[calc(100vh-120px)]">
-              
+
               {/* Premium Top App Header bar */}
               <div className="bg-gradient-to-r from-[#742E85] to-[#E5097F] p-4 flex items-center justify-between text-white shadow-md z-10">
                 <div className="flex items-center gap-2.5">
@@ -224,7 +225,7 @@ export default function SimpleChatbot() {
                   </div>
                   <div>
                     <h3 className="text-sm font-semibold tracking-wide uppercase">Piinggaksha</h3>
-                    
+
                   </div>
                 </div>
                 <button
@@ -261,11 +262,10 @@ export default function SimpleChatbot() {
                       className={`flex ${msg.type === 'bot' ? 'justify-start' : 'justify-end'}`}
                     >
                       <div
-                        className={`max-w-[85%] px-4 py-2.5 rounded-2xl text-[13px] leading-relaxed break-words shadow-sm ${
-                          msg.type === 'bot'
-                            ? 'bg-white text-slate-800 rounded-tl-none border border-slate-100'
-                            : 'bg-purple-600 text-white rounded-tr-none font-medium'
-                        }`}
+                        className={`max-w-[85%] px-4 py-2.5 rounded-2xl text-[13px] leading-relaxed break-words shadow-sm ${msg.type === 'bot'
+                          ? 'bg-white text-slate-800 rounded-tl-none border border-slate-100'
+                          : 'bg-purple-600 text-white rounded-tr-none font-medium'
+                          }`}
                       >
                         {msg.content}
                       </div>
@@ -286,7 +286,7 @@ export default function SimpleChatbot() {
 
               {/* Bot Action Interaction Layer */}
               <div className="bg-white border-t border-slate-200/80 p-4 shadow-[0_-4px_12px_rgba(0,0,0,0.02)]">
-                
+
                 {activeMenu === 'main' && (
                   <div className="grid grid-cols-3 gap-2">
                     {[
@@ -482,7 +482,7 @@ export default function SimpleChatbot() {
                     </motion.button>
                   </div>
                 )}
-                
+
               </div>
             </div>
           </motion.div>
@@ -490,20 +490,47 @@ export default function SimpleChatbot() {
       </AnimatePresence>
 
       {/* Floating Call to Action Widget Switch */}
-      <motion.button
-        whileHover={{ scale: 1.04 }}
-        whileTap={{ scale: 0.96 }}
-        onClick={() => {
-          setIsOpen(!isOpen);
-          if (!isOpen && messages.length === 0) {
-            handleStart();
-          }
-        }}
-        className="bg-gradient-to-r from-[#742E85] to-[#E5097F] text-white px-4 py-2 rounded-full flex items-center gap-2 shadow-xl hover:shadow-2xl transition-all font-semibold text-sm tracking-wide"
-      >
-        <MessageCircle size={24} className="animate-pulse" />
-        Chat with Us
-      </motion.button>
+     <div className="fixed bottom-6 right-6 z-50 flex items-center gap-3">
+        {/* Chatbot Button */}
+        <motion.button
+          whileHover={{ scale: 1.04 }}
+          whileTap={{ scale: 0.96 }}
+          onClick={() => {
+            setIsOpen(!isOpen);
+            if (!isOpen && messages.length === 0) {
+              handleStart();
+            }
+          }}
+          className="bg-[#2559ff] text-white px-2 py-2 rounded-full hover:cursor-pointer hover:p-3 flex items-center justify-center gap-2 shadow-xl hover:shadow-2xl transition-all font-semibold text-sm tracking-wide animate-bounce"
+        >
+          <MessageCircle size={20} />
+
+        </motion.button>
+
+        {/* WhatsApp Button */}
+        <button
+          type="button"
+          onClick={(e) => {
+            e.preventDefault();
+            e.stopPropagation();
+
+            const companyPhoneNumber = "919172400250";
+
+            const message =
+              "Hello Piinggaksha Team, I would like to know more about your properties and available options. Please share the details.";
+
+            const encodedMessage = encodeURIComponent(message);
+
+            window.open(
+              `https://wa.me/${companyPhoneNumber}?text=${encodedMessage}`,
+              "_blank"
+            );
+          }}
+          className="bg-[#1AA34A] hover:bg-[#20ba5a] hover:cursor-pointer hover:p-3 text-white px-2 py-2 rounded-full font-semibold text-sm flex items-center justify-center gap-2 shadow-xl transition-all whitespace-nowrap animate-bounce"
+        >
+          <BsWhatsapp size={20} />
+        </button>
+      </div>
     </div>
   );
 }

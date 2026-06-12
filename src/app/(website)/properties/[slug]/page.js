@@ -21,7 +21,11 @@ export default function ProjectDetails() {
     Luxury: "bg-[#F97316]",
     Affordable: "bg-[#1447EA]",
     Holiday: "bg-[#1DA2B3]",
-     Featured:"bg-[#A566B8]",
+         Featured: "bg-[#A566B8]",
+    Residential: "bg-[#8B5CF6]",
+    Commercial: "bg-black",
+  
+
   };
   const [activeTab, setActiveTab] = useState("Overview");
   const tabs = ["Overview", "Pricing", "Amenities", "Construction", "Location", "USP's of Project"];

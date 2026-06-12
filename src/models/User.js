@@ -14,6 +14,18 @@ const UserSchema = new mongoose.Schema(
       required: false,
       trim: true,
     },
+    phoneVerified: {
+      type: Boolean,
+      default: false,
+    },
+    signupOtp: {
+      type: String,
+      required: false,
+    },
+    signupOtpExpiry: {
+      type: Date,
+      required: false,
+    },
 
     // Signup step data
     budget: {

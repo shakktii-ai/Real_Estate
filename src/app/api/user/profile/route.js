@@ -10,6 +10,7 @@ export async function POST(req) {
 
     const {
       uid,
+      id,
       phone,
       email,
       name,
@@ -19,15 +20,27 @@ export async function POST(req) {
       referralCodeUsed,
     } = body;
 
-    if (!uid) {
+    const identifier = id || uid;
+
+    if (!identifier) {
       return NextResponse.json(
-        { error: "UID is required" },
+        { error: "User identifier (id or uid) is required" },
         { status: 400 }
       );
     }
 
     // Find existing user
-    let user = await User.findOne({ uid });
+    let user = null;
+    if (identifier.toString().match(/^[0-9a-fA-F]{24}$/)) {
+      user = await User.findById(identifier);
+    } else {
+      user = await User.findOne({ uid: identifier });
+    }
+
+    if (!user && phone) {
+      user = await User.findOne({ phone: phone.trim() });
+    }
+
     const wasAlreadyReferred = !!user?.referredBy;
     // Find referrer if referral code entered
     let referrer = null;
@@ -65,6 +78,14 @@ export async function POST(req) {
         user.profileCompleted = true;
       }
 
+      // Ensure they have a referral code
+      if (!user.referralCode) {
+        user.referralCode =
+          "USER" +
+          Date.now().toString().slice(-5) +
+          Math.random().toString(36).slice(2, 5).toUpperCase();
+      }
+
       // Only set referredBy once
       if (!user.referredBy && referrer) {
         user.referredBy = referrer._id;
@@ -72,10 +93,13 @@ export async function POST(req) {
 
       await user.save();
     } else {
-      const generatedReferralCode = "USER" + uid.slice(-5).toUpperCase() + Math.random().toString(36).substring(2, 5).toUpperCase();
+      const generatedReferralCode =
+        "USER" +
+        Date.now().toString().slice(-5) +
+        Math.random().toString(36).slice(2, 5).toUpperCase();
       const hasFullProfile = !!(budget && buyingTimeline && purpose);
       const newUserData = {
-        uid,
+        uid: (identifier && !identifier.toString().match(/^[0-9a-fA-F]{24}$/)) ? identifier : `phone-${phone}`,
         profileCompleted: hasFullProfile,
         referralCode: generatedReferralCode,
       };
@@ -144,16 +168,27 @@ export async function PUT(req) {
     await connectToDatabase();
 
     const body = await req.json();
-    const { uid, phone, fullName, email, budget, buyingTimeline, purpose } = body;
+    const { uid, id, phone, fullName, email, budget, buyingTimeline, purpose } = body;
 
-    if (!uid) {
-      return NextResponse.json({ error: "UID is required" }, { status: 400 });
+    const identifier = id || uid;
+
+    if (!identifier) {
+      return NextResponse.json({ error: "User identifier (id or uid) is required" }, { status: 400 });
     }
 
     const hasFullProfile = !!(budget && buyingTimeline && purpose);
-    
+
     // Use upsert to create if not exists
-    let user = await User.findOne({ uid });
+    let user = null;
+    if (identifier.toString().match(/^[0-9a-fA-F]{24}$/)) {
+      user = await User.findById(identifier);
+    } else {
+      user = await User.findOne({ uid: identifier });
+    }
+
+    if (!user && phone) {
+      user = await User.findOne({ phone: phone.trim() });
+    }
 
     if (user) {
       // Update existing
@@ -173,15 +208,18 @@ export async function PUT(req) {
       user.budget = budget !== undefined ? budget : user.budget;
       user.buyingTimeline = buyingTimeline !== undefined ? buyingTimeline : user.buyingTimeline;
       user.purpose = purpose !== undefined ? purpose : user.purpose;
-      
+
       if (hasFullProfile) user.profileCompleted = true;
+      if (!user.referralCode) {
+        user.referralCode = "USER" + (identifier && !identifier.toString().match(/^[0-9a-fA-F]{24}$/) ? identifier.slice(-5) : (phone || "").slice(-5)).toUpperCase() + Math.random().toString(36).substring(2, 5).toUpperCase();
+      }
       await user.save();
     } else {
       // Create new (upsert case for old accounts)
-      const generatedReferralCode = "USER" + uid.slice(-5).toUpperCase() + Math.random().toString(36).substring(2, 5).toUpperCase();
-      
+      const generatedReferralCode = "USER" + (identifier && !identifier.toString().match(/^[0-9a-fA-F]{24}$/) ? identifier.slice(-5) : (phone || "").slice(-5)).toUpperCase() + Math.random().toString(36).substring(2, 5).toUpperCase();
+
       const newUserData = {
-        uid,
+        uid: (identifier && !identifier.toString().match(/^[0-9a-fA-F]{24}$/)) ? identifier : `phone-${phone}`,
         profileCompleted: hasFullProfile,
         referralCode: generatedReferralCode,
       };
@@ -242,7 +280,7 @@ export async function GET(req) {
         { $or: [{ phone: null }, { phone: "" }] },
         { $unset: { phone: "" } }
       );
-      
+
       // 2. Drop the index and let it be recreated by Mongoose
       try {
         await User.collection.dropIndex("phone_1");
@@ -256,18 +294,25 @@ export async function GET(req) {
       });
     }
 
-    // 2. Check if a UID was provided in the URL (e.g., /api/user/profile?uid=123)
+    // 2. Check if a UID/ID was provided in the URL (e.g., /api/user/profile?id=123 or ?uid=123)
     const uid = searchParams.get("uid");
+    const id = searchParams.get("id");
+    const identifier = id || uid;
 
-    if (uid) {
+    if (identifier) {
       // Logic for your Login Modal: Find one specific user
-      const user = await User.findOne({ uid });
-      
+      let user = null;
+      if (identifier.toString().match(/^[0-9a-fA-F]{24}$/)) {
+        user = await User.findById(identifier);
+      } else {
+        user = await User.findOne({ uid: identifier });
+      }
+
       return NextResponse.json({
         exists: !!user,
         profileCompleted: user?.profileCompleted || false,
         // Optional: return basic user data if needed for the UI
-        user: user || null 
+        user: user || null
       });
     }
 

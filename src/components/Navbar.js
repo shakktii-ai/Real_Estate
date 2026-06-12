@@ -5,8 +5,7 @@ import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { useAuth } from "@/lib/context/AuthContext";
 import AuthModal from "../components/AuthModal";
-import { signOut } from "firebase/auth";
-import { auth } from "@/lib/firebase";
+
 import { Bell, Heart, LogOut, Phone, User, Menu, X, Search } from "lucide-react";
 import SearchBar from "./SearchBar";
 
@@ -24,7 +23,7 @@ const formatTimeAgo = (date) => {
 const Navbar = () => {
   const router = useRouter();
   const pathname = usePathname();
-  const { user } = useAuth();
+  const { user, logout } = useAuth();
   const [showModal, setShowModal] = useState(false);
   const [notifications, setNotifications] = useState([]);
   const [open, setOpen] = useState(false);
@@ -38,7 +37,7 @@ const Navbar = () => {
     { name: "Blogs", href: "/blogs" },
     { name: "EMI Calculator", href: "/emi" },
     { name: "About Us", href: "/about" },
-    ...(user ? [{ name: "Referrals", href: "/referrals" }] : []),
+    { name: "Refer Now", href: "/referrals" },
   ];
 
   useEffect(() => {
@@ -94,10 +93,12 @@ const Navbar = () => {
 
   const handleLogout = async () => {
     try {
-      await signOut(auth);
+      await logout();
       setIsMobileMenuOpen(false);
       router.replace("/");
-    } catch (error) { console.error("Error signing out: ", error); }
+    } catch (error) {
+      console.error("Error signing out: ", error);
+    }
   };
 
   const unreadCount = notifications.filter((n) => !n.isRead).length;
@@ -107,7 +108,7 @@ const Navbar = () => {
       <div className="flex items-center justify-between px-2 sm:px-4 py-2 sm:py-3 xl:hidden border-b border-gray-200 gap-2">
         {/* LEFT: Burger (Mobile) & Logo */}
         <div className="flex items-center gap-1 sm:gap-2 shrink-0">
-        
+
 
           <Link href="/" className="flex items-center">
             <div className="relative w-[70px] h-[35px] sm:w-[90px] sm:h-[45px] shrink-0">
@@ -122,45 +123,45 @@ const Navbar = () => {
         </div>
 
         {/* RIGHT section*/}
-         {user && (
-            <>
-              <div className="relative" ref={dropdownRef}>
-                <button onClick={() => setOpen(!open)} className="relative p-2 text-black hover:text-[#742E85]">
-                  <Bell size={20} />
-                  {unreadCount > 0 && <span className="absolute top-0 right-0 bg-red-500 text-white text-[10px] w-4 h-4 flex items-center justify-center rounded-full">{unreadCount}</span>}
-                </button>
-                {open && (
-                  <div className="absolute right-0 md:right-0 mt-2 w-[220px] md:w-80 bg-white border border-gray-100 rounded-xl shadow-xl z-50 max-h-[70vh] overflow-y-auto">
-                    <div className="p-3 border-b font-bold text-[#742E85] sticky top-0 bg-white">Notifications</div>
-                    {notifications.length === 0 ? (
-                      <p className="p-4 text-sm text-gray-500 text-center">No new notifications</p>
-                    ) : (
-                      notifications.map((n) => (
-                        <div
-                          key={n._id}
-                          onClick={() => handleNotificationClick(n._id)}
-                          className={`p-3 border m-2 rounded hover:bg-gray-50 cursor-pointer transition-colors ${!n.isRead ? 'bg-purple-100 ' : ''}`}
-                        >
-                          <div className="flex justify-between items-start">
-                            <p className="text-sm font-semibold text-black">{n.title}</p>
-                            <span className="text-[10px] text-gray-400 whitespace-nowrap ml-2">
-                              {formatTimeAgo(n.createdAt)}
-                            </span>
-                          </div>
-                          <p className="text-xs text-gray-500 mt-1">{n.message}</p>
+        {user && (
+          <>
+            <div className="relative" ref={dropdownRef}>
+              <button onClick={() => setOpen(!open)} className="relative p-2 text-black hover:text-[#742E85]">
+                <Bell size={20} />
+                {unreadCount > 0 && <span className="absolute top-0 right-0 bg-red-500 text-white text-[10px] w-4 h-4 flex items-center justify-center rounded-full">{unreadCount}</span>}
+              </button>
+              {open && (
+                <div className="absolute right-0 md:right-0 mt-2 w-[220px] md:w-80 bg-white border border-gray-100 rounded-xl shadow-xl z-50 max-h-[70vh] overflow-y-auto">
+                  <div className="p-3 border-b font-bold text-[#742E85] sticky top-0 bg-white">Notifications</div>
+                  {notifications.length === 0 ? (
+                    <p className="p-4 text-sm text-gray-500 text-center">No new notifications</p>
+                  ) : (
+                    notifications.map((n) => (
+                      <div
+                        key={n._id}
+                        onClick={() => handleNotificationClick(n._id)}
+                        className={`p-3 border m-2 rounded hover:bg-gray-50 cursor-pointer transition-colors ${!n.isRead ? 'bg-purple-100 ' : ''}`}
+                      >
+                        <div className="flex justify-between items-start">
+                          <p className="text-sm font-semibold text-black">{n.title}</p>
+                          <span className="text-[10px] text-gray-400 whitespace-nowrap ml-2">
+                            {formatTimeAgo(n.createdAt)}
+                          </span>
                         </div>
-                      ))
-                    )}
-                  </div>
-                )}
-              </div>
+                        <p className="text-xs text-gray-500 mt-1">{n.message}</p>
+                      </div>
+                    ))
+                  )}
+                </div>
+              )}
+            </div>
 
-            </>
-          ) }
-            <button className="p-1.5 sm:p-2 rounded-full  text-black hover:bg-[#5f256a]" onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}>
-            {isMobileMenuOpen ? <X size={20} /> : <Menu size={20} />}
-          </button>
-          </div>
+          </>
+        )}
+        <button className="p-1.5 sm:p-2 rounded-full  text-black hover:bg-[#5f256a]" onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}>
+          {isMobileMenuOpen ? <X size={20} /> : <Menu size={20} />}
+        </button>
+      </div>
 
       <div className="hidden xl:flex items-center justify-between px-4 py-3 gap-2">
         <div className="flex items-center gap-4 xl:gap-8">
@@ -185,7 +186,7 @@ const Navbar = () => {
 
         <div className="flex items-center gap-2 xl:gap-3 shrink-0">
           <SearchBar className="w-[180px] xl:w-[240px] mr-2" inputClassName="text-xs" />
-          
+
           <Link href="/contact" className="hidden xl:flex bg-[#742E85] text-white px-4 py-2 rounded-lg items-center gap-2 hover:bg-[#652674]">
             <Phone size={18} /> Contact
           </Link>
@@ -223,7 +224,7 @@ const Navbar = () => {
                 )}
               </div>
 
-              <Link href='/wishlist' className="relative p-2 text-black hover:text-[#742E85]">
+              <Link href='/wishlist' className="relative pr-2 pt-2 text-black hover:text-[#742E85]">
                 <Heart size={20} />
                 {wishlistCount > 0 && <span className="absolute top-0 right-0 bg-red-500 text-white text-[10px] w-4 h-4 flex items-center justify-center rounded-full">{wishlistCount}</span>}
               </Link>
@@ -239,69 +240,69 @@ const Navbar = () => {
 
 
 
-      
+
       {/* Mobile Drawer */}
-{isMobileMenuOpen && (
-  <div className="absolute top-full left-0 w-full bg-white flex flex-col p-4 shadow-xl xl:hidden border-t border-gray-100">
-    
-    {navLinks.map((link) => (
-      <Link
-        key={link.href}
-        href={link.href}
-        onClick={() => setIsMobileMenuOpen(false)}
-        className="py-3 font-medium text-[#333]"
-      >
-        {link.name}
-      </Link>
-    ))}
+      {isMobileMenuOpen && (
+        <div className="absolute top-full left-0 w-full bg-white flex flex-col p-4 shadow-xl xl:hidden border-t border-gray-100">
 
-    <Link
-      href="/contact"
-      onClick={() => setIsMobileMenuOpen(false)}
-      className="py-3 font-medium text-[#333]"
-    >
-      Contact Us
-    </Link>
+          {navLinks.map((link) => (
+            <Link
+              key={link.href}
+              href={link.href}
+              onClick={() => setIsMobileMenuOpen(false)}
+              className="py-3 font-medium text-[#333]"
+            >
+              {link.name}
+            </Link>
+          ))}
 
-    {user ? (
-      <>
-        <Link
-          href="/profile"
-          onClick={() => setIsMobileMenuOpen(false)}
-          className="py-3 font-medium text-[#333]"
-        >
-          Profile
-        </Link>
+          <Link
+            href="/contact"
+            onClick={() => setIsMobileMenuOpen(false)}
+            className="py-3 font-medium text-[#333]"
+          >
+            Contact Us
+          </Link>
 
-        <Link
-          href="/wishlist"
-          onClick={() => setIsMobileMenuOpen(false)}
-          className="py-3 font-medium text-[#333]"
-        >
-          Wishlist
-        </Link>
+          {user ? (
+            <>
+              <Link
+                href="/profile"
+                onClick={() => setIsMobileMenuOpen(false)}
+                className="py-3 font-medium text-[#333]"
+              >
+                Profile
+              </Link>
 
-        <button
-          onClick={handleLogout}
-          className="text-left py-3 text-red-600 font-semibold"
-        >
-          Logout
-        </button>
-      </>
-    ) : (
-      <button
-        onClick={() => {
-          setShowModal(true);
-          setIsMobileMenuOpen(false);
-        }}
-        className="mt-2 bg-[#E5097F] text-white px-4 py-3 rounded-xl font-medium"
-      >
-        SignUp
-      </button>
-    )}
-  </div>
-)}
-      {showModal && <AuthModal onClose={() => setShowModal(false)} />}
+              <Link
+                href="/wishlist"
+                onClick={() => setIsMobileMenuOpen(false)}
+                className="py-3 font-medium text-[#333]"
+              >
+                Wishlist
+              </Link>
+
+              <button
+                onClick={handleLogout}
+                className="text-left py-3 text-red-600 font-semibold"
+              >
+                Logout
+              </button>
+            </>
+          ) : (
+            <button
+              onClick={() => {
+                setShowModal(true);
+                setIsMobileMenuOpen(false);
+              }}
+              className="mt-2 bg-[#E5097F] text-white px-4 py-3 rounded-xl font-medium"
+            >
+              SignUp
+            </button>
+          )}
+        </div>
+      )}
+      {showModal && <AuthModal onClose={() => setShowModal(false)} onAuthSuccess={() => setShowModal(false)} />}
     </nav>
   );
 };

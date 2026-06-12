@@ -9,7 +9,7 @@ import {
   Clock3,
 } from "lucide-react";
 import { toast } from "react-toastify";
-import { getAuth } from "firebase/auth";
+import { useAuth } from "@/lib/context/AuthContext";
 const TIME_SLOTS = [
   "9:00 AM - 10:00 AM",
   "10:00 AM - 11:00 AM",
@@ -35,6 +35,7 @@ export default function BookSiteVisitModal({
     phone: "",
     email: "",
   });
+  const { user } = useAuth();
 
   const handleNextFromStep2 = () => {
     if (!formData.date) {
@@ -80,15 +81,16 @@ export default function BookSiteVisitModal({
     }
 
     try {
-      
-const auth = getAuth();
-  const user = auth.currentUser;
-setLoading(true);
-  const bookingPayload = {
-    ...formData,
-    userId: user.uid, // Sending the unique user ID
-    userEmail: user.email // Optional: helpful for admin reference
-  };
+      if (!user) {
+        toast.error("Please login to book");
+        return;
+      }
+      setLoading(true);
+      const bookingPayload = {
+        ...formData,
+        userId: user?.uid,
+        userEmail: user?.email,
+      };
       const res = await fetch("/api/sitevisit", {
         method: "POST",
         headers: {
@@ -113,7 +115,7 @@ setLoading(true);
   };
 
   return (
-    <div className="fixed inset-0 z-[100] bg-black/50 flex items-center justify-center p-4">
+    <div className="fixed inset-0 z-[100]   flex items-center justify-center p-4">
       <div className="bg-white w-full max-w-[420px] rounded-2xl shadow-2xl relative p-6">
         <button
           onClick={onClose}

@@ -1,25 +1,133 @@
 "use client";
 
 import { useMemo, useState, useEffect, Suspense } from "react";
-import { useSearchParams } from "next/navigation";
+import { useSearchParams, useRouter } from "next/navigation";
 import Navbar from "@/components/Navbar";
 import PropertyCard from "@/components/PropertyCard";
-import { Grid2X2, List, Map } from "lucide-react";
+import { Grid2X2, List, Map, ChevronDown } from "lucide-react";
 import PropertyCardHori from "@/components/PropertyCardHori";
 import { useAuth } from "@/lib/context/AuthContext";
 import TourSelectionModal from '@/components/TourSelectionModal';
 import BookSiteVisitModal from '@/components/BookSiteVisitModal';
 import BookVirtualTourModal from '@/components/BookVirtualTourModal';
 import MapModal from "@/components/map";
+
+// ─── Filter Bar Component ─────────────────────────────────────────────────────
+function PropertyFilterBar({ projects, selectedCity, setSelectedCity, selectedCategory, setSelectedCategory, budget, setBudget, selectedStatus, setSelectedStatus, onApply }) {
+  const cities = [...new Set(projects.map(p => p.address?.city).filter(Boolean))];
+
+  const handleApply = () => {
+    if (onApply) onApply();
+  };
+
+  const handleReset = () => {
+    setSelectedCity("Pune");
+    setSelectedCategory("");
+    setBudget(99);
+    setSelectedStatus("");
+  };
+
+  return (
+    <div className="bg-white shadow-[0_-4px_10px_rgba(0,0,0,0.08),0_4px_10px_rgba(0,0,0,0.08)] px-4 py-4 mx-0 flex flex-wrap md:flex-nowrap items-center gap-3 md:gap-0 w-full max-w-full text-[14px] font-semibold"
+    >
+      {/* Location */}
+      <div className="flex flex-col flex-1 min-w-[220px] md:border-r border-gray-200 md:pr-4">
+        <span className=" text-[#742E85] uppercase tracking-widest mb-1">Location</span>
+        <div className="relative">
+          <select
+            value={selectedCity}
+            onChange={(e) => setSelectedCity(e.target.value)}
+            className="appearance-none w-full text-sm text-gray-800 font-semibold bg-transparent outline-none pr-6 cursor-pointer"
+          >
+            <option value="Pune">Pune</option>
+            {cities.filter(c => c !== "Pune").map(city => (
+              <option key={city} value={city}>{city}</option>
+            ))}
+          </select>
+          <ChevronDown className="absolute right-0 top-1/2 -translate-y-1/2 w-4 h-4 text-black pointer-events-none" />
+        </div>
+      </div>
+
+      {/* Property */}
+      <div className="flex flex-col flex-1 min-w-[220px] md:border-r border-gray-200 md:px-4">
+        <span className=" text-[#742E85] uppercase tracking-widest mb-1">Property</span>
+        <div className="relative">
+          <select
+            value={selectedCategory}
+            onChange={(e) => setSelectedCategory(e.target.value)}
+            className="appearance-none w-full text-sm text-gray-800 font-semibold bg-transparent outline-none pr-6 cursor-pointer truncate"
+          >
+            <option value="">All</option>
+            <option value="Residential">Residential</option>
+            <option value="Commercial">Commercial</option>
+          </select>
+          <ChevronDown className="absolute right-0 top-1/2 -translate-y-1/2 w-4 h-4 text-black pointer-events-none" />
+        </div>
+      </div>
+
+      {/* Budget */}
+      <div className="flex flex-col flex-1 min-w-[220px] md:border-r border-gray-200 md:px-4">
+        <span className=" text-[#742E85] uppercase tracking-widest mb-1">Budget</span>
+        <input
+          type="range" min="50" max="400" value={budget}
+          onChange={(e) => setBudget(Number(e.target.value))}
+          className="w-full accent-[#742E85] mt-1"
+        />
+        <span className="text-xs text-gray-600 mt-0.5 font-medium">
+          ₹50L - ₹{budget >= 400 ? "4Cr" : `${budget}L`}
+        </span>
+      </div>
+
+      {/* Status */}
+      <div className="flex flex-col flex-1 min-w-[220px] md:border-r border-gray-200 md:px-4">
+        <span className=" text-[#742E85] uppercase tracking-widest mb-1">Status</span>
+        <div className="relative">
+          <select
+            value={selectedStatus}
+            onChange={(e) => setSelectedStatus(e.target.value)}
+            className="appearance-none w-full text-sm text-gray-800 font-semibold bg-transparent outline-none pr-6 cursor-pointer"
+          >
+            <option value="">All</option>
+            <option value="Ready">Ready</option>
+            <option value="Under Construction">Under Construction</option>
+            <option value="Late Possession">Late Possession</option>
+          </select>
+          <ChevronDown className="absolute right-0 top-1/2 -translate-y-1/2 w-4 h-4 text-black pointer-events-none" />
+        </div>
+      </div>
+
+      {/* Apply & Reset */}
+      <div className="flex items-center gap-3 md:pl-4">
+        <button
+          onClick={handleApply}
+          className="bg-black text-white text-sm font-semibold px-8 py-3 rounded-xl hover:bg-gray-900 transition whitespace-nowrap"
+        >
+          Apply
+        </button>
+        <button
+          onClick={handleReset}
+          className="bg-white text-black text-sm font-semibold px-6 py-3 rounded-xl border border-gray-300 hover:bg-gray-100 transition whitespace-nowrap"
+        >
+          Reset
+        </button>
+      </div>
+    </div>
+  );
+}
+
+
 function PropertiesContent() {
     const searchParams = useSearchParams();
     const categoryParam = searchParams.get("category");
     const builderParam = searchParams.get("builder");
     const locationParam = searchParams.get("location");
     const queryParam = searchParams.get("q");
-    const [budget, setBudget] = useState(3000);
+    const budgetParam = searchParams.get("budget");
+    const statusParam = searchParams.get("status");
+    const fromHomeParam = searchParams.get("fromHome");
+    const [budget, setBudget] = useState(budgetParam ? Number(budgetParam) : 99);
     const [selectedConfig, setSelectedConfig] = useState("");
-    const [selectedStatus, setSelectedStatus] = useState("");
+    const [selectedStatus, setSelectedStatus] = useState(statusParam || "");
     const [selectedCity, setSelectedCity] = useState(locationParam || builderParam || queryParam ? "" : "Pune");
     const [selectedCategory, setSelectedCategory] = useState(categoryParam || "");
     const [projects, setProjects] = useState([]);
@@ -87,7 +195,19 @@ function PropertiesContent() {
         if (locationParam || builderParam || queryParam) {
             setSelectedCity("");
         }
-    }, [categoryParam, locationParam, builderParam, queryParam]);
+        if (budgetParam) {
+            setBudget(Number(budgetParam));
+        }
+        // if navigated from home, clear config/status to show all
+        if (fromHomeParam) {
+            setSelectedConfig("");
+            setSelectedStatus("");
+        } else {
+            if (statusParam) {
+                setSelectedStatus(statusParam);
+            }
+        }
+    }, [categoryParam, locationParam, builderParam, queryParam, budgetParam, statusParam]);
 
     const cities = [
         ...new Set(projects.map((p) => p.address?.city).filter(Boolean)),
@@ -176,137 +296,31 @@ function PropertiesContent() {
     return (
         <main className="min-h-screen bg-gray-50 ">
 
-
             {/* Filter Section */}
-            <div className="max-w-7xl  mx-auto border-y border-black bg-white">
-                <div className="grid grid-cols-1 lg:grid-cols-4 gap-8 px-6 py-8">
-                    {/* Budget */}
-                    <div className="border-r border-gray-300 pr-6">
-                        <h3 className="text-[15px] font-medium text-black mb-4">
-                            Budget
-                        </h3>
-
-                        <input
-                            type="range"
-                            min="0"
-                            max="3000"
-                            value={budget}
-                            onChange={(e) => setBudget(Number(e.target.value))}
-                            className="w-full accent-[#742E85]"
-                        />
-
-                        <div className="mt-3 text-[15px] text-black font-medium">
-                            ₹0 - {budget >= 100 ? `₹${(budget / 100).toFixed(2)} Cr` : `₹${budget} L`}
-                        </div>
-                    </div>
-
-                    {/* Configuration */}
-                    <div className="border-r border-gray-300 ">
-                        <h3 className="text-[15px] font-medium text-black mb-4">
-                            Configuration
-                        </h3>
-
-                        <div className="flex flex-wrap gap-2">
-                            {[
-                                "1BHK",
-                                "1.5BHK",
-                                "2BHK",
-                                "2.5BHK",
-                                "3BHK",
-                                "3.5BHK",
-                                "4BHK",
-                                "4.5BHK",
-                                "5BHK",
-                            ].map((item) => (
-                                <button
-                                    key={item}
-                                    onClick={() => setSelectedConfig(item)}
-                                    className={`px-4 py-2 rounded-md border text-[14px] font-medium transition ${selectedConfig === item
-                                        ? "bg-[#E61E8C] text-white border-[#E61E8C]"
-                                        : "bg-white text-black border-gray-300"
-                                        }`}
-                                >
-                                    {item}
-                                </button>
-                            ))}
-                        </div>
-                    </div>
-
-                    {/* Status */}
-                    <div className="border-r border-gray-300 ">
-                        <h3 className="text-[15px] font-medium text-black mb-4">Status</h3>
-
-                        <div className="flex flex-wrap gap-3">
-                            {["Ready", "Under Construction", "Late Possession"].map(
-                                (item) => (
-                                    <button
-                                        key={item}
-                                        onClick={() => setSelectedStatus(item)}
-                                        className={`px-5 py-3 rounded-md border text-[14px] font-medium transition ${selectedStatus === item
-                                            ? "bg-[#742E85] text-white border-[#742E85]"
-                                            : "bg-white text-black border-gray-300"
-                                            }`}
-                                    >
-                                        {item}
-                                    </button>
-                                )
-                            )}
-                        </div>
-                    </div>
-
-                    {/* Location */}
-                    <div>
-                        <h3 className="text-[15px] font-medium uppercase text-black mb-4">
-                            Location
-                        </h3>
-
-                        <div className="space-y-3">
-                            <select
-                                value={selectedCity}
-                                onChange={(e) => {
-                                    setSelectedCity(e.target.value);
-                                }}
-                                className="w-full border border-gray-300 rounded-md px-4 py-3 text-[14px] text-black outline-none"
-                            >
-                                <option value="">City</option>
-                                {cities.map((city) => (
-                                    <option key={city} value={city}>
-                                        {city}
-                                    </option>
-                                ))}
-                            </select>
-                            <div className="flex gap-2">
-
-
-                                <button className="px-6 py-2 bg-[#742E85] text-white rounded-md text-[14px] font-medium">
-                                    Apply
-                                </button>
-
-                                    <button
-                                        onClick={() => {
-                                            setBudget(3000);
-                                            setSelectedConfig("");
-                                            setSelectedStatus("");
-                                            setSelectedCity("Pune");
-                                        }}
-                                        className="px-6 py-2 border border-gray-300 rounded-md text-[14px] text-black"
-                                    >
-                                    Reset
-                                </button>
-                            </div>
-                        </div>
-                    </div>
-                </div>
+            <div className="max-w-full px-1  py-4">
+              <PropertyFilterBar 
+                projects={projects}
+                selectedCity={selectedCity}
+                setSelectedCity={setSelectedCity}
+                selectedCategory={selectedCategory}
+                setSelectedCategory={setSelectedCategory}
+                budget={budget}
+                setBudget={setBudget}
+                selectedStatus={selectedStatus}
+                setSelectedStatus={setSelectedStatus}
+                onApply={() => {}}
+              />
             </div>
 
+
             {/* Heading + Right Side Controls */}
-            <div className="max-full mx-auto px-6 py-8">
+            <div className="max-full mx-auto px-6 py-4">
                 <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-5 mb-8">
                     <div>
-                        <h1 className="text-[40px] leading-none font-bold text-[#742E85]">
+                        <h1 className="text-[20px] md:text-[30px] leading-none font-bold text-[#742E85]">
                             New Projects in Wakad, Pune
                         </h1>
-                        <p className="mt-4 text-[18px] text-black">
+                        <p className="mt-4 text-[14px] md:text-[18px] text-black">
                             {filteredProjects.length} Projects found
                         </p>
                     </div>
@@ -321,7 +335,6 @@ function PropertiesContent() {
                             <option value="Affordable">Affordable</option>
                             <option value="Premium">Premium</option>
                             <option value="Luxury">Luxury</option>
-                            <option value="Holiday">Holiday</option>
                         </select>
 
                         <div className="hidden md:flex border border-gray-300 rounded-xl overflow-hidden shadow-sm">
@@ -360,7 +373,7 @@ function PropertiesContent() {
           ))}
         </div> */}
                 <div className={viewMode === "grid"
-                    ? "grid grid-cols-1 md:grid-cols-5 gap-2"
+                    ? "grid grid-cols-1 md:grid-cols-4 gap-1"
                     : "flex flex-col gap-6"
                 }>
                     {filteredProjects.map((project) => (

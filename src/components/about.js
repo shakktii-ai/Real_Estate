@@ -41,9 +41,9 @@ export default function About({ showOn }) {
   const visibleReviews = reviews.slice(startIndex, startIndex + cardsPerPage);
 
   return (
-    <section className="px-6 py-20 lg:px-16">
-      <h2 className="text-4xl lg:text-[40px] font-bold text-[#E5097F] mb-12">
-        What They <br /> Say About Us
+    <section className="px-6 py-8 lg:px-16">
+      <h2 className="text-md md:text-xl font-bold text-[#E5097F] mb-6">
+        What They Say About Us
       </h2>
 
       <div className="max-w-6xl mx-auto">
@@ -177,4 +177,4 @@ export default function About({ showOn }) {
       )}
     </section>
   );
-}
+}

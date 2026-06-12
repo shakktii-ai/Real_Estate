@@ -191,7 +191,7 @@ export default function AuthModal({ onClose, onAuthSuccess }) {
                 throw new Error(errData.error || "Failed to save profile");
             }
 
-            toast.success("Profile saved! Welcome aboard 🎉");
+            toast.success("Profile saved successfully!");
             finishAuth();
         } catch (error) {
             console.error("Profile Submit Error:", error);

@@ -75,7 +75,12 @@ function PropertyFilterBar({ projects, onFilteredProjects }) {
   const applyFilters = () => {
     const filtered = projects.filter((project) => {
       const matchesBudget = (project.pricing?.maxPrice || 0) / 100000 <= budget;
-      const matchesCity = !selectedCity || project.address?.city === selectedCity;
+      const matchesCity =
+  selectedCity === "Pune"
+    ? project.address?.city === "Pune"
+    : project.address?.area
+        ?.toLowerCase()
+        .includes(selectedCity.toLowerCase());
       const matchesCategory = !selectedCategory || project.tags?.includes(selectedCategory);
       const matchesStatus = !selectedStatus || project.status === selectedStatus;
       return matchesBudget && matchesCity && matchesCategory && matchesStatus;
@@ -114,6 +119,15 @@ function PropertyFilterBar({ projects, onFilteredProjects }) {
             style={{ WebkitAppearance: "none", MozAppearance: "none" }}
           >
             <option value="Pune">Pune</option>
+                      <option value="Hadapsar">Pune - Hadapsar</option>
+                      <option value="Kondhwa">Pune - Kondhwa</option>
+                      <option value="Pisoli">Pune - Pisoli</option>
+                    <option value="Undri">Pune - Undri</option>
+                     <option value="Mohammed Wadi">Pune - Mohammed Wadi</option>
+                   <option value="Salisbury Park">Pune - Salisbury Park</option>
+                  <option value="Gultekdi">Pune - Gultekdi</option>
+                   <option value="Wadachi Wadi">Pune - Wadachi Wadi</option>
+                    <option value="NIBM Road">Pune - NIBM Road</option>
             {cities.filter(c => c !== "Pune").map(city => (
               <option key={city} value={city}>{city}</option>
             ))}
@@ -194,7 +208,7 @@ function HeroWhyChooseUs({ projects, onFilteredProjects }) {
     clearInterval(timerRef.current);
     timerRef.current = setInterval(() => {
       setCurrent((prev) => (prev + 1) % WHY_SLIDES.length);
-    }, 3000);
+    }, 4500);
   };
 
   useEffect(() => {
@@ -369,8 +383,14 @@ function StepScrollRow({ projects, direction, onTourClick, showTopControls = fal
     if (!carouselRef.current) return;
     const firstCard = carouselRef.current.querySelector(':scope > div');
     if (!firstCard) return;
-    const gap = 12; // gap-3
-    setCardStep(Math.round(firstCard.getBoundingClientRect().width + gap));
+if (window.innerWidth < 640) {
+  setCardStep(carouselRef.current.parentElement.offsetWidth);
+} else {
+  const gap = 12;
+  setCardStep(
+    Math.round(firstCard.getBoundingClientRect().width + gap)
+  );
+}
   }, [projects.length, itemsPerView]);
 
   const autoDelta = STEP_COUNT;
@@ -446,10 +466,10 @@ function StepScrollRow({ projects, direction, onTourClick, showTopControls = fal
         </div>
       )}
 
-      <div className="overflow-hidden px-3">
+      <div className="overflow-hidden md:px-3">
         <div
           ref={carouselRef}
-          className={`${isTransitioning ? 'transition-transform duration-700 ease-in-out' : ''} flex gap-3`}
+          className={`${isTransitioning ? 'transition-transform duration-700 ease-in-out' : ''} flex md:gap-3`}
           style={{
             transform: `translateX(-${index * cardStep}px)`,
           }}
@@ -457,7 +477,7 @@ function StepScrollRow({ projects, direction, onTourClick, showTopControls = fal
           {displayProjects.map((project, i) => (
             <div
               key={`${project._id ?? i}-${i}`}
-              className="flex-shrink-0 w-[280px] md:w-[320px]"
+              className="flex-shrink-0 w-full sm:w-[280px] md:w-[320px]"
             >
               <PropertyCard project={project} onTourClick={onTourClick} />
             </div>

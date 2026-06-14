@@ -493,7 +493,13 @@ function PropertyFilterBar({ projects, onFilteredProjects }) {
     const applyFilters = () => {
         const filtered = projects.filter((project) => {
             const matchesBudget = (project.pricing?.maxPrice || 0) / 100000 <= budget;
-            const matchesCity = !selectedCity || project.address?.city === selectedCity;
+            // const matchesCity = !selectedCity || project.address?.city === selectedCity;
+           const matchesCity =
+  selectedCity === "Pune"
+    ? project.address?.city === "Pune"
+    : project.address?.area
+        ?.toLowerCase()
+        .includes(selectedCity.toLowerCase());
             const matchesCategory = !selectedCategory || project.tags?.includes(selectedCategory);
             const matchesStatus = !selectedStatus || project.status === selectedStatus;
             return matchesBudget && matchesCity && matchesCategory && matchesStatus;
@@ -531,7 +537,16 @@ function PropertyFilterBar({ projects, onFilteredProjects }) {
                         className={selectClass}
                         style={{ WebkitAppearance: "none", MozAppearance: "none" }}
                     >
-                        <option value="Pune">Pune</option>
+                     <option value="Pune">Pune</option>
+                      <option value="Hadapsar">Pune - Hadapsar</option>
+                      <option value="Kondhwa">Pune - Kondhwa</option>
+                      <option value="Pisoli">Pune - Pisoli</option>
+                    <option value="Undri">Pune - Undri</option>
+                     <option value="Mohammed Wadi">Pune - Mohammed Wadi</option>
+                   <option value="Salisbury Park">Pune - Salisbury Park</option>
+                  <option value="Gultekdi">Pune - Gultekdi</option>
+                   <option value="Wadachi Wadi">Pune - Wadachi Wadi</option>
+                    <option value="NIBM Road">Pune - NIBM Road</option>
                         {cities.filter(c => c !== "Pune").map(city => (
                             <option key={city} value={city}>{city}</option>
                         ))}
@@ -612,7 +627,7 @@ function HeroWhyChooseUs({ projects, onFilteredProjects }) {
         clearInterval(timerRef.current);
         timerRef.current = setInterval(() => {
             setCurrent((prev) => (prev + 1) % WHY_SLIDES.length);
-        }, 3000);
+        }, 4500);
     };
 
     useEffect(() => {
@@ -769,6 +784,10 @@ function FeaturedProjectCarousel({ projects, direction, onTourClick, showTopCont
     useEffect(() => {
         const measureStep = () => {
             if (!carouselRef.current) return;
+            if (window.innerWidth < 640) {
+    setCardStep(carouselRef.current.parentElement.offsetWidth);
+    return;
+  }
             const firstCard = carouselRef.current.querySelector(':scope > div');
             if (!firstCard) return;
             setCardStep(Math.round(firstCard.getBoundingClientRect().width + 16));
@@ -782,8 +801,8 @@ function FeaturedProjectCarousel({ projects, direction, onTourClick, showTopCont
         if (projects.length === 0 || isHovering || !cardStep) return;
         const interval = setInterval(() => {
             setIsTransitioning(true);
-            setIndex((prev) => prev + 2);
-        }, 3000);
+            setIndex((prev) => prev + 1);
+        }, 4500);
         return () => clearInterval(interval);
     }, [projects.length, isHovering, cardStep]);
 
@@ -794,15 +813,15 @@ function FeaturedProjectCarousel({ projects, direction, onTourClick, showTopCont
             return () => clearTimeout(t);
         }
         if (index < 0) {
-            const t = setTimeout(() => { setIsTransitioning(false); setIndex(Math.max(0, projects.length - 2)); }, 700);
+            const t = setTimeout(() => { setIsTransitioning(false); setIndex(Math.max(0, projects.length - 1)); }, 700);
             return () => clearTimeout(t);
         }
     }, [index, projects.length, cardStep]);
 
     const carouselProjects = direction === 'right' ? [...projects].reverse() : projects;
     const displayProjects = [...carouselProjects, ...carouselProjects];
-    const handleNext = () => { setIsTransitioning(true); setIndex(p => p + 2); };
-    const handlePrev = () => { setIsTransitioning(true); setIndex(p => p - 2); };
+    const handleNext = () => { setIsTransitioning(true); setIndex(p => p + 1); };
+    const handlePrev = () => { setIsTransitioning(true); setIndex(p => p - 1); };
 
     return (
         <div className="relative overflow-hidden py-4" onMouseEnter={() => setIsHovering(true)} onMouseLeave={() => setIsHovering(false)}>
@@ -816,14 +835,14 @@ function FeaturedProjectCarousel({ projects, direction, onTourClick, showTopCont
                     </button>
                 </div>
             )}
-            <div className="overflow-hidden px-3">
+            <div className="overflow-hidden md:px-0">
                 <div
                     ref={carouselRef}
-                    className={`${isTransitioning ? 'transition-transform duration-700 ease-in-out' : ''} flex gap-3`}
+                    className={`${isTransitioning ? 'transition-transform duration-700 ease-in-out' : ''} flex md:gap-0`}
                     style={{ transform: `translateX(-${index * cardStep}px)` }}
                 >
                     {displayProjects.map((project, i) => (
-                        <div key={`${project._id ?? i}-${i}`} className="flex-shrink-0 w-[280px] md:w-[320px]">
+                        <div key={`${project._id ?? i}-${i}`} className="flex-shrink-0 w-full sm:w-[280px] md:w-[320px]">
                             <PropertyCard project={project} onTourClick={onTourClick} />
                         </div>
                     ))}

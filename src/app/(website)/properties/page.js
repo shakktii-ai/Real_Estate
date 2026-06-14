@@ -40,6 +40,15 @@ function PropertyFilterBar({ projects, selectedCity, setSelectedCity, selectedCa
             className="appearance-none w-full text-sm text-gray-800 font-semibold bg-transparent outline-none pr-6 cursor-pointer"
           >
             <option value="Pune">Pune</option>
+             <option value="Hadapsar">Pune - Hadapsar</option>
+                      <option value="Kondhwa">Pune - Kondhwa</option>
+                      <option value="Pisoli">Pune - Pisoli</option>
+                    <option value="Undri">Pune - Undri</option>
+                     <option value="Mohammed Wadi">Pune - Mohammed Wadi</option>
+                   <option value="Salisbury Park">Pune - Salisbury Park</option>
+                  <option value="Gultekdi">Pune - Gultekdi</option>
+                   <option value="Wadachi Wadi">Pune - Wadachi Wadi</option>
+                    <option value="NIBM Road">Pune - NIBM Road</option>
             {cities.filter(c => c !== "Pune").map(city => (
               <option key={city} value={city}>{city}</option>
             ))}
@@ -128,7 +137,7 @@ function PropertiesContent() {
     const [budget, setBudget] = useState(budgetParam ? Number(budgetParam) : 99);
     const [selectedConfig, setSelectedConfig] = useState("");
     const [selectedStatus, setSelectedStatus] = useState(statusParam || "");
-    const [selectedCity, setSelectedCity] = useState(locationParam || builderParam || queryParam ? "" : "Pune");
+    const [selectedCity, setSelectedCity] = useState(locationParam || "Pune");
     const [selectedCategory, setSelectedCategory] = useState(categoryParam || "");
     const [projects, setProjects] = useState([]);
     const [viewMode, setViewMode] = useState("grid");
@@ -144,6 +153,18 @@ function PropertiesContent() {
         name: "PIINGGAKSHA Team Office",
         address: "ILESEUM CO-WORKING Space, GANGA GLITZ, Kad Nagar, Undri, Pune, Maharashtra 411060"
     };
+    const router = useRouter();
+
+const handleApplyFilters = () => {
+  const params = new URLSearchParams();
+
+  if (selectedCity) params.set("location", selectedCity);
+  if (selectedCategory) params.set("category", selectedCategory);
+  if (selectedStatus) params.set("status", selectedStatus);
+  if (budget) params.set("budget", budget);
+
+  router.push(`/properties?${params.toString()}`);
+};
     const handleToggleWishlist = (propertyId, isNowWishlisted) => {
         if (isNowWishlisted) {
             // Add to wishlist array
@@ -193,7 +214,7 @@ function PropertiesContent() {
             setSelectedCategory(categoryParam);
         }
         if (locationParam || builderParam || queryParam) {
-            setSelectedCity("");
+         setSelectedCity(locationParam || "Pune");
         }
         if (budgetParam) {
             setBudget(Number(budgetParam));
@@ -247,7 +268,8 @@ function PropertiesContent() {
                 !selectedStatus || project.status === selectedStatus;
 
             const matchesCity =
-                !selectedCity || project.address?.city === selectedCity;
+  selectedCity === "Pune" ||
+  project.address?.area?.includes(selectedCity);
 
             const matchesCategory =
                 !selectedCategory || project.tags?.includes(selectedCategory);
@@ -262,10 +284,10 @@ function PropertiesContent() {
 
             const matchesBuilder = !builderParam || project.builderName?.toLowerCase() === builderParam.toLowerCase();
             
-            const matchesLocation = !locationParam || (
-                project.address?.city?.toLowerCase() === locationParam.toLowerCase() ||
-                project.address?.area?.toLowerCase() === locationParam.toLowerCase()
-            );
+//          const matchesLocation =
+//   !locationParam ||
+//   (project.address?.city || "").includes(locationParam) ||
+//   (project.address?.area || "").includes(locationParam);
 
             return (
                 matchesBudget &&
@@ -274,8 +296,8 @@ function PropertiesContent() {
                 matchesCity &&
                 matchesCategory &&
                 matchesQuery &&
-                matchesBuilder &&
-                matchesLocation
+                matchesBuilder 
+                // matchesLocation
             );
         });
     }, [
@@ -308,7 +330,8 @@ function PropertiesContent() {
                 setBudget={setBudget}
                 selectedStatus={selectedStatus}
                 setSelectedStatus={setSelectedStatus}
-                onApply={() => {}}
+                // onApply={() => {}}
+                    onApply={handleApplyFilters}
               />
             </div>
 

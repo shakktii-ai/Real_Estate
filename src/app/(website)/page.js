@@ -453,7 +453,7 @@ const WHY_SLIDES = [
         ],
     },
     {
-        bg: "/Galaxy-04_2.png",
+        bg: "/Galaxy-04.png",
         badge: "Transparent Bottom-Line Pricing",
         icon: "/img4.png",
         points: [
@@ -669,7 +669,7 @@ function HeroWhyChooseUs({ projects, onFilteredProjects }) {
                             className="absolute inset-0 md:hidden"
                             style={{
                                 background:
-                                    "linear-gradient(to bottom, rgba(0,0,0,0.85) 0%, rgba(0,0,0,0.75) 55%, rgba(0,0,0,0.25) 55%)",
+                                    "linear-gradient(to bottom, rgba(0,0,0,0.37) 0%, rgba(0,0,0,0.75) 55%, rgba(0,0,0,0.25) 55%)",
                             }}
                         />
 
@@ -678,7 +678,7 @@ function HeroWhyChooseUs({ projects, onFilteredProjects }) {
                             className="absolute inset-0 hidden md:block"
                             style={{
                                 background:
-                                    "linear-gradient(to right, rgba(0,0,0,0.72) 0%, rgba(0,0,0,0.72) 50%, rgba(0,0,0,0.0) 48.1%)",
+                                    "linear-gradient(to right, rgba(0,0,0,0.37) 0%, rgba(0,0,0,0.72) 50%, rgba(0,0,0,0.0) 48.1%)",
                             }}
                         />
                     </div>
@@ -742,7 +742,7 @@ function HeroWhyChooseUs({ projects, onFilteredProjects }) {
                                 </h2>
                             </div>
 
-                            <ul className="space-y-3 w-full md:w-[500px] text-[14px] md:text-[15px]">
+                            <ul className="space-y-3 w-full md:w-[500px] text-[14px] md:text-[15px] tracking-[1.5px]">
                                 {slide.points.map((pt, i) => (
                                     <li
                                         key={i}

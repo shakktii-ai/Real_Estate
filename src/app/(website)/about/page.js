@@ -156,7 +156,7 @@ const handleScroll = (index) => {
         <section className="relative z-10 lg:-mt-16 px-6 lg:px-16 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mb-8">
           <div className="relative h-[550] md:h-[450px] mx-auto w-full max-w-[402px]">
             <Image
-              src="/vision.png"
+              src="/about_1.jpg"
               alt="Our Vision"
               fill
               className="object-cover rounded-2xl opacity-70"
@@ -170,10 +170,10 @@ const handleScroll = (index) => {
               }}
             >
               <div className="p-8 h-full flex flex-col justify-start">
-                <h2 className="text-[25px] font-medium underline decoration-primary-pink underline-offset-8 mb-4">
+                <h2 className="text-[18px] font-medium underline decoration-primary-pink underline-offset-8 mb-4">
                   Our Vision
                 </h2>
-                <p className="text-[12px] leading-relaxed text-black">
+                <p className="bg-white p-3 rounded text-[12px] leading-relaxed text-black">
                   To be Pune's most trusted real estate advisory by combining
                   market expertise, transparency, and customer-first ethics,
                   ensuring that every client finds not just a house — but a
@@ -189,7 +189,7 @@ const handleScroll = (index) => {
           {/* CORE STRENGTHS CARD - SLIDE AND PAUSE ONE-BY-ONE */}
           <div className="relative h-[600] md:h-[450px] mx-auto w-full max-w-[402px]">
             <Image
-              src="/strengths.png"
+              src="/about_2.jpg"
               alt="Our Core Strengths"
               fill
               className="object-cover rounded-2xl opacity-70"
@@ -203,7 +203,7 @@ const handleScroll = (index) => {
               }}
             >
               <div className="pt-6 px-4 h-full flex flex-col justify-between p-2">
-                <h2 className="text-[18px] font-medium underline decoration-primary-pink underline-offset-6 mb-2 px-2 shrink-0">
+                <h2 className="text-[18px] font-medium underline decoration-primary-pink underline-offset-6 mb-5 px-2 shrink-0">
                   Our Core Strengths
                 </h2>
                 
@@ -278,7 +278,7 @@ const handleScroll = (index) => {
           
           <div className="relative h-[450px] mx-auto w-full max-w-[402px]">
             <Image
-              src="/mission.png"
+              src="/about_3.jpg"
               alt="Our Mission"
               fill
               className="object-cover rounded-2xl opacity-70"
@@ -292,10 +292,10 @@ const handleScroll = (index) => {
               }}
             >
               <div className="p-8 h-full flex flex-col justify-start">
-                <h2 className="text-[20px] font-medium underline decoration-primary-pink underline-offset-8 mb-4">
+                <h2 className="text-[18px] font-medium underline decoration-primary-pink underline-offset-8 mb-4">
                   Our Mission
                 </h2>
-                <p className="text-[12px] leading-relaxed text-black">
+                <p className="bg-white p-3 rounded text-[12px] leading-relaxed text-black">
                   To guide and empower our clients at every stage of the
                   home-buying journey — from discovery to possession — ensuring
                   their expectations are not just met, but consistently

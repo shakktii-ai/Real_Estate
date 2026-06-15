@@ -35,7 +35,7 @@ export default function ProjectListCard({ project, isWishlisted, onToggleWishlis
             .map((tag) => (
               <span
                 key={tag}
-                className={`px-3 py-1 rounded-full text-xs font-bold ${categoryColors[tag] || "text-gray-600 bg-gray-100"
+                className={`px-2.5 py-0.5 rounded-full text-[8px] font-medium ${categoryColors[tag] || "text-gray-600 bg-gray-100"
                   }`}
               >
                 {tag}
@@ -56,7 +56,7 @@ export default function ProjectListCard({ project, isWishlisted, onToggleWishlis
                       </span>
                     )}s
         {project.tags?.includes("RERA Verified") && (
-          <div className="absolute bottom-3 left-3 bg-[#DBFCE7] px-2 py-1 rounded-full flex items-center gap-1 text-[10px] text-[#009318] font-bold border border-green-200">
+          <div className="absolute bottom-3 left-3 bg-[#DBFCE7] px-2.5 py-0.5 rounded-full flex items-center gap-1 text-[8px] text-[#009318] font-medium border border-green-200">
             RERA Verified
           </div>
         )}

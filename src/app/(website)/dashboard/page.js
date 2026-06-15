@@ -35,7 +35,7 @@ const WHY_SLIDES = [
     ],
   },
   {
-    bg: "/Galaxy-04_2.png",
+    bg: "/Galaxy-04.png",
     badge: "Transparent Bottom-Line Pricing",
     icon: "/img4.png",
     points: [
@@ -104,14 +104,14 @@ function PropertyFilterBar({ projects, onFilteredProjects }) {
   const cities = [...new Set(projects.map(p => p.address?.city).filter(Boolean))];
 
   const selectClass =
-    "appearance-none w-full text-sm text-gray-800 font-semibold bg-transparent outline-none pr-6 cursor-pointer rounded-none border-0 focus:ring-0";
+    "appearance-none w-full text-sm text-gray-800 font-semibold bg-transparent outline-none pl-2 cursor-pointer rounded-xl border-0 focus:ring-0";
 
   return (
     <div className="bg-white text-[15px] rounded-2xl shadow-2xl px-4 py-4 flex flex-wrap md:flex-nowrap items-center gap-3 md:gap-0 w-full max-w-6xl mx-auto">
       {/* Location */}
-      <div className="flex flex-col flex-1 min-w-[110px] md:border-r border-gray-200 md:pr-4">
+      <div className="flex flex-col flex-1 min-w-[190px] md:border-r border-gray-200 md:pr-4">
         <span className=" font-semibold text-[#742E85] uppercase tracking-widest mb-1">Location</span>
-        <div className="relative">
+        <div className="relative ">
           <select
             value={selectedCity}
             onChange={(e) => setSelectedCity(e.target.value)}
@@ -249,7 +249,7 @@ function HeroWhyChooseUs({ projects, onFilteredProjects }) {
               className="absolute inset-0 md:hidden"
               style={{
                 background:
-                  "linear-gradient(to bottom, rgba(0,0,0,0.85) 0%, rgba(0,0,0,0.75) 55%, rgba(0,0,0,0.25) 55%)",
+                  "linear-gradient(to bottom, rgba(0,0,0,0.35) 0%, rgba(0,0,0,0.75) 55%, rgba(0,0,0,0.25) 55%)",
               }}
             />
 
@@ -258,7 +258,7 @@ function HeroWhyChooseUs({ projects, onFilteredProjects }) {
               className="absolute inset-0 hidden md:block"
               style={{
                 background:
-                  "linear-gradient(to right, rgba(0,0,0,0.72) 0%, rgba(0,0,0,0.72) 50%, rgba(0,0,0,0.0) 48.1%)",
+                  "linear-gradient(to right, rgba(0,0,0,0.35) 0%, rgba(0,0,0,0.72) 50%, rgba(0,0,0,0.0) 48.1%)",
               }}
             />
           </div>
@@ -267,7 +267,7 @@ function HeroWhyChooseUs({ projects, onFilteredProjects }) {
 
       {/* ── Content ── */}
       <div
-        className="relative flex flex-col justify-between px-6 md:px-14 lg:px-20 pt-6 pb-4"
+        className="relative flex flex-col justify-between px-6 md:px-14 lg:px-20 pt-6 pb-2"
         style={{ zIndex: 10, minHeight: "82vh" }}
       >
         <div className="flex-1 flex flex-col justify-center max-w-2xl">
@@ -323,7 +323,7 @@ function HeroWhyChooseUs({ projects, onFilteredProjects }) {
                 </h2>
               </div>
 
-              <ul className="space-y-3 w-full md:w-[500px] text-[14px] md:text-[15px]">
+              <ul className="space-y-3 w-full md:w-[500px] text-[14px] md:text-[15px] tracking-[1.5px]">
                 {slide.points.map((pt, i) => (
                   <li
                     key={i}
@@ -336,7 +336,7 @@ function HeroWhyChooseUs({ projects, onFilteredProjects }) {
                     }}
                   >
                     <span
-                      className="flex-shrink-0 rounded-full mt-2"
+                      className="flex-shrink-0 rounded-full mt-2 "
                       style={{ width: 7, height: 7, background: "#ffffff", marginTop: 8 }}
                     />
                     {pt}

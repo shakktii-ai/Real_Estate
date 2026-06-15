@@ -10,7 +10,7 @@ const PropertyCard = ({ project, isWishlisted, onToggleWishlist, onTourClick }) 
   const [showAllAmenities, setShowAllAmenities] = useState(false);
 
   const categoryColors = {
-    Premium: "bg-[#009966]",
+    Premium: "bg-[#00A529]",
     Luxury: "bg-[#F97316]",
     Affordable: "bg-[#1447EA]",
     Holiday: "bg-[#1DA2B3]",
@@ -39,7 +39,7 @@ const PropertyCard = ({ project, isWishlisted, onToggleWishlist, onTourClick }) 
                 .map((tag) => (
                   <span
                     key={tag}
-                    className={`px-2.5 py-0.5 rounded-full text-[10px] sm:text-xs font-bold whitespace-nowrap text-white ${categoryColors[tag] || "text-gray-600 bg-gray-100"}`}
+                    className={`px-2.5 py-0.5 rounded-full text-[8px] sm:text-[8px] font-medium whitespace-nowrap shadow-md text-white ${categoryColors[tag] || "text-gray-600 bg-gray-100"}`}
                   >
                     {tag}
                   </span>
@@ -59,7 +59,7 @@ const PropertyCard = ({ project, isWishlisted, onToggleWishlist, onTourClick }) 
               </span>
             )}
             {project.tags?.includes("RERA Verified") && (
-              <div className="absolute bottom-3 left-3 bg-[#DBFCE7] px-2 py-1 rounded-full flex items-center gap-1 text-[10px] text-[#009318] font-bold border border-green-200 whitespace-nowrap">
+              <div className="absolute bottom-3 left-3 bg-[#DBFCE7] px-2 py-0.5 rounded-full flex items-center gap-1 text-[8px] text-[#009318] font-medium border border-green-200 whitespace-nowrap shadow-md">
                 RERA Verified
               </div>
             )}

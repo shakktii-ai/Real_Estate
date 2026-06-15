@@ -13,7 +13,7 @@ export default function ContactPage() {
     phoneNumber: "",
     projectName: "",
     budget: "",
-    configuration: "",
+    configuration: [],
     message: "",
   });
 
@@ -21,18 +21,18 @@ export default function ContactPage() {
   const [loading, setLoading] = useState(false);
   const [status, setStatus] = useState({ type: "", message: "" });
 
-  // useEffect(() => {
-  //   const fetchProjects = async () => {
-  //     try {
-  //       const res = await fetch("/api/projects");
-  //       const data = await res.json();
-  //       setProjects(data);
-  //     } catch (error) {
-  //       console.error("Failed to fetch projects", error);
-  //     }
-  //   };
-  //   fetchProjects();
-  // }, []);
+  useEffect(() => {
+    const fetchProjects = async () => {
+      try {
+        const res = await fetch("/api/properties");
+        const data = await res.json();
+        setProjects(data);
+      } catch (error) {
+        console.error("Failed to fetch projects", error);
+      }
+    };
+    fetchProjects();
+  }, []);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -40,7 +40,13 @@ export default function ContactPage() {
   };
 
   const handleConfigChange = (config) => {
-    setFormData((prev) => ({ ...prev, configuration: config }));
+    setFormData((prev) => {
+      const current = Array.isArray(prev.configuration) ? prev.configuration : prev.configuration ? [prev.configuration] : [];
+      const nextConfiguration = current.includes(config)
+        ? current.filter((item) => item !== config)
+        : [...current, config];
+      return { ...prev, configuration: nextConfiguration };
+    });
   };
 
   const handleSubmit = async (e) => {
@@ -49,10 +55,17 @@ export default function ContactPage() {
     setStatus({ type: "", message: "" });
 
     try {
+      const payload = {
+        ...formData,
+        configuration: Array.isArray(formData.configuration)
+          ? formData.configuration.join(", ")
+          : formData.configuration,
+      };
+
       const res = await fetch("/api/contact", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(formData),
+        body: JSON.stringify(payload),
       });
 
       const data = await res.json();
@@ -64,7 +77,7 @@ export default function ContactPage() {
           phoneNumber: "",
           projectName: "",
           budget: "",
-          configuration: "",
+          configuration: [],
           message: "",
         });
       } else {
@@ -230,12 +243,11 @@ export default function ContactPage() {
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   {/* Project Name */}
                   <div className="space-y-2">
-                    <label className="text-[14px] font-medium">Project name *</label>
+                    <label className="text-[14px] font-medium">Project name</label>
                     <select 
                       name="projectName"
                       value={formData.projectName}
                       onChange={handleChange}
-                      required
                       className="w-full px-4 py-3 bg-[#F8F8F8] border border-gray-200 rounded-lg outline-none focus:border-[#742E85] transition-all text-gray-600"
                     >
                       <option value="">Select Project</option>
@@ -247,12 +259,11 @@ export default function ContactPage() {
                   </div>
                   {/* Budget */}
                   <div className="space-y-2">
-                    <label className="text-[14px] font-medium">Budget *</label>
+                    <label className="text-[14px] font-medium">Budget</label>
                     <select
                       name="budget"
                       value={formData.budget}
                       onChange={handleChange}
-                      required
                       className="w-full px-4 py-3 bg-[#F8F8F8] border border-gray-200 rounded-lg outline-none focus:border-[#742E85] transition-all text-gray-600"
                     >
                       <option value="">Select Budget</option>
@@ -266,7 +277,7 @@ export default function ContactPage() {
 
                 {/* Configuration */}
                 <div className="space-y-3">
-                  <label className="text-[14px] font-medium block">Configuration *</label>
+                  <label className="text-[14px] font-medium block">Configuration</label>
                   <div className="flex flex-wrap gap-2">
                     {["1 BHK", "1.5 BHK", "2 BHK", "2.5 BHK", "3 BHK", "3.5 BHK", "4 BHK", "4.5 BHK", "5 BHK", "5.5 BHK"].map((item) => (
                       <button
@@ -274,7 +285,7 @@ export default function ContactPage() {
                         type="button"
                         onClick={() => handleConfigChange(item)}
                         className={`px-4 py-2 rounded-md border text-[13px] font-medium transition ${
-                          formData.configuration === item
+                          Array.isArray(formData.configuration) && formData.configuration.includes(item)
                             ? "bg-[#E61E8C] text-white border-[#E61E8C]"
                             : "bg-white text-black border-gray-300 hover:border-[#742E85]"
                         }`}

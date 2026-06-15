@@ -194,7 +194,7 @@ const Navbar = () => {
           {user ? (
             <>
               <div className="relative" ref={dropdownRef}>
-                <button onClick={() => setOpen(!open)} className="relative p-2 text-black hover:text-[#742E85]">
+                <button onClick={() => setOpen(!open)} className="relative pt-2 text-black hover:text-[#742E85]">
                   <Bell size={20} />
                   {unreadCount > 0 && <span className="absolute top-0 right-0 bg-red-500 text-white text-[10px] w-4 h-4 flex items-center justify-center rounded-full">{unreadCount}</span>}
                 </button>
@@ -224,12 +224,12 @@ const Navbar = () => {
                 )}
               </div>
 
-              <Link href='/wishlist' className="relative pr-2 pt-2 text-black hover:text-[#742E85]">
+              <Link href='/wishlist' className="relative text-black hover:text-[#742E85]">
                 <Heart size={20} />
-                {wishlistCount > 0 && <span className="absolute top-0 right-0 bg-red-500 text-white text-[10px] w-4 h-4 flex items-center justify-center rounded-full">{wishlistCount}</span>}
+                {wishlistCount > 0 && <span className="absolute top-[-4] right-[-4] bg-red-500 text-white text-[10px] w-4 h-4 flex items-center justify-center rounded-full">{wishlistCount}</span>}
               </Link>
 
-              <Link href="/profile" className="hidden xl:flex text-black"><User size={20} /></Link>
+              <Link href="/profile" className="hidden xl:flex text-black "><User size={20} /></Link>
               <button onClick={handleLogout} className="hidden xl:flex text-black hover:cursor-pointer"><LogOut size={20} /></button>
             </>
           ) : (

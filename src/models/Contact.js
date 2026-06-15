@@ -14,15 +14,15 @@ const ContactSchema = new mongoose.Schema(
     },
     projectName: {
       type: String,
-      required: [true, "Project name is required"],
+      required: false,
     },
     budget: {
       type: String,
-      required: [true, "Budget is required"],
+      required: false,
     },
     configuration: {
       type: String,
-      required: [true, "Configuration is required"],
+      required: false,
     },
     message: {
       type: String,

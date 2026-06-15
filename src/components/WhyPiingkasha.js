@@ -2,20 +2,35 @@ import React from 'react';
 
 const features = [
   {
-    id: "01",
+    id: "01.",
     title: "No Brokerage | Rock Bottom Prices",
-    desc: ""
+    desc: "",
   },
   {
-    id: "02",
+    id: "02.",
     title: "Maharashtra Real Estate Regulatory Authority",
-    desc: "Rera no - A52100026024"
+    desc: "RERA No - A52100026024",
   },
   {
-    id: "03",
+    id: "03.",
     title: "Certified By NAREDCO",
-    desc: "National Real Estate Development Council"
-  }
+    desc: "National Real Estate Development Council",
+  },
+  {
+    id: "04.",
+    title: "9+ Years Of Experience",
+    desc: "",
+  },
+  {
+    id: "05.",
+    title: "Focused Approach",
+    desc: "",
+  },
+  {
+    id: "06.",
+    title: "Award-Winning Team",
+    desc: "",
+  },
 ];
 
 export default function WhyChooseUs() {

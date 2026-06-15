@@ -19,7 +19,7 @@ import {
   TrendingDown,
   Gift,
   User,
-  ChevronRight, ArrowRight, ChevronDown
+  ChevronRight, ArrowRight, ChevronDown, Star
 } from "lucide-react";
 
 // Step-scroll row: uses the same carousel mechanism as the Google Reviews section
@@ -842,6 +842,35 @@ export default function WebsitePage() {
       {/* <WhyChooseUs /> */}
       <About showOn="homepage" />
       <h2 className="text-md md:text-xl font-bold text-[#742E85]  flex items-center justify-center">Google Reviews</h2>
+      <div className="flex flex-col md:flex-row items-center justify-center   gap-6 md:gap-26 mb-2">
+                {/* Rating */}
+                <div className="text-center">
+                    <div className="flex items-center justify-center gap-1 mb-1">
+                        <span className="text-3xl font-bold text-gray-900">5.0</span>
+
+                        {[...Array(5)].map((_, i) => (
+                            <Star
+                                key={i}
+                                size={16}
+                                className="fill-[#FBBC05] text-[#FBBC05]"
+                            />
+                        ))}
+                    </div>
+
+                    <p className="text-sm text-black">on Google</p>
+                </div>
+
+                {/* Button */}
+                <a
+                    href="https://www.google.com/maps/place/PIINGGAKSHA/@18.4603827,73.9150395,17z/data=!4m8!3m7!1s0x3bc2eb291d95088b:0xbfae7509b6f71b86!8m2!3d18.4603827!4d73.9150395!9m1!1b1!16s%2Fg%2F11lsyb5yk1?hl=en&entry=ttu"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="inline-flex items-center gap-2 px-5 py-2 bg-blue-600 text-white rounded-full font-medium hover:bg-blue-700 transition-colors text-sm"
+                >
+                    Review Us on Google
+                </a>
+            </div>
+
       <Review />
 
       {/* Builder Partners Marquee Section */}

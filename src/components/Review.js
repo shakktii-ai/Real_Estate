@@ -10,6 +10,7 @@ export default function ReviewsPage() {
   const [index, setIndex] = useState(0);
   const [itemsPerView, setItemsPerView] = useState(5);
   const [isHovering, setIsHovering] = useState(false);
+  const [isModalOpen, setIsModalOpen] = useState(false);
   const [isTransitioning, setIsTransitioning] = useState(true);
 
   useEffect(() => {
@@ -39,13 +40,13 @@ export default function ReviewsPage() {
   }, []);
 
   useEffect(() => {
-    if (reviews.length === 0 || isHovering) return;
+    if (reviews.length === 0 || isHovering || isModalOpen) return;
     const interval = setInterval(() => {
       setIsTransitioning(true);
       setIndex((prev) => prev + 1);
     }, 3000);
     return () => clearInterval(interval);
-  }, [reviews.length, isHovering]);
+  }, [reviews.length, isHovering, isModalOpen]);
 
   useEffect(() => {
     if (index >= reviews.length && reviews.length > 0) {
@@ -106,7 +107,11 @@ export default function ReviewsPage() {
                   key={`${review._id}-${i}`}
                   className={`flex-shrink-0 px-3 ${getItemWidthClass()}`}
                 >
-                  <ReviewCard review={review} />
+                  <ReviewCard
+                    review={review}
+                    onOpen={() => setIsModalOpen(true)}
+                    onClose={() => setIsModalOpen(false)}
+                  />
                 </div>
               ))}
             </div>

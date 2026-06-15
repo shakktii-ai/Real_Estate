@@ -494,12 +494,12 @@ function PropertyFilterBar({ projects, onFilteredProjects }) {
         const filtered = projects.filter((project) => {
             const matchesBudget = (project.pricing?.maxPrice || 0) / 100000 <= budget;
             // const matchesCity = !selectedCity || project.address?.city === selectedCity;
-           const matchesCity =
-  selectedCity === "Pune"
-    ? project.address?.city === "Pune"
-    : project.address?.area
-        ?.toLowerCase()
-        .includes(selectedCity.toLowerCase());
+            const matchesCity =
+                selectedCity === "Pune"
+                    ? project.address?.city === "Pune"
+                    : project.address?.area
+                        ?.toLowerCase()
+                        .includes(selectedCity.toLowerCase());
             const matchesCategory = !selectedCategory || project.tags?.includes(selectedCategory);
             const matchesStatus = !selectedStatus || project.status === selectedStatus;
             return matchesBudget && matchesCity && matchesCategory && matchesStatus;
@@ -537,16 +537,16 @@ function PropertyFilterBar({ projects, onFilteredProjects }) {
                         className={selectClass}
                         style={{ WebkitAppearance: "none", MozAppearance: "none" }}
                     >
-                     <option value="Pune">Pune</option>
-                      <option value="Hadapsar">Pune - Hadapsar</option>
-                      <option value="Kondhwa">Pune - Kondhwa</option>
-                      <option value="Pisoli">Pune - Pisoli</option>
-                    <option value="Undri">Pune - Undri</option>
-                     <option value="Mohammed Wadi">Pune - Mohammed Wadi</option>
-                   <option value="Salisbury Park">Pune - Salisbury Park</option>
-                  <option value="Gultekdi">Pune - Gultekdi</option>
-                   <option value="Wadachi Wadi">Pune - Wadachi Wadi</option>
-                    <option value="NIBM Road">Pune - NIBM Road</option>
+                        <option value="Pune">Pune</option>
+                        <option value="Hadapsar">Pune - Hadapsar</option>
+                        <option value="Kondhwa">Pune - Kondhwa</option>
+                        <option value="Pisoli">Pune - Pisoli</option>
+                        <option value="Undri">Pune - Undri</option>
+                        <option value="Mohammed Wadi">Pune - Mohammed Wadi</option>
+                        <option value="Salisbury Park">Pune - Salisbury Park</option>
+                        <option value="Gultekdi">Pune - Gultekdi</option>
+                        <option value="Wadachi Wadi">Pune - Wadachi Wadi</option>
+                        <option value="NIBM Road">Pune - NIBM Road</option>
                         {cities.filter(c => c !== "Pune").map(city => (
                             <option key={city} value={city}>{city}</option>
                         ))}
@@ -677,8 +677,8 @@ function HeroWhyChooseUs({ projects, onFilteredProjects }) {
                         <div
                             className="absolute inset-0 hidden md:block"
                             style={{
-                                background:
-                                    "linear-gradient(to right, rgba(0,0,0,0.37) 0%, rgba(0,0,0,0.72) 50%, rgba(0,0,0,0.0) 48.1%)",
+                                width: "50%",
+                                background: "rgba(0,0,0,0.40)",
                             }}
                         />
                     </div>
@@ -731,7 +731,7 @@ function HeroWhyChooseUs({ projects, onFilteredProjects }) {
                                 <h2
                                     className="font-bold leading-tight text-[22px] md:text-[28px] w-full md:w-[440px]"
                                     style={{
-                                        
+
                                         background: "linear-gradient(90deg, #ffffff 0%, #E372FF 100%)",
                                         WebkitBackgroundClip: "text",
                                         WebkitTextFillColor: "transparent",
@@ -749,7 +749,7 @@ function HeroWhyChooseUs({ projects, onFilteredProjects }) {
                                         className="flex items-start gap-3 leading-snug"
                                         style={{
                                             color: "#ffffff",
-                                           
+
                                             fontWeight: 400,
                                         }}
                                     >
@@ -785,9 +785,9 @@ function FeaturedProjectCarousel({ projects, direction, onTourClick, showTopCont
         const measureStep = () => {
             if (!carouselRef.current) return;
             if (window.innerWidth < 640) {
-    setCardStep(carouselRef.current.parentElement.offsetWidth);
-    return;
-  }
+                setCardStep(carouselRef.current.parentElement.offsetWidth);
+                return;
+            }
             const firstCard = carouselRef.current.querySelector(':scope > div');
             if (!firstCard) return;
             setCardStep(Math.round(firstCard.getBoundingClientRect().width + 16));

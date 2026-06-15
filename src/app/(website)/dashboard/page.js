@@ -256,10 +256,10 @@ function HeroWhyChooseUs({ projects, onFilteredProjects }) {
             {/* Desktop */}
             <div
               className="absolute inset-0 hidden md:block"
-              style={{
-                background:
-                  "linear-gradient(to right, rgba(0,0,0,0.35) 0%, rgba(0,0,0,0.72) 50%, rgba(0,0,0,0.0) 48.1%)",
-              }}
+               style={{
+    width: "50%",
+    background: "rgba(0,0,0,0.40)",
+  }}
             />
           </div>
         </div>

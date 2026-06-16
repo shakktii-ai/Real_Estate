@@ -846,7 +846,7 @@ export default function WebsitePage() {
                 {/* Rating */}
                 <div className="text-center">
                     <div className="flex items-center justify-center gap-1 mb-1">
-                        <span className="text-3xl font-bold text-gray-900">5.0</span>
+                        <span className="text-3xl font-bold text-gray-900">4.8</span>
 
                         {[...Array(5)].map((_, i) => (
                             <Star

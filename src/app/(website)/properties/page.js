@@ -341,7 +341,7 @@ const handleApplyFilters = () => {
                 <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-5 mb-8">
                     <div>
                         <h1 className="text-[20px] md:text-[30px] leading-none font-bold text-[#742E85]">
-                            New Projects in Wakad, Pune
+                            New Projects in Pune
                         </h1>
                         <p className="mt-4 text-[14px] md:text-[18px] text-black">
                             {filteredProjects.length} Projects found

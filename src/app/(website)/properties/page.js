@@ -78,12 +78,12 @@ function PropertyFilterBar({ projects, selectedCity, setSelectedCity, selectedCa
       <div className="flex flex-col flex-1 min-w-[220px] md:border-r border-gray-200 md:px-4">
         <span className=" text-[#742E85] uppercase tracking-widest mb-1">Budget</span>
         <input
-          type="range" min="50" max="400" value={budget}
+          type="range" min="50" max="1000" value={budget}
           onChange={(e) => setBudget(Number(e.target.value))}
           className="w-full accent-[#742E85] mt-1"
         />
         <span className="text-xs text-gray-600 mt-0.5 font-medium">
-          ₹50L - ₹{budget >= 400 ? "4Cr" : `${budget}L`}
+          ₹50L - ₹{budget >= 1000 ? "10Cr" : `${budget}L`}
         </span>
       </div>
 

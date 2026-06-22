@@ -410,7 +410,7 @@ export default function About({ showOn }) {
                   className="flex flex-col md:flex-row gap-6 items-center w-full h-full"
                 >
                   {/* Blog Image */}
-                  <div className="relative w-full md:w-[220px] h-full md:h-[176px] rounded-[15px] flex-shrink-0 overflow-hidden bg-white border border-gray-100 shadow-sm flex items-center justify-center">
+                  <div className="relative w-full md:w-[220px] h-[176px] rounded-[15px] flex-shrink-0 overflow-hidden bg-white border border-gray-100 shadow-sm flex items-center justify-center">
                     <Image
                       src={currentBlog.image}
                       alt={currentBlog.title}

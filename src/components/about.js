@@ -415,7 +415,7 @@ export default function About({ showOn }) {
                       src={currentBlog.image}
                       alt={currentBlog.title}
                       fill
-                      className="object-cover" 
+                      className="object-fill" 
                       sizes="(max-width: 768px) 100vw, 220px"
                     />
                   </div>

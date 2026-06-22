@@ -273,14 +273,24 @@ function HeroWhyChooseUs({ projects, onFilteredProjects }) {
         <div className="flex-1 flex flex-col justify-center max-w-2xl">
 
           <p
-            className="mb-5 font-bold uppercase tracking-[0.22em]"
+            className="mb-5 font-bold"
             style={{
-              color: "#ffffff",
-              fontSize: "clamp(13px, 1.6vw, 18px)",
-              letterSpacing: "0.22em",
+                            background: "linear-gradient(to right, #ffffff, #e862ff)",
+              WebkitBackgroundClip: "text",
+              WebkitTextFillColor: "transparent",
+              backgroundClip: "text",
+              fontSize: "clamp(14px, 1.8vw, 19px)",
+              lineHeight: "28px",
+              letterSpacing: "0em",
+              width: "fit-content",
+              filter: "drop-shadow(0px 2px 4px rgba(0, 0, 0, 0.35))",
+
             }}
           >
-            WHY CHOOSE US
+                      The Address That Defines Success,
+            <br />
+            Your Gateway to Premium Living in Pune South
+
           </p>
 
           <AnimatePresence mode="wait">
@@ -309,7 +319,7 @@ function HeroWhyChooseUs({ projects, onFilteredProjects }) {
                 </div>
 
                 <h2
-                  className="font-bold leading-tight text-[22px] md:text-[28px] w-full md:w-[440px]"
+                  className="font-bold leading-tight text-[16px] md:text-[22px] w-full md:w-[440px]"
                   style={{
 
                     // fontSize: "clamp(22px, 2.8vw, 36px)",
@@ -323,7 +333,7 @@ function HeroWhyChooseUs({ projects, onFilteredProjects }) {
                 </h2>
               </div>
 
-              <ul className="space-y-3 w-full md:w-[500px] text-[14px] md:text-[15px] tracking-[1.5px]">
+              <ul className="space-y-3 w-full md:w-[500px] text-[13px] md:text-[15px] tracking-[1.5px]">
                 {slide.points.map((pt, i) => (
                   <li
                     key={i}
@@ -337,7 +347,7 @@ function HeroWhyChooseUs({ projects, onFilteredProjects }) {
                   >
                     <span
                       className="flex-shrink-0 rounded-full mt-2 "
-                      style={{ width: 7, height: 7, background: "#ffffff", marginTop: 8 }}
+                      style={{ width: 5, height: 5, background: "#ffffff", marginTop: 8 }}
                     />
                     {pt}
                   </li>

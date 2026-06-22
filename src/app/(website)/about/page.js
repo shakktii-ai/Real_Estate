@@ -1,556 +1,511 @@
 "use client";
-import { useState, useEffect, useRef } from "react";
+
 import Image from "next/image";
-import { ChevronLeft, ChevronRight, Maximize2, X } from "lucide-react";
-import { motion, AnimatePresence } from "framer-motion";
+import { useState, useRef, useEffect } from "react";
+import { motion } from "framer-motion";
+import About from "@/components/about";
 
-// Blog tips data with screenshots details mapped to images and content
-const BLOG_TIPS = [
+export default function AboutUs() {
+  const [activeIndex, setActiveIndex] = useState(0);
+  const scrollRef = useRef(null);
+  const [isPaused, setIsPaused] = useState(false);
+
+  const awards = [65, 71, 60, 61];
+  const strengths = [
   {
-    id: 1,
-    image: "/Rectangle_5747_1.png",
-    title: "Why NIBM Road is One of Pune's Most Preferred Residential Destinations in 2026",
-    content: `**Primary Keywords:**
-• NIBM Road Pune Property
-• Buy Flat in NIBM Pune
-• Luxury Apartments in NIBM
-• NIBM Residential Projects
-• NIBM Property Investment
-
-**Secondary Keywords:**
-• Premium Homes in Pune
-• NIBM Road Real Estate
-• Gated Communities in NIBM`
+    label: "RERA Registered & Industry Certified",
+    points: [
+      "Maharashtra RERA registered for complete transparency.",
+      "NAREDCO–REMI certified real estate professionals.",
+      "Trusted, compliant, and credible property advisory services."
+    ]
   },
   {
-    id: 2,
-    image: "/Rectangle_5747_2.png",
-    title: "Undri vs NIBM: Which Area is Better for Home Buyers and Investors?",
-    content: `**Primary Keywords:**
-• Undri vs NIBM
-• Property Investment in Undri
-• Flats in Undri Pune
-• NIBM Property Prices
-• Best Area to Buy Property in Pune
-
-**Search Intent:**
-Comparison-driven buyers researching locations before purchase. Undri is often considered more affordable than NIBM while offering appreciation potential and growing social infrastructure.`
+    label: "9+ Years of Real Estate Expertise",
+    points: [
+      "Deep understanding of Pune’s residential property market.",
+      "Expert guidance to help you make informed decisions.",
+      "Trusted support from property search to final booking."
+    ]
   },
   {
-    id: 3,
-    image: "/Rectangle_5747_3.png",
-    title: "Top Reasons Families are Choosing Mohammadwadi for Their Dream Home",
-    content: `**Primary Keywords:**
-• Mohammadwadi Pune Property
-• Flats in Mohammadwadi
-• Residential Projects in Mohammadwadi
-• Luxury Homes in Mohammadwadi
-
-**Secondary Keywords:**
-• Family-Friendly Areas in Pune
-• Schools Near Mohammadwadi
-• Premium Living in Pune`
+    label: "GST-Compliant & Transparent Operations",
+    points: [
+      "Fully GST-compliant business practices.",
+      "Complete transparency in all transactions.",
+      "Clear documentation and billing process.",
+     
+    ]
   },
   {
-    id: 4,
-    image: "/Rectangle_5747_4.png",
-    title: "NIBM Annexe: Pune's Emerging Luxury Residential Corridor",
-    content: `**Primary Keywords:**
-• NIBM Annexe Property
-• NIBM Annexe Projects
-• Luxury Flats in NIBM Annexe
-• Premium Homes Pune
-
-**Long-Tail Keywords:**
-• Best Residential Projects in NIBM Annexe
-• Future Growth of NIBM Annexe`
+    label: "100% No Brokerage, No Advisory Fees",
+    points: [
+      "Pay absolutely zero brokerage charges.",
+      "No hidden advisory or consultation fees.",
+      "Save significantly on your property purchase.",
+     
+    ]
   },
   {
-    id: 5,
-    image: "/Rectangle_5747_5.png",
-    title: "Is Handewadi the Next Real Estate Growth Hub of South Pune?",
-    content: `**Primary Keywords:**
-• Handewadi Pune Property
-• Flats in Handewadi
-• Property Investment in Handewadi
-• Affordable Housing Pune
-
-**Secondary Keywords:**
-• South Pune Real Estate
-• Handewadi Infrastructure Development
-• Handewadi Property Appreciation`
+    label: "Exclusive Developer Partnerships",
+    points: [
+      "Access to pre-launch and exclusive project offers.",
+      "Special pricing through trusted developer tie-ups.",
+      "Opportunity to secure homes at competitive rates."
+    ]
   },
   {
-    id: 6,
-    image: "/Rectangle_5747_6.png",
-    title: "Lullanagar Real Estate Guide: Premium Living in the Heart of Pune",
-    content: `**Primary Keywords:**
-• Lullanagar Pune Property
-• Luxury Flats in Lullanagar
-• Premium Residential Projects Pune
-• Buy Home in Lullanagar
-
-**SEO Focus:**
-Luxury buyers, NRI buyers, and HNI investors.`
+    label: "Customer-First Approach",
+    points: [
+      "Personalized property recommendations.",
+      "Honest and transparent buying guidance.",
+      "Dedicated support at every stage."
+    ]
   },
   {
-    id: 7,
-    image: "/Rectangle_5747_7.png",
-    title: "Property Appreciation Trends in NIBM, Undri and Mohammadwadi: Where Should You Invest?",
-    content: `**Primary Keywords:**
-• Property Appreciation Pune
-• Pune Real Estate Investment
-• Best Investment Areas in Pune
-• NIBM vs Mohammadwadi
-
-**Secondary Keywords:**
-• Pune Property Market Trends
-• ROI on Property in Pune`
+    label: "End-to-End Property Assistance",
+    points: [
+      "Expert support from search to possession.",
+      "Organized site visits and project walkthroughs.",
+      "Home loan and financing assistance."
+    ]
   },
   {
-    id: 8,
-    image: "/Rectangle_5747_8.png",
-    title: "Complete Home Buyer's Guide for South Pune: NIBM, Undri, Mohammadwadi and Handewadi",
-    content: `**Primary Keywords:**
-• Home Buying Guide Pune
-• Property Buying Tips Pune
-• Residential Property Pune
-• Best Localities in South Pune
-
-**High-Converting Keywords:**
-• First-Time Home Buyer Pune
-• Pune Property Consultant`
-  },
-  {
-    id: 9,
-    image: "/Rectangle_5747_9.png",
-    title: "Upcoming Infrastructure Projects Boosting Property Prices in South Pune",
-    content: `**Primary Keywords:**
-• Pune Infrastructure Projects
-• Property Price Growth Pune
-• South Pune Development
-• Pune Metro Impact on Property
-
-**Description:**
-Infrastructure improvements remain a major factor influencing real estate demand and price appreciation in Pune.`
-  },
-  {
-    id: 10,
-    image: "/Rectangle_5747_10.png",
-    title: "Best Residential Projects Near NIBM and Undri for End Users and Investors",
-    content: `**Primary Keywords:**
-• Best Residential Projects Pune
-• New Launch Projects in NIBM
-• New Projects in Undri
-• Luxury Apartments Pune
-
-**Transactional Keywords:**
-• Book Flat in Pune
-• Ready Possession Flats Pune
-• New Launch Properties Pune
-
-**Highest Ranking SEO Keywords for Your Website:**
-Focus on these keywords across blogs, landing pages, and FAQs:
-• High Volume Keywords
-• Local SEO Keywords
-• Property in Pune / NIBM Pune
-• Flats in Pune / Undri Pune
-• Luxury Apartments Pune
-• Flats in Mohammadwadi Pune
-• Residential Projects Pune
-• Property in Handewadi Pune
-• New Launch Projects Pune
-• Luxury Flats in Lullanagar
-• Buy Flat in Pune
-• NIBM Annexe Property
-• Real Estate Investment Pune
-• South Pune Property
-• Premium Homes Pune
-• Residential Projects NIBM
-• Property Consultant Pune
-• Buy Home in Undri
-• Best Areas to Buy Property in Pune
-• Mohammadwadi Real Estate
-
-**Content Strategy for Maximum SEO Results:**
-• 4 Location Guides (NIBM, Undri, Mohammadwadi, Handewadi)
-• 2 Comparison Blogs (NIBM vs Undri, Undri vs Handewadi)
-• 2 Investment Blogs
-• 1 Infrastructure Blog
-• 1 Buyer Guide`
+    label: "Trusted by Hundreds of Homebuyers",
+    points: [
+      "Preferred choice of homebuyers across Pune.",
+      "Access to genuine and verified property options.",
+      "Known for competitive pricing and value deals."
+    ]
   }
 ];
+const handleScroll = (index) => {
+    if (scrollRef.current) {
+      const container = scrollRef.current;
+      const card = container.children[index];
 
-export default function About({ showOn }) {
-  const [reviews, setReviews] = useState([]);
-  const [startIndex, setStartIndex] = useState(0);
-  const [expandedVideo, setExpandedVideo] = useState(null);
+      if (card) {
+        const containerWidth = container.offsetWidth;
+        const cardOffset = card.offsetLeft;
+        const cardWidth = card.offsetWidth;
 
-  // Blog section state variables
-  const [blogIndex, setBlogIndex] = useState(0);
-  const [isBlogHovering, setIsBlogHovering] = useState(false);
-  const [selectedBlog, setSelectedBlog] = useState(null);
-  const [slideDirection, setSlideDirection] = useState("up"); // Direction of scroll animation
-  const timerRef = useRef(null);
+        const scrollTo = cardOffset - containerWidth / 2 + cardWidth / 2;
 
-  useEffect(() => {
-    const fetchReviews = async () => {
-      try {
-        const url = showOn ? `/api/testimonials?showOn=${showOn}` : "/api/testimonials";
-        const res = await fetch(url);
-        const data = await res.json();
-        setReviews(Array.isArray(data) ? data : []);
-      } catch (error) {
-        console.error("Error fetching testimonials:", error);
+        container.scrollTo({
+          left: scrollTo,
+          behavior: "smooth",
+        });
       }
-    };
-    fetchReviews();
-  }, [showOn]);
-
-  // Blog auto-scrolling interval: scrolls every 3 seconds unless hovering or modal open
-  useEffect(() => {
-    if (isBlogHovering || selectedBlog) {
-      if (timerRef.current) clearInterval(timerRef.current);
-      return;
     }
+  };
 
-    timerRef.current = setInterval(() => {
-      setSlideDirection("up");
-      setBlogIndex((prev) => (prev + 1) % BLOG_TIPS.length);
+  useEffect(() => {
+    if (isPaused) return;
+
+    const interval = setInterval(() => {
+      setActiveIndex((prev) => (prev + 1) % awards.length);
     }, 3000);
 
-    return () => {
-      if (timerRef.current) clearInterval(timerRef.current);
-    };
-  }, [isBlogHovering, selectedBlog]);
+    return () => clearInterval(interval);
+  }, [isPaused, awards.length]);
 
-  const handleNextReview = () => {
-    if (reviews.length === 0) return;
-    setStartIndex((prev) => (prev + 1) % reviews.length);
-  };
-
-  const handlePrevReview = () => {
-    if (reviews.length === 0) return;
-    setStartIndex((prev) => (prev - 1 + reviews.length) % reviews.length);
-  };
-
-  const handleBlogNext = () => {
-    setSlideDirection("up");
-    setBlogIndex((prev) => (prev + 1) % BLOG_TIPS.length);
-  };
-
-  const handleBlogPrev = () => {
-    setSlideDirection("down");
-    setBlogIndex((prev) => (prev - 1 + BLOG_TIPS.length) % BLOG_TIPS.length);
-  };
-
-  const isVideo = (url) =>
-    url && (url.includes(".mp4") || url.includes("video/upload"));
-
-  // Formatter to render full content cleanly in modal popup
-  const formatContent = (text) => {
-    if (!text) return null;
-    return text.split("\n").map((line, idx) => {
-      if (line.trim().startsWith("**") && line.trim().endsWith("**")) {
-        return (
-          <h4 key={idx} className="font-bold text-[#742E85] text-md mt-4 mb-2 uppercase tracking-wide">
-            {line.replace(/\*\*/g, "")}
-          </h4>
-        );
-      }
-      if (line.trim().startsWith("•")) {
-        return (
-          <li key={idx} className="ml-5 list-disc text-sm text-gray-700 py-0.5">
-            {line.replace(/•\s*/, "")}
-          </li>
-        );
-      }
-      if (line.trim() === "") return <div key={idx} className="h-2" />;
-      return (
-        <p key={idx} className="text-sm text-gray-600 leading-relaxed my-1">
-          {line}
-        </p>
-      );
-    });
-  };
-
-  const currentReview = reviews[startIndex];
-  const currentBlog = BLOG_TIPS[blogIndex];
-
-  // Framer Motion slide variants
-  const slideVariants = {
-    initial: (direction) => ({
-      y: direction === "up" ? 40 : -40,
-      opacity: 0
-    }),
-    animate: {
-      y: 0,
-      opacity: 1,
-      transition: { duration: 0.4, ease: "easeOut" }
-    },
-    exit: (direction) => ({
-      y: direction === "up" ? -40 : 40,
-      opacity: 0,
-      transition: { duration: 0.4, ease: "easeIn" }
-    })
-  };
+  useEffect(() => {
+    handleScroll(activeIndex);
+  }, [activeIndex]);
 
   return (
-    <section className="px-6 py-10 lg:px-16 max-w-7xl mx-auto text-black font-roboto-condensed">
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-10 lg:gap-14">
-
-        {/* ================= LEFT SECTION: WHAT THEY SAY ABOUT US ================= */}
-        <div className="flex flex-col h-full justify-between">
-          <div>
-            <h2 className="text-md md:text-xl font-bold text-[#E5097F] mb-6">
-              What They Say About Us
-            </h2>
-
-            {currentReview ? (
-              <div className="bg-[#F4F4F4] p-5 md:p-6 rounded-[21px] flex flex-col md:flex-row gap-6 items-center shadow-[4px_4px_7.3px_rgba(0,0,0,0.15)] w-full min-h-[305px]">
-
-                {/* Review Media Panel */}
-                <div className="relative w-full md:w-[220px] h-[160px] md:h-[180px] rounded-[21px] flex-shrink-0 overflow-hidden group bg-white border border-gray-100 shadow-inner flex items-center justify-center">
-                  {currentReview.videoUrl && isVideo(currentReview.videoUrl) ? (
-                    <video
-                      src={currentReview.videoUrl}
-                      className="w-full h-full object-cover"
-                      controls
-                    />
-                  ) : (
-                    <Image
-                      src={currentReview.videoUrl || "/piinggaksha.png"}
-                      alt={currentReview.customerName}
-                      fill
-                      className={currentReview.videoUrl ? "object-cover" : "object-contain p-10"}
-                      sizes="(max-width: 768px) 100vw, 220px"
-                    />
-                  )}
-                  {currentReview.videoUrl && (
-                    <button
-                      onClick={() => setExpandedVideo(currentReview.videoUrl)}
-                      className="absolute top-3 right-3 bg-black/60 hover:bg-black/80 text-white p-2 rounded-lg opacity-0 group-hover:opacity-100 transition-opacity duration-200"
-                      title="Enlarge"
-                    >
-                      <Maximize2 size={16} />
-                    </button>
-                  )}
-                </div>
-
-                {/* Review Details */}
-                <div className="flex-1 text-black w-full min-w-0">
-                  <div className="text-[#742E85] text-4xl h-6 leading-none">“</div>
-                  <p className="text-xs md:text-sm leading-relaxed mb-2 line-clamp-5">{currentReview.reviewText}</p>
-                  <div className="mb-2 text-yellow-500 text-md flex gap-1">
-                    {"★".repeat(currentReview.rating || 5)}
-                  </div>
-
-                  <div className="flex items-center gap-3 flex-wrap">
-                    <div className="w-8 h-8 rounded-full bg-gradient-to-br from-[#CCA4D6] to-[#742E85] flex items-center justify-center text-white font-bold uppercase text-xs">
-                      {currentReview.customerName?.charAt(0)}
-                    </div>
-                    <span className="text-xs md:text-sm font-bold text-black uppercase tracking-wider truncate">
-                      by {currentReview.customerName}
-                    </span>
-                    {currentReview.googleLink && (
-                      <a
-                        href={currentReview.googleLink}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="text-[11px] text-[#742E85] underline ml-auto"
-                      >
-                        View
-                      </a>
-                    )}
-                  </div>
-                </div>
-              </div>
-            ) : (
-              <div className="bg-[#F4F4F4] rounded-[21px] flex items-center justify-center min-h-[305px] text-gray-400 text-sm shadow-[4px_4px_7.3px_rgba(0,0,0,0.15)]">
-                No testimonials found.
-              </div>
-            )}
+    <div className="flex flex-col min-h-screen bg-white overflow-x-hidden font-roboto-condensed text-black">
+      <main>
+        <section className="relative overflow-hidden min-h-[476px] h-auto lg:h-[476px] flex flex-col justify-center z-0 py-4 lg:py-0">
+          <div className="absolute inset-0">
+            <Image
+              src="/Rectangle_4826.png"
+              alt="Hero Background"
+              fill
+              className="object-cover object-center"
+              sizes="100vw"
+              priority
+            />
           </div>
-
-          {/* Testimonials Pagination Controls */}
-          <div className="flex justify-center gap-4 mt-6">
-            <button
-              onClick={handlePrevReview}
-              className="w-10 h-10 rounded-full border border-[#742E85] text-[#742E85] hover:bg-[#742E85] hover:text-white flex items-center justify-center transition shadow-sm"
-            >
-              <ChevronLeft size={18} />
-            </button>
-            <button
-              onClick={handleNextReview}
-              className="w-10 h-10 rounded-full border border-[#742E85] text-[#742E85] hover:bg-[#742E85] hover:text-white flex items-center justify-center transition shadow-sm"
-            >
-              <ChevronRight size={18} />
-            </button>
+          <div
+            className="absolute inset-0"
+            style={{
+              background:
+                "linear-gradient(178.85deg, #FFFFFF -21.47%, rgba(255, 255, 255, 0) 373%)",
+            }}
+          />
+          <div className="relative z-10 px-6 lg:px-16 max-w-[720px]">
+            <h1 className="text-md lg:text-[25px] font-bold text-primary-purple mb-4">
+              About Us
+            </h1>
+            <p className="text-base lg:text-[18px] leading-relaxed lg:leading-[30px] text-black">
+              Piinggaksha is a company focused on simplifying the home buying
+              process for its clients.{" "}
+              <span className="font-bold">PIINGGAKSHA REALTY</span> is a
+              Maharashtra RERA-Registered and NAREDCO–REMI Certified real estate
+              consultancy firm based in South Pune, proudly serving clients for
+              over 9+ years.
+              <br />
+              We are a GST-compliant, performance-driven organization focused on
+              delivering value, trust, and transparency in every real estate
+              transaction.
+            </p>
           </div>
-        </div>
+        </section>
 
-        {/* ================= RIGHT SECTION: BLOG TIPS ================= */}
-        <div className="flex flex-col h-full justify-between"
-          onMouseEnter={() => setIsBlogHovering(true)}
-          onMouseLeave={() => setIsBlogHovering(false)}>
-          <div>
-            <h2 className="text-md md:text-xl font-bold text-[#E5097F] mb-6">
-              Blog Tips
-            </h2>
-
-            <div className="bg-[#F4F4F4] p-5 md:p-6 rounded-[21px] shadow-[4px_4px_7.3px_rgba(0,0,0,0.15)] w-full min-h-[305px] overflow-hidden relative flex flex-col justify-center">
-              <AnimatePresence mode="wait" custom={slideDirection}>
-                <motion.div
-                  key={blogIndex}
-                  custom={slideDirection}
-                  variants={slideVariants}
-                  initial="initial"
-                  animate="animate"
-                  exit="exit"
-                  className="flex flex-col md:flex-row gap-6 items-center w-full h-full"
-                >
-                  {/* Blog Image */}
-                  <div className="relative w-full md:w-[220px] h-[176px] rounded-[21px] flex-shrink-0 overflow-hidden bg-white border border-gray-100 shadow-sm flex items-center justify-center">
-                    <Image
-                      src={currentBlog.image}
-                      alt={currentBlog.title}
-                      fill
-                      className="object-cover"
-                      sizes="(max-width: 768px) 100vw, 220px"
-                    />
-                  </div>
-
-                  {/* Blog Summary Details */}
-                  <div className="flex-1 text-black w-full min-w-0">
-                    <div className="text-[#742E85] text-4xl h-6 leading-none">“</div>
-                    <h3 className="font-bold text-[13px] md:text-[14px] text-slate-800 leading-snug mb-2 line-clamp-2">
-                      {currentBlog.title}
-                    </h3>
-
-                    {/* Shortened preview of keywords or layout */}
-                    <p className="text-[11px] md:text-[12px] text-gray-600 leading-relaxed mb-3 line-clamp-4 whitespace-pre-line">
-                      {currentBlog.content.replace(/\*\*/g, "").replace(/•/g, "-")}
-                    </p>
-
-                    <div>
-                      {currentBlog.content.length > 120 && (
-                        <button
-                          onClick={() => setSelectedBlog(currentBlog)}
-                          className="text-[#E5097F] font-bold text-xs hover:underline cursor-pointer flex items-center gap-0.5 mt-2"
-                        >
-                          Read more
-                        </button>
-                      )}
-                    </div>
-                  </div>
-                </motion.div>
-              </AnimatePresence>
+        <section className="relative z-10 lg:-mt-16 px-6 lg:px-16 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mb-8">
+          <div className="relative h-[550] md:h-[450px] mx-auto w-full max-w-[402px]">
+            <Image
+              src="/about_1.jpg"
+              alt="Our Vision"
+              fill
+              className="object-cover rounded-2xl opacity-70"
+              sizes="402px"
+            />
+            <div
+              className="absolute top-0 left-[43px] right-[43px] h-[293px] z-10"
+              style={{
+                background:
+                  "radial-gradient(97.99% 97.99% at 50% 50%, #FFFFFF 0%, #CCA4D6 100%)",
+              }}
+            >
+              <div className="p-8 h-full flex flex-col justify-start">
+                <h2 className="text-[18px] font-medium underline decoration-primary-pink underline-offset-8 mb-4">
+                  Our Vision
+                </h2>
+                <p className="bg-white p-3 rounded text-[12px] leading-relaxed text-black">
+                  To be Pune's most trusted real estate advisory by combining
+                  market expertise, transparency, and customer-first ethics,
+                  ensuring that every client finds not just a house — but a
+                  place they can proudly call home.
+                </p>
+              </div>
             </div>
           </div>
 
-          {/* Blog Pagination Controls */}
-          <div className="flex justify-center gap-4 mt-6">
-            <button
-              onClick={handleBlogPrev}
-              className="w-10 h-10 rounded-full border border-[#742E85] text-[#742E85] hover:bg-[#742E85] hover:text-white flex items-center justify-center transition shadow-sm"
+          
+
+              
+          {/* CORE STRENGTHS CARD - SLIDE AND PAUSE ONE-BY-ONE */}
+          <div className="relative h-[600] md:h-[450px] mx-auto w-full max-w-[402px]">
+            <Image
+              src="/about_2.jpg"
+              alt="Our Core Strengths"
+              fill
+              className="object-cover rounded-2xl opacity-70"
+              sizes="402px"
+            />
+            <div
+              className="absolute top-0 left-[24px] right-[24px] h-[350px] md:h-[300px] z-10  overflow-hidden"
+              style={{
+                background:
+                  "radial-gradient(97.99% 97.99% at 50% 50%, #FFFFFF 0%, #CCA4D6 100%)",
+              }}
             >
-              <ChevronLeft size={18} />
-            </button>
-            <button
-              onClick={handleBlogNext}
-              className="w-10 h-10 rounded-full border border-[#742E85] text-[#742E85] hover:bg-[#742E85] hover:text-white flex items-center justify-center transition shadow-sm"
-            >
-              <ChevronRight size={18} />
-            </button>
-          </div>
-        </div>
+              <div className="pt-6 px-4 h-full flex flex-col justify-between p-2">
+                <h2 className="text-[18px] font-medium underline decoration-primary-pink underline-offset-6 mb-5 px-2 shrink-0">
+                  Our Core Strengths
+                </h2>
+                
+                {/* Single Card Window Frame Viewport */}
+                <div className="w-full overflow-hidden relative flex-grow flex items-center py-1">
+                  
+                  {/* Step Slider Tracks */}
+                  <motion.div
+                    className="flex w-full"
+                    animate={{ x: `-${(activeIndex % strengths.length) * 100}%` }}
+                    transition={{ type: "spring", stiffness: 100, damping: 22 }}
+                  >
+                    {strengths.map((item, idx) => (
+                      <div
+                        key={idx}
+                        className="w-full shrink-0 px-2 select-none"
+                      >
+                        {/* Interactive Item Container Card */}
+                        <div className="bg-white/95 backdrop-blur-sm rounded-xl p-4 border border-purple-200/60 shadow-md flex flex-col justify-start min-h-[220px] mx-auto max-w-[324px]">
+                          
+                          {/* Inner Card Header Title */}
+                          <h4 className="text-[12px] font-bold text-black flex items-center gap-2 mb-2">
+                            {/* <span className="w-2 h-2 rounded-full bg-primary-pink shrink-0" /> */}
+                            {item.label}
+                          </h4>
+                          
+                          {/* Inner Separator Rule */}
+                          <div className="w-full h-[1px] bg-purple-100/70 mb-2.5" />
+                          
+                          {/* Descriptive Point Items Wrapper */}
+                          <div className="text-[12px] text-black pl-2 space-y-2 font-normal leading-normal">
+                            {item.points.map((point, pIdx) => (
+                              <div key={pIdx} className="flex items-start gap-1.5">
+                                <span className="text-primary-pink font-bold select-none mt-0.5">•</span>
+                                <p className="flex-1">{point}</p>
+                              </div>
+                            ))}
+                          </div>
 
-      </div>
+                        </div>
+                      </div>
+                    ))}
+                  </motion.div>
+                </div>
 
-      {/* ================= MODAL LIGHTBOX FOR TESTIMONIAL VIDEO ================= */}
-      {expandedVideo && (
-        <div
-          className="fixed inset-0 z-[9999] bg-black/80 flex items-center justify-center p-4"
-          onClick={() => setExpandedVideo(null)}
-        >
-          <div
-            className="relative w-full max-w-4xl max-h-[90vh] rounded-2xl overflow-hidden shadow-2xl"
-            onClick={(e) => e.stopPropagation()}
-          >
-            <button
-              onClick={() => setExpandedVideo(null)}
-              className="absolute top-3 right-3 z-10 bg-black/60 hover:bg-black/80 text-white p-2 rounded-full transition"
-            >
-              <X size={20} />
-            </button>
-            {isVideo(expandedVideo) ? (
-              <video
-                src={expandedVideo}
-                className="w-full h-full max-h-[85vh] object-contain"
-                controls
-                autoPlay
-              />
-            ) : (
-              <div className="relative w-full aspect-video">
-                <Image
-                  src={expandedVideo}
-                  alt="Enlarged testimonial"
-                  fill
-                  className="object-contain"
-                  sizes="(max-width: 1024px) 100vw, 896px"
-                />
-              </div>
-            )}
-          </div>
-        </div>
-      )}
-
-      {/* ================= POPUP MODAL FOR READ MORE BLOG DETAILS ================= */}
-      <AnimatePresence>
-        {selectedBlog && (
-          <motion.div
-            className="fixed inset-0 z-[9999] flex items-center justify-center bg-black/60 p-4"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            onClick={() => setSelectedBlog(null)}
-          >
-            <motion.div
-              className="relative z-10 w-full max-w-2xl rounded-2xl bg-white shadow-2xl border border-slate-200 overflow-hidden flex flex-col max-h-[85vh]"
-              initial={{ y: 20, opacity: 0, scale: 0.96 }}
-              animate={{ y: 0, opacity: 1, scale: 1 }}
-              exit={{ y: 20, opacity: 0, scale: 0.96 }}
-              transition={{ duration: 0.25, ease: "easeOut" }}
-              onClick={(e) => e.stopPropagation()}
-            >
-              {/* Top Bar / Header */}
-              <div className="flex justify-between items-center px-6 py-4 border-b border-gray-100 bg-[#F8F9FA]">
-                <h3 className="font-bold text-sm text-[#742E85] tracking-wider uppercase">Blog Tip Detail</h3>
-                <button
-                  onClick={() => setSelectedBlog(null)}
-                  className="rounded-full p-1.5 text-gray-500 hover:bg-gray-200 transition"
-                >
-                  <X size={18} />
-                </button>
-              </div>
-
-              {/* Modal Content Area */}
-              <div className="p-6 overflow-y-auto flex flex-col gap-6">
-
-                {/* Text Content */}
-                <div>
-                  <h2 className="text-md md:text-lg font-bold text-slate-900 leading-snug mb-4">
-                    {selectedBlog.title}
-                  </h2>
-                  <div className="border-t border-gray-100 pt-4">
-                    {formatContent(selectedBlog.content)}
-                  </div>
+                {/* Progress Indicators (Dots Alignment) */}
+                <div className="flex justify-center flex-wrap gap-1.5 mt-3 px-4">
+                  {strengths.map((_, i) => (
+                    <div 
+                      key={i}
+                      className={`h-1 rounded-full transition-all duration-300 ${
+                        (activeIndex % strengths.length) === i 
+                        ? "w-4 bg-primary-pink" 
+                        : "w-1.5 bg-purple-300"
+                      }`}
+                    />
+                  ))}
                 </div>
               </div>
-            </motion.div>
-          </motion.div>
-        )}
-      </AnimatePresence>
-    </section>
+            </div>
+            
+            {/* Dynamic Card Sub-Footer Labeling Info text */}
+            <div className="absolute bottom-4 left-0 right-0 z-20 text-center text-white">
+              <p className="text-[14px] font-bold leading-tight">
+                Rera – A031262503639 || A52100026024
+                <br />
+                GSTIN – 27AEFPT4188M1Z
+              </p>
+            </div>
+          </div>
+            
+          
+          <div className="relative h-[450px] mx-auto w-full max-w-[402px]">
+            <Image
+              src="/about_3.jpg"
+              alt="Our Mission"
+              fill
+              className="object-cover rounded-2xl opacity-70"
+              sizes="402px"
+            />
+            <div
+              className="absolute top-0 left-[43px] right-[43px] h-[293px] z-10"
+              style={{
+                background:
+                  "radial-gradient(97.99% 97.99% at 50% 50%, #FFFFFF 0%, #CCA4D6 100%)",
+              }}
+            >
+              <div className="p-8 h-full flex flex-col justify-start">
+                <h2 className="text-[18px] font-medium underline decoration-primary-pink underline-offset-8 mb-4">
+                  Our Mission
+                </h2>
+                <p className="bg-white p-3 rounded text-[12px] leading-relaxed text-black">
+                  To guide and empower our clients at every stage of the
+                  home-buying journey — from discovery to possession — ensuring
+                  their expectations are not just met, but consistently
+                  exceeded.
+                </p>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <section className="px-6 py-8 lg:px-16 flex flex-col lg:flex-row gap-16 items-center">
+          <div className="lg:w-3/5">
+            <h2 className="text-md lg:text-[25px] font-bold text-primary-pink mb-8">
+              Our Story
+            </h2>
+            <div className="space-y-6 text-lg lg:text-[18px] leading-relaxed text-zinc-800">
+              <p>
+                Piinggaksha Realty was founded with a simple yet powerful
+                belief — buying a home should be exciting, not overwhelming.
+                What started as a small initiative in South Pune has today grown
+                into a trusted real estate consultancy.
+              </p>
+              <p>
+                Over the years, we observed a common challenge faced by
+                homebuyers — confusing processes, hidden costs, and lack of
+                genuine guidance. That’s where Piinggaksha stepped in. We set
+                out to simplify the entire home-buying journey by offering clear
+                advice.
+              </p>
+              <p>
+                From the first property search to the final possession, our goal
+                has always been to make the experience smooth, transparent, and
+                stress-free. Our 100% No Brokerage Policy reflects our
+                commitment to putting customers first.
+              </p>
+              <p>
+                Being a Maharashtra RERA-Registered firm, we operate with full
+                compliance, accountability, and trust — values that have helped
+                us serve hundreds of happy homebuyers across Pune.
+              </p>
+            </div>
+          </div>
+          <div className="lg:w-2/5">
+            <div className="relative w-full aspect-[390/563] rounded-[20px] overflow-hidden">
+              <Image
+                src="/founder.png"
+                alt="Founder"
+                fill
+                className="object-cover"
+                sizes="(max-width: 768px) 100vw, 40vw"
+              />
+            </div>
+          </div>
+        </section>
+
+        <section
+          className="bg-footer-bg py-10 lg:py-10 px-4 sm:px-6 lg:px-8"
+          onMouseEnter={() => setIsPaused(true)}
+          onMouseLeave={() => setIsPaused(false)}
+        >
+          <div className="max-w-7xl mx-auto w-full">
+            <h2 className="text-md md:text-[25px] font-bold text-primary-purple mb-4 text-center lg:text-left">
+              Awards & Rewards
+            </h2>
+
+            <div
+              ref={scrollRef}
+              className="flex justify-start gap-6 sm:gap-8 lg:gap-10 overflow-x-auto overflow-y-hidden pb-10 pt-6 items-center snap-x snap-mandatory scroll-smooth no-scrollbar"
+            >
+              {awards.map((id, index) => {
+                const isActive = index === activeIndex;
+
+                return (
+                  <motion.div
+                    key={id}
+                    layout
+                    initial={{ opacity: 0.6, scale: 0.95 }}
+                    animate={{
+                      opacity: isActive ? 1 : 0.5,
+                      scale: isActive ? 1.05 : 0.95,
+                      filter: isActive ? "grayscale(0%)" : "grayscale(80%)",
+                      zIndex: isActive ? 10 : 1,
+                    }}
+                    transition={{ type: "spring", stiffness: 200, damping: 20 }}
+                    onClick={() => setActiveIndex(index)}
+                    className="relative flex-shrink-0 cursor-pointer snap-center min-w-[220px] sm:w-[260px] lg:w-[340px]"
+                  >
+                    <div className="relative w-[260px] h-[260px] sm:w-[300px] sm:h-[300px] lg:w-[340px] lg:h-[340px] rounded-[24px] overflow-hidden">
+                      <Image
+                        src={`/image-${id}.png`}
+                        alt={`Award ${id}`}
+                        fill
+                        className="object-cover "
+                        sizes="(max-width: 640px) 260px, (max-width: 1024px) 300px, 340px"
+                      />
+                    </div>
+                  </motion.div>
+                );
+              })}
+            </div>
+
+            <div className="flex justify-center gap-4 sm:gap-6 mt-2">
+              <motion.button
+                whileHover={{ scale: 1.1 }}
+                whileTap={{ scale: 0.9 }}
+                onClick={() =>
+                  setActiveIndex((prev) =>
+                    prev === 0 ? awards.length - 1 : prev - 1
+                  )
+                }
+                className="w-8 h-8 sm:w-14 sm:h-14 rounded-full flex items-center justify-center bg-[#742E85] text-white shadow-lg"
+              >
+                <svg
+                  className="w-6 h-6 sm:w-8 sm:h-8 rotate-180"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth="2.5"
+                    d="M9 5l7 7-7 7"
+                  />
+                </svg>
+              </motion.button>
+
+              <motion.button
+                whileHover={{ scale: 1.1 }}
+                whileTap={{ scale: 0.9 }}
+                onClick={() =>
+                  setActiveIndex((prev) => (prev + 1) % awards.length)
+                }
+                className="w-8 h-8 sm:w-14 sm:h-14 rounded-full flex items-center justify-center bg-[#742E85] text-white shadow-lg"
+              >
+                <svg
+                  className="w-6 h-6 sm:w-8 sm:h-8"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth="2.5"
+                    d="M9 5l7 7-7 7"
+                  />
+                </svg>
+              </motion.button>
+            </div>
+          </div>
+        </section>
+
+        <section className="px-6 py-4 lg:px-16">
+          <h2 className="text-md lg:text-[25px] font-bold text-primary-purple mb-4">
+            Certification
+          </h2>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-8 p-4">
+            <div className="relative aspect-[654/505] w-full">
+              <Image
+                src="/image-59.png"
+                alt="Certification 1"
+                fill
+                className="object-contain"
+                sizes="(max-width: 768px) 100vw, 50vw"
+              />
+            </div>
+            <div className="relative aspect-[448/645] w-full">
+              <Image
+                src="/cert-4.png"
+                alt="Certification 2"
+                fill
+                className="object-contain"
+                sizes="(max-width: 768px) 100vw, 50vw"
+              />
+            </div>
+            <div className="col-span-1 md:col-span-2 grid grid-cols-1 sm:grid-cols-3 gap-8 mt-8">
+              <div className="relative aspect-[377/533] w-full">
+                <Image
+                  src="/cert-1.png"
+                  alt="Certification 3"
+                  fill
+                  className="object-contain"
+                  sizes="(max-width: 768px) 100vw, 33vw"
+                />
+              </div>
+              <div className="relative aspect-[376/533] w-full">
+                <Image
+                  src="/cert-2.png"
+                  alt="Certification 4"
+                  fill
+                  className="object-contain"
+                  sizes="(max-width: 768px) 100vw, 33vw"
+                />
+              </div>
+              <div className="relative aspect-[375/533] w-full">
+                <Image
+                  src="/cert-3.png"
+                  alt="Certification 5"
+                  fill
+                  className="object-contain"
+                  sizes="(max-width: 768px) 100vw, 33vw"
+                />
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <About showOn="about" />
+      </main>
+    </div>
   );
 }

@@ -3,6 +3,7 @@ import { MapPin, Calendar, Home, Heart } from "lucide-react";
 import { useState } from "react";
 import HeartButton from "@/components/HeartButton"
 import { useAuth } from "@/lib/context/AuthContext";
+import { BsWhatsapp } from "react-icons/bs";
 export default function ProjectListCard({ project, isWishlisted, onToggleWishlist, onTourClick }) {
   const { user } = useAuth();
   const [showAllAmenities, setShowAllAmenities] = useState(false);
@@ -14,6 +15,7 @@ export default function ProjectListCard({ project, isWishlisted, onToggleWishlis
     Featured:"bg-[#A566B8]",
      Residential: "bg-[#8B5CF6]",
     Commercial: "bg-black",
+    Plot:"bg-[#F59E0B]",
   };
   return (
     <div className="bg-white rounded-3xl border border-gray-100 shadow-sm hover:shadow-md transition-all flex flex-col md:flex-row overflow-hidden h-auto md:h-[350px]">
@@ -138,7 +140,7 @@ export default function ProjectListCard({ project, isWishlisted, onToggleWishlis
               e.stopPropagation();
               if (onTourClick) onTourClick(project);
             }}
-            className="flex-1 px-3 sm:px-4 py-2 border border-gray-300 bg-[#742E85] rounded-md text-xs sm:text-sm font-semibold text-white hover:bg-[#A566B8] transition whitespace-nowrap text-center"
+            className="flex-1 px-3 sm:px-4 py-2 border border-gray-300 bg-[#742E85] rounded-md text-xs sm:text-sm font-semibold text-white hover:bg-[#A566B8] transition whitespace-nowrap text-center hover:cursor-pointer"
           >
             Tour
           </button>
@@ -154,8 +156,9 @@ export default function ProjectListCard({ project, isWishlisted, onToggleWishlis
               const encodedMessage = encodeURIComponent(message);
               window.open(`https://wa.me/${companyPhoneNumber}?text=${encodedMessage}`, '_blank');
             }}
-            className="flex-1 px-3 sm:px-4 py-2 bg-white text-black rounded-md text-xs sm:text-sm font-semibold flex items-center justify-center gap-1.5 transition border border-black shadow-sm whitespace-nowrap text-center"
+            className="flex-1 px-3 sm:px-4 py-2 bg-white text-black rounded-md text-xs sm:text-sm font-semibold flex items-center justify-center gap-1.5 transition border border-black shadow-sm whitespace-nowrap text-cente hover:cursor-pointer"
           >
+            <BsWhatsapp size={16} className="text-[#25D366]" />
             Live Chat
           </button>
         </div>

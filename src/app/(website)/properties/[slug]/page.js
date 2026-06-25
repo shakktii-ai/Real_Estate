@@ -8,6 +8,7 @@ import BookSiteVisitModal from "@/components/BookSiteVisitModal";
 import BookVirtualTourModal from "@/components/BookVirtualTourModal";
 import { useAuth } from "@/lib/context/AuthContext";
 import { toast } from "react-toastify";
+import AuthModal from "@/components/AuthModal";
 import { BsDash } from "react-icons/bs";
 export default function ProjectDetails() {
   const { user } = useAuth();
@@ -16,6 +17,7 @@ export default function ProjectDetails() {
   const [loading, setLoading] = useState(true);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isVirtualModalOpen,setIsVirtualModalOpen] = useState(false);
+  const [showAuthModal, setShowAuthModal] = useState(false);
   const categoryColors = {
     Premium: "bg-[#009966]",
     Luxury: "bg-[#F97316]",
@@ -68,6 +70,12 @@ const dropAmount = oldPrice - newPrice;
   if (!project) return <div className="p-10 text-center">Project not found.</div>;
 
   const handleDownload = (fileUrl, fileName) => {
+     if (!user) {
+    setShowAuthModal(true); // or open your auth modal
+    toast.info("Sign up to download brochures and price sheets.");
+    return;
+  }
+
     if (!fileUrl) return;
     const downloadUrl = `/api/download?url=${encodeURIComponent(fileUrl)}&name=${encodeURIComponent(fileName)}`;
     window.location.href = downloadUrl;
@@ -386,6 +394,13 @@ const dropAmount = oldPrice - newPrice;
             )}
           </div>
         )}
-      </div>    </div>
+      </div>  
+      {showAuthModal && (
+                      <AuthModal
+                          onClose={() => setShowAuthModal(false)}
+                          onAuthSuccess={() => setShowAuthModal(false)}
+                      />
+                  )}
+        </div>
   );
 }

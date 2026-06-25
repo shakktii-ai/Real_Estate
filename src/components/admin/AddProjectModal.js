@@ -339,7 +339,7 @@ export default function AddProjectModal({ isOpen, onClose, refreshData }) {
                     <div>
                         <h3 className="text-sm font-semibold mb-3 text-black">Tags</h3>
                         <div className="flex flex-wrap gap-2 text-black">
-                            {['RERA Verified', 'Residential', 'Luxury', 'Premium', 'Affordable', 'Commercial'].map(tag => (
+                            {['RERA Verified', 'Residential', 'Luxury', 'Premium', 'Affordable', 'Commercial','Plot'].map(tag => (
                                 <label key={tag} className="cursor-pointer">
                                     <input type="checkbox" value={tag} {...register("tags")} className="hidden peer" />
                                     <span className="px-4 py-1 text-[10px] border rounded-full peer-checked:bg-[#D81B60] peer-checked:text-white peer-checked:border-[#D81B60] transition-all">

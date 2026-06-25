@@ -4,6 +4,7 @@ import { useState } from 'react';
 import HeartButton from "@/components/HeartButton"
 import Link from 'next/link';
 import { useAuth } from '@/lib/context/AuthContext';
+import { BsWhatsapp } from 'react-icons/bs';
 
 const PropertyCard = ({ project, isWishlisted, onToggleWishlist, onTourClick }) => {
   const { user } = useAuth();
@@ -15,8 +16,9 @@ const PropertyCard = ({ project, isWishlisted, onToggleWishlist, onTourClick }) 
     Affordable: "bg-[#1447EA]",
     Holiday: "bg-[#1DA2B3]",
     Featured:"bg-[#A566B8]",
-     Residential: "bg-[#8B5CF6]",
+    Residential: "bg-[#8B5CF6]",
     Commercial: "bg-black",
+    Plot:"bg-[#F59E0B]",
 
   };
 
@@ -144,7 +146,7 @@ const PropertyCard = ({ project, isWishlisted, onToggleWishlist, onTourClick }) 
               e.stopPropagation();
               if (onTourClick) onTourClick(project);
             }}
-            className="flex-1 px-3 sm:px-4 py-2 border border-gray-300 bg-[#742E85] rounded-md text-xs sm:text-sm font-semibold text-white hover:bg-[#A566B8] transition whitespace-nowrap text-center"
+            className="flex-1 px-3 sm:px-4 py-2 border border-gray-300 bg-[#742E85] rounded-md text-xs sm:text-sm font-semibold text-white hover:bg-[#A566B8] transition whitespace-nowrap text-center hover:cursor-pointer"
           >
             Tour
           </button>
@@ -160,8 +162,9 @@ const PropertyCard = ({ project, isWishlisted, onToggleWishlist, onTourClick }) 
               const encodedMessage = encodeURIComponent(message);
               window.open(`https://wa.me/${companyPhoneNumber}?text=${encodedMessage}`, '_blank');
             }}
-            className="flex-1 px-3 sm:px-4 py-2 bg-white text-black rounded-md text-xs sm:text-sm font-semibold flex items-center justify-center gap-1.5 transition border border-black shadow-sm whitespace-nowrap text-center"
+            className="flex-1 px-3 sm:px-4 py-2 bg-white text-black rounded-md text-xs sm:text-sm font-semibold flex items-center justify-center gap-1.5 transition border border-black shadow-sm whitespace-nowrap text-center hover:cursor-pointer"
           >
+            <BsWhatsapp size={16} className="text-[#25D366]" />
             Live Chat
           </button>
         </div>

@@ -18,7 +18,7 @@ export default function AuthModal({ onClose, onAuthSuccess }) {
         referralCode: "",
     });
     const [step, setStep] = useState("PHONE");
-    const [authMode, setAuthMode] = useState("LOGIN"); // LOGIN or SIGNUP
+    const [authMode, setAuthMode] = useState("SIGNUP"); // LOGIN or SIGNUP
     const router = useRouter();
     const [phone, setPhone] = useState("");
     const [otp, setOtp] = useState("");
@@ -62,7 +62,7 @@ export default function AuthModal({ onClose, onAuthSuccess }) {
 
             // setPendingUid(data.uid || `phone-${phone}`);
             setStep("OTP");
-            toast.success("OTP sent successfully via WhatsApp");
+            toast.success("Your OTP has been sent to your WhatsApp number.");
         } catch (err) {
             console.error("Send OTP Error:", err);
             toast.error(err.message || "Unable to send OTP.");

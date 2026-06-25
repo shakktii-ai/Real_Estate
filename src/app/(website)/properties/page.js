@@ -69,6 +69,7 @@ function PropertyFilterBar({ projects, selectedCity, setSelectedCity, selectedCa
             <option value="">All</option>
             <option value="Residential">Residential</option>
             <option value="Commercial">Commercial</option>
+            <option value="Plot">Plots</option>
           </select>
           <ChevronDown className="absolute right-0 top-1/2 -translate-y-1/2 w-4 h-4 text-black pointer-events-none" />
         </div>

@@ -568,6 +568,7 @@ function PropertyFilterBar({ projects, onFilteredProjects }) {
                         <option value="">All</option>
                         <option value="Residential">Residential</option>
                         <option value="Commercial">Commercial</option>
+                        <option value="Plot">Plots</option>
                     </select>
                     <ChevronDown className="absolute right-0 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400 pointer-events-none" />
                 </div>
@@ -909,7 +910,7 @@ export default function WebsitePage() {
     useEffect(() => {
         if (!loading && user) { router.replace("/dashboard"); return; }
         if (!loading && !user) {
-            const timer = setTimeout(() => setShowAuthModal(true), 5000);
+            const timer = setTimeout(() => setShowAuthModal(true), 10000);
             return () => clearTimeout(timer);
         }
     }, [user, loading, router]);

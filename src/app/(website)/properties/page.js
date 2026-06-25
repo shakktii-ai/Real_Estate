@@ -49,6 +49,7 @@ function PropertyFilterBar({ projects, selectedCity, setSelectedCity, selectedCa
                   <option value="Gultekdi">Pune - Gultekdi</option>
                    <option value="Wadachi Wadi">Pune - Wadachi Wadi</option>
                     <option value="NIBM Road">Pune - NIBM Road</option>
+                    {/* <option value="Sindhudurg (Near Mopa, Goa)">Sindhudurg (Near Mopa, Goa)</option> */}
             {cities.filter(c => c !== "Pune").map(city => (
               <option key={city} value={city}>{city}</option>
             ))}
@@ -270,6 +271,7 @@ const handleApplyFilters = () => {
 
             const matchesCity =
   selectedCity === "Pune" ||
+  project.address?.city === selectedCity ||
   project.address?.area?.includes(selectedCity);
 
             const matchesCategory =

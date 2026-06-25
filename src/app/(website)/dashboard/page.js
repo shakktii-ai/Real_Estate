@@ -78,9 +78,10 @@ function PropertyFilterBar({ projects, onFilteredProjects }) {
       const matchesCity =
   selectedCity === "Pune"
     ? project.address?.city === "Pune"
-    : project.address?.area
-        ?.toLowerCase()
-        .includes(selectedCity.toLowerCase());
+    : (
+        project.address?.city?.toLowerCase().includes(selectedCity.toLowerCase()) ||
+        project.address?.area?.toLowerCase().includes(selectedCity.toLowerCase())
+      );
       const matchesCategory = !selectedCategory || project.tags?.includes(selectedCategory);
       const matchesStatus = !selectedStatus || project.status === selectedStatus;
       return matchesBudget && matchesCity && matchesCategory && matchesStatus;

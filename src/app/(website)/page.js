@@ -494,12 +494,19 @@ function PropertyFilterBar({ projects, onFilteredProjects }) {
         const filtered = projects.filter((project) => {
             const matchesBudget = (project.pricing?.maxPrice || 0) / 100000 <= budget;
             // const matchesCity = !selectedCity || project.address?.city === selectedCity;
-            const matchesCity =
-                selectedCity === "Pune"
-                    ? project.address?.city === "Pune"
-                    : project.address?.area
-                        ?.toLowerCase()
-                        .includes(selectedCity.toLowerCase());
+            // const matchesCity =
+            //     selectedCity === "Pune"
+            //         ? project.address?.city === "Pune"
+            //         : project.address?.area
+            //             ?.toLowerCase()
+            //             .includes(selectedCity.toLowerCase());
+                        const matchesCity =
+  selectedCity === "Pune"
+    ? project.address?.city === "Pune"
+    : (
+        project.address?.city?.toLowerCase().includes(selectedCity.toLowerCase()) ||
+        project.address?.area?.toLowerCase().includes(selectedCity.toLowerCase())
+      );
             const matchesCategory = !selectedCategory || project.tags?.includes(selectedCategory);
             const matchesStatus = !selectedStatus || project.status === selectedStatus;
             return matchesBudget && matchesCity && matchesCategory && matchesStatus;
@@ -547,6 +554,7 @@ function PropertyFilterBar({ projects, onFilteredProjects }) {
                         <option value="Gultekdi">Pune - Gultekdi</option>
                         <option value="Wadachi Wadi">Pune - Wadachi Wadi</option>
                         <option value="NIBM Road">Pune - NIBM Road</option>
+                        {/* <option value="Sindhudurg (Near Mopa, Goa)">Sindhudurg (Near Mopa, Goa)</option> */}
                         {cities.filter(c => c !== "Pune").map(city => (
                             <option key={city} value={city}>{city}</option>
                         ))}

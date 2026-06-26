@@ -4,6 +4,7 @@ import { useState, useRef, useEffect } from 'react';
 import { MessageCircle, X, MapPin, Building2, IndianRupee, ShieldCheck, Sparkles } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { BsWhatsapp } from 'react-icons/bs';
+import { useAuth } from '@/lib/context/AuthContext';
 
 export default function SimpleChatbot() {
   const [isOpen, setIsOpen] = useState(false);
@@ -17,12 +18,43 @@ export default function SimpleChatbot() {
   const messagesEndRef = useRef(null);
   const messageIdRef = useRef(0);
 
+  const prevUserRef = useRef(undefined);
+  const { user } = useAuth();
+
+
   const locations = ['Hadapsar', 'NIBM', 'Kharadi', 'Wakad'];
   const priceRanges = ['20-30L', '30-50L', '50-75L', '75L+'];
 
   useEffect(() => {
     scrollToBottom();
   }, [messages]);
+
+  // Auto-open chatbot 10 seconds after login
+ useEffect(() => {
+  if (!user) return;
+
+  const timer = setTimeout(() => {
+    setIsOpen(true);
+
+    setMessages((msgs) => {
+      if (msgs.length === 0) {
+        return [
+          {
+            id: Date.now(),
+            type: "bot",
+            content: `Welcome back${user.fullName ? ", " + user.fullName : ""}! What would you like to know today?`,
+          },
+        ];
+      }
+      return msgs;
+    });
+  }, 10000);
+
+  return () => clearTimeout(timer);
+}, [user]);
+
+
+
 
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
@@ -517,7 +549,7 @@ export default function SimpleChatbot() {
             const companyPhoneNumber = "919172400250";
 
             const message =
-              "Hello Piinggaksha Team, I would like to know more about your properties and available options. Please share the details.";
+              "Share Project Details";
 
             const encodedMessage = encodeURIComponent(message);
 

@@ -157,7 +157,7 @@ const PropertyCard = ({ project, isWishlisted, onToggleWishlist, onTourClick }) 
               e.stopPropagation();
 
               const companyPhoneNumber = "919172400250";
-              const message = `Hello Piinggaksha Team, I am interested in *${project.projectName}* by ${project.builderName} located in ${project.address?.area || 'Pune'}. Please share the current pricing, floor plans, and layout options for ${project.configuration?.join(", ") || 'this project'}.`;
+              const message = "Share Project Details";
 
               const encodedMessage = encodeURIComponent(message);
               window.open(`https://wa.me/${companyPhoneNumber}?text=${encodedMessage}`, '_blank');

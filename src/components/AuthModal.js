@@ -30,7 +30,8 @@ export default function AuthModal({ onClose, onAuthSuccess }) {
         if (onAuthSuccess) {
             onAuthSuccess();
         }
-        await refreshUser?.();
+            const currentUser = await refreshUser();
+          console.log("Current User:", currentUser);
         router.replace("/dashboard");
     };
 

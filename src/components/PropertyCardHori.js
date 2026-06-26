@@ -151,7 +151,7 @@ export default function ProjectListCard({ project, isWishlisted, onToggleWishlis
               e.stopPropagation();
 
               const companyPhoneNumber = "919284429197";
-              const message = `Hello Piinggaksha Team, I am interested in *${project.projectName}* by ${project.builderName} located in ${project.address?.area || 'Pune'}. Please share the current pricing, floor plans, and layout options for ${project.configuration?.join(", ") || 'this project'}.`;
+              const message = "Share Project Details";
 
               const encodedMessage = encodeURIComponent(message);
               window.open(`https://wa.me/${companyPhoneNumber}?text=${encodedMessage}`, '_blank');

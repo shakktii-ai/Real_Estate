@@ -555,7 +555,7 @@ function PropertyFilterBar({ projects, onFilteredProjects }) {
                 <div className="bg-white rounded-t-2xl px-4 py-2">
 
                     {/* Mobile */}
-                    <div className="md:hidden flex items-start justify-start font-medium text-sm h-6">
+                    <div className="md:hidden flex items-start justify-start text-black font-medium text-sm h-6">
                         <span className="mr-1">No</span>
 
                         <span

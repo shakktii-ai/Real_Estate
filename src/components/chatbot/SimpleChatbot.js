@@ -5,7 +5,7 @@ import { MessageCircle, X, MapPin, Building2, IndianRupee, ShieldCheck, Sparkles
 import { motion, AnimatePresence } from 'framer-motion';
 import { BsWhatsapp } from 'react-icons/bs';
 import { useAuth } from '@/lib/context/AuthContext';
-
+import { useRouter } from 'next/navigation';
 export default function SimpleChatbot() {
   const [isOpen, setIsOpen] = useState(false);
   const [messages, setMessages] = useState([]);
@@ -17,7 +17,7 @@ export default function SimpleChatbot() {
   const [loading, setLoading] = useState(false);
   const messagesEndRef = useRef(null);
   const messageIdRef = useRef(0);
-
+  const router = useRouter();
   const prevUserRef = useRef(undefined);
   const { user } = useAuth();
 
@@ -30,28 +30,28 @@ export default function SimpleChatbot() {
   }, [messages]);
 
   // Auto-open chatbot 10 seconds after login
- useEffect(() => {
-  if (!user) return;
+  useEffect(() => {
+    if (!user) return;
 
-  const timer = setTimeout(() => {
-    setIsOpen(true);
+    const timer = setTimeout(() => {
+      setIsOpen(true);
 
-    setMessages((msgs) => {
-      if (msgs.length === 0) {
-        return [
-          {
-            id: Date.now(),
-            type: "bot",
-            content: `Welcome back${user.fullName ? ", " + user.fullName : ""}! What would you like to know today?`,
-          },
-        ];
-      }
-      return msgs;
-    });
-  }, 10000);
+      setMessages((msgs) => {
+        if (msgs.length === 0) {
+          return [
+            {
+              id: Date.now(),
+              type: "bot",
+              content: `Welcome back${user.fullName ? ", " + user.fullName : ""}! What would you like to know today?`,
+            },
+          ];
+        }
+        return msgs;
+      });
+    }, 10000);
 
-  return () => clearTimeout(timer);
-}, [user]);
+    return () => clearTimeout(timer);
+  }, [user]);
 
 
 
@@ -247,10 +247,10 @@ export default function SimpleChatbot() {
             className="mb-4"
           >
             {/* Main Chat Window Panel */}
-            <div className="w-screen sm:w-[400px] max-w-[calc(100vw-32px)] bg-slate-50 rounded-2xl shadow-2xl flex flex-col overflow-hidden border border-slate-200 h-[560px] sm:h-[600px] max-h-[calc(100vh-120px)]">
+            <div className="w-screen sm:w-[300px] max-w-[calc(100vw-32px)] bg-slate-50 rounded-2xl shadow-2xl flex flex-col overflow-hidden  h-[560px] sm:h-[400px] max-h-[calc(100vh-120px)]">
 
               {/* Premium Top App Header bar */}
-              <div className="bg-gradient-to-r from-[#742E85] to-[#E5097F] p-4 flex items-center justify-between text-white shadow-md z-10">
+              <div className="bg-[#742e85] p-4 flex items-center justify-between text-white shadow-md z-10">
                 <div className="flex items-center gap-2.5">
                   <div className="bg-white/10 p-2 rounded-xl border border-white/10 backdrop-blur-md">
                     <Building2 size={18} className="text-white" />
@@ -270,12 +270,12 @@ export default function SimpleChatbot() {
               </div>
 
               {/* Central Scrolling Chat Message Stream */}
-              <div className="flex-1 overflow-y-auto p-4 space-y-3.5 scrollbar-thin">
+              <div className="flex-1 overflow-y-auto p-2 space-y-4 scrollbar-">
                 {messages.length === 0 ? (
                   <motion.div
                     initial={{ opacity: 0 }}
                     animate={{ opacity: 1 }}
-                    className="flex items-center justify-center h-full text-center p-6"
+                    className="flex items-center justify-center h-full text-center p-4"
                   >
                     <div className="max-w-[240px]">
                       <div className="w-14 h-14 bg-purple-50 rounded-2xl flex items-center justify-center mx-auto mb-3 shadow-inner text-2xl">
@@ -294,9 +294,9 @@ export default function SimpleChatbot() {
                       className={`flex ${msg.type === 'bot' ? 'justify-start' : 'justify-end'}`}
                     >
                       <div
-                        className={`max-w-[85%] px-4 py-2.5 rounded-2xl text-[13px] leading-relaxed break-words shadow-sm ${msg.type === 'bot'
-                          ? 'bg-white text-slate-800 rounded-tl-none border border-slate-100'
-                          : 'bg-purple-600 text-white rounded-tr-none font-medium'
+                        className={`max-w-[85%] px-2 py-2.5 rounded-2xl text-[10px] leading-relaxed break-words shadow-sm ${msg.type === 'bot'
+                          ? 'bg-white text-black rounded-tl-none border border-slate-100'
+                          : 'bg-[#742e85] text-white rounded-tr-none font-medium'
                           }`}
                       >
                         {msg.content}
@@ -306,10 +306,10 @@ export default function SimpleChatbot() {
                 )}
                 {loading && (
                   <div className="flex justify-start">
-                    <div className="bg-white border border-slate-100 rounded-2xl px-4 py-3 shadow-sm flex items-center gap-1.5">
-                      <span className="w-2 h-2 rounded-full bg-slate-400 animate-bounce [animation-delay:-0.3s]" />
-                      <span className="w-2 h-2 rounded-full bg-slate-400 animate-bounce [animation-delay:-0.15s]" />
-                      <span className="w-2 h-2 rounded-full bg-slate-400 animate-bounce" />
+                    <div className="bg-white border border-slate-100 rounded-full  px-2 py-2 shadow-sm flex items-center gap-1.5">
+                      <span className="w-1 h-1 rounded-full bg-slate-400 animate-bounce [animation-delay:-0.3s]" />
+                      <span className="w-1 h-1 rounded-full bg-slate-400 animate-bounce [animation-delay:-0.15s]" />
+                      <span className="w-1 h-1 rounded-full bg-slate-400 animate-bounce" />
                     </div>
                   </div>
                 )}
@@ -331,8 +331,7 @@ export default function SimpleChatbot() {
                         whileHover={{ scale: 1.02, y: -1 }}
                         whileTap={{ scale: 0.98 }}
                         onClick={btn.handler}
-                        className="bg-white hover:bg-slate-50 text-slate-700 font-semibold border border-slate-200 py-3 px-1 rounded-xl text-xs transition-all shadow-sm flex flex-col items-center justify-center gap-1"
-                      >
+                        className="bg-white hover:bg-[#742e85]/5 text-black font-semibold border border-[#742e85] py-3 px-2 rounded-xl text-xs transition-all duration-200 shadow-sm hover:shadow-md flex flex-col items-center justify-center gap-1">
                         {btn.label}
                       </motion.button>
                     ))}
@@ -340,14 +339,14 @@ export default function SimpleChatbot() {
                 )}
 
                 {activeMenu === 'price' && (
-                  <div className="grid grid-cols-2 gap-2">
+                  <div className="grid grid-cols-2 gap-1">
                     {priceRanges.map((range) => (
                       <motion.button
                         key={range}
                         whileHover={{ scale: 1.02 }}
                         whileTap={{ scale: 0.98 }}
                         onClick={() => handlePriceSelect(range)}
-                        className="bg-purple-50/50 hover:bg-purple-50 border border-purple-100 text-purple-700 font-semibold py-2.5 px-2 rounded-xl text-xs transition-all"
+                        className="bg-purple-50/50 hover:bg-purple-50 border border-purple-100 text-black font-semibold py-2 px-2 rounded-xl text-[10px] transition-all"
                       >
                         {range}
                       </motion.button>
@@ -356,7 +355,7 @@ export default function SimpleChatbot() {
                       whileHover={{ scale: 1.02 }}
                       whileTap={{ scale: 0.98 }}
                       onClick={handleBack}
-                      className="bg-slate-100 hover:bg-slate-200 text-slate-600 font-semibold py-2.5 px-2 rounded-xl text-xs col-span-2 transition-all mt-1"
+                      className="w-full flex items-center justify-center text-slate-800 font-semibold py-2.5 px-2 rounded-xl text-xs col-span-2 transition-all border border-slate-200 hover:bg-slate-100 hover:shadow-sm"
                     >
                       Back to Start
                     </motion.button>
@@ -504,14 +503,34 @@ export default function SimpleChatbot() {
                       </div>
                     </div>
 
-                    <motion.button
-                      whileHover={{ scale: 1.01 }}
-                      whileTap={{ scale: 0.99 }}
-                      onClick={handleBackToProjects}
-                      className="w-full bg-slate-900 hover:bg-slate-800 text-white font-bold py-2.5 rounded-xl text-xs transition-all shadow-sm"
-                    >
-                      Back to Project Pipeline
-                    </motion.button>
+                    <div className="flex gap-2 w-full">
+                      <motion.button
+                        whileHover={{ scale: 1.01 }}
+                        whileTap={{ scale: 0.99 }}
+                        onClick={handleBackToProjects}
+                        className="flex-1 bg-slate-900 hover:bg-slate-800 text-white font-bold py-2.5 px-3 rounded-xl text-xs transition-all shadow-sm"
+                      >
+                        Back to Projects
+                      </motion.button>
+
+                      <motion.button
+                        whileHover={{ scale: 1.01 }}
+                        whileTap={{ scale: 0.99 }}
+                        onClick={() => {
+                          const productRouteParam = selectedProject.slug || selectedProject._id;
+
+                          if (productRouteParam) {
+                            router.push(`/properties/${productRouteParam}`);
+                          } else {
+                            alert("Project page link is currently under maintenance.");
+                          }
+                        }}
+                        className="flex-1 bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-700 hover:to-indigo-700 text-white font-bold py-2.5 px-3 rounded-xl text-xs transition-all shadow-sm flex items-center justify-center gap-1.5"
+                      >
+
+                        <span className="truncate">View Project</span>
+                      </motion.button>
+                    </div>
                   </div>
                 )}
 
@@ -522,7 +541,7 @@ export default function SimpleChatbot() {
       </AnimatePresence>
 
       {/* Floating Call to Action Widget Switch */}
-     <div className="fixed bottom-6 right-6 z-50 flex items-center gap-3">
+      <div className="fixed bottom-2 right-6 z-50 flex items-center gap-3">
         {/* Chatbot Button */}
         <motion.button
           whileHover={{ scale: 1.04 }}

@@ -439,7 +439,7 @@ import BookSiteVisitModal from '@/components/BookSiteVisitModal';
 import BookVirtualTourModal from '@/components/BookVirtualTourModal';
 import AuthModal from '@/components/AuthModal';
 import { ChevronRight, ArrowRight, ChevronDown, Star } from "lucide-react";
-
+import { ShieldCheck, BadgeCheck, IndianRupee } from "lucide-react";
 // ─── Slide data ───────────────────────────────────────────────────────────────
 const WHY_SLIDES = [
     {
@@ -489,7 +489,21 @@ function PropertyFilterBar({ projects, onFilteredProjects }) {
     const [budget, setBudget] = useState(99);
     const [selectedStatus, setSelectedStatus] = useState("");
     const router = useRouter();
+    const trustItems = [
+        "Brokerage",
+        "Service Fees",
+        "Hidden Charges",
+    ];
 
+    const [currentTrust, setCurrentTrust] = useState(0);
+
+    useEffect(() => {
+        const interval = setInterval(() => {
+            setCurrentTrust((prev) => (prev + 1) % trustItems.length);
+        }, 2500);
+
+        return () => clearInterval(interval);
+    }, []);
     const applyFilters = () => {
         const filtered = projects.filter((project) => {
             const matchesBudget = (project.pricing?.maxPrice || 0) / 100000 <= budget;
@@ -500,13 +514,13 @@ function PropertyFilterBar({ projects, onFilteredProjects }) {
             //         : project.address?.area
             //             ?.toLowerCase()
             //             .includes(selectedCity.toLowerCase());
-                        const matchesCity =
-  selectedCity === "Pune"
-    ? project.address?.city === "Pune"
-    : (
-        project.address?.city?.toLowerCase().includes(selectedCity.toLowerCase()) ||
-        project.address?.area?.toLowerCase().includes(selectedCity.toLowerCase())
-      );
+            const matchesCity =
+                selectedCity === "Pune"
+                    ? project.address?.city === "Pune"
+                    : (
+                        project.address?.city?.toLowerCase().includes(selectedCity.toLowerCase()) ||
+                        project.address?.area?.toLowerCase().includes(selectedCity.toLowerCase())
+                    );
             const matchesCategory = !selectedCategory || project.tags?.includes(selectedCategory);
             const matchesStatus = !selectedStatus || project.status === selectedStatus;
             return matchesBudget && matchesCity && matchesCategory && matchesStatus;
@@ -533,95 +547,131 @@ function PropertyFilterBar({ projects, onFilteredProjects }) {
         "appearance-none w-full text-sm text-gray-800 font-semibold bg-transparent outline-none pr-6 cursor-pointer rounded-none border-0 focus:ring-0";
 
     return (
-        <div className="bg-white text-[15px] rounded-2xl shadow-2xl px-4 py-4 flex flex-wrap md:flex-nowrap items-center gap-3 md:gap-0 w-full max-w-6xl mx-auto">
-            {/* Location */}
-            <div className="flex flex-col flex-1 min-w-[110px] md:border-r border-gray-200 md:pr-4">
-                <span className="font-semibold text-[#742E85] uppercase tracking-widest mb-1">Location</span>
-                <div className="relative">
-                    <select
-                        value={selectedCity}
-                        onChange={(e) => setSelectedCity(e.target.value)}
-                        className={selectClass}
-                        style={{ WebkitAppearance: "none", MozAppearance: "none" }}
-                    >
-                        <option value="Pune">Pune</option>
-                        <option value="Hadapsar">Pune - Hadapsar</option>
-                        <option value="Kondhwa">Pune - Kondhwa</option>
-                        <option value="Pisoli">Pune - Pisoli</option>
-                        <option value="Undri">Pune - Undri</option>
-                        <option value="Mohammed Wadi">Pune - Mohammed Wadi</option>
-                        <option value="Salisbury Park">Pune - Salisbury Park</option>
-                        <option value="Gultekdi">Pune - Gultekdi</option>
-                        <option value="Wadachi Wadi">Pune - Wadachi Wadi</option>
-                        <option value="NIBM Road">Pune - NIBM Road</option>
-                        {/* <option value="Sindhudurg (Near Mopa, Goa)">Sindhudurg (Near Mopa, Goa)</option> */}
-                        {cities.filter(c => c !== "Pune").map(city => (
-                            <option key={city} value={city}>{city}</option>
-                        ))}
-                    </select>
-                    <ChevronDown className="absolute right-0 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400 pointer-events-none" />
+
+        <div className="w-full max-w-6xl mx-auto">
+
+            {/* Trust Bar */}
+            <div className="max-w-xl">
+                <div className="bg-white rounded-t-2xl px-4 py-2">
+
+                    {/* Mobile */}
+                    <div className="md:hidden flex items-start justify-start font-medium text-sm h-6">
+                        <span className="mr-1">No</span>
+
+                        <span
+                            key={currentTrust}
+                            className="animate-fade"
+                        >
+                            {trustItems[currentTrust]}
+                        </span>
+                    </div>
+
+                    {/* Desktop */}
+                    <div className="hidden md:flex items-center gap-6 text-base font-normal">
+                        <span>No Brokerage</span>
+
+                        <div className="w-px h-5 bg-gray-300"></div>
+
+                        <span>No Service Fees</span>
+
+                        <div className="w-px h-5 bg-gray-300"></div>
+
+                        <span>No Hidden Charges</span>
+                    </div>
+
                 </div>
             </div>
+            <div className="bg-white text-[15px] rounded-b-2xl md:rounded-tr-xl shadow-2xl px-4 py-2 flex flex-wrap md:flex-nowrap items-center gap-3 md:gap-0 w-full max-w-6xl mx-auto">
+                {/* Location */}
 
-            {/* Property */}
-            <div className="flex flex-col flex-1 min-w-[190px] md:border-r border-gray-200 md:px-4">
-                <span className="font-semibold text-[#742E85] uppercase tracking-widest mb-1">Property</span>
-                <div className="relative">
-                    <select
-                        value={selectedCategory}
-                        onChange={(e) => setSelectedCategory(e.target.value)}
-                        className={selectClass}
-                        style={{ WebkitAppearance: "none", MozAppearance: "none" }}
-                    >
-                        <option value="">All</option>
-                        <option value="Residential">Residential</option>
-                        <option value="Commercial">Commercial</option>
-                        <option value="Plot">Plots</option>
-                    </select>
-                    <ChevronDown className="absolute right-0 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400 pointer-events-none" />
+                <div className="flex flex-col flex-1 min-w-[110px] md:border-r border-gray-200 md:pr-4">
+                    <span className="font-semibold text-[#742E85] uppercase tracking-widest mb-1">Location</span>
+                    <div className="relative">
+                        <select
+                            value={selectedCity}
+                            onChange={(e) => setSelectedCity(e.target.value)}
+                            className={selectClass}
+                            style={{ WebkitAppearance: "none", MozAppearance: "none" }}
+                        >
+                            <option value="Pune">Pune</option>
+                            <option value="Hadapsar">Pune - Hadapsar</option>
+                            <option value="Kondhwa">Pune - Kondhwa</option>
+                            <option value="Pisoli">Pune - Pisoli</option>
+                            <option value="Undri">Pune - Undri</option>
+                            <option value="Mohammed Wadi">Pune - Mohammed Wadi</option>
+                            <option value="Salisbury Park">Pune - Salisbury Park</option>
+                            <option value="Gultekdi">Pune - Gultekdi</option>
+                            <option value="Wadachi Wadi">Pune - Wadachi Wadi</option>
+                            <option value="NIBM Road">Pune - NIBM Road</option>
+                            {/* <option value="Sindhudurg (Near Mopa, Goa)">Sindhudurg (Near Mopa, Goa)</option> */}
+                            {cities.filter(c => c !== "Pune").map(city => (
+                                <option key={city} value={city}>{city}</option>
+                            ))}
+                        </select>
+                        <ChevronDown className="absolute right-0 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400 pointer-events-none" />
+                    </div>
                 </div>
-            </div>
 
-            {/* Budget */}
-            <div className="flex flex-col flex-1 min-w-[140px] md:border-r border-gray-200 md:px-4">
-                <span className="font-semibold text-[#742E85] uppercase tracking-widest mb-1">Budget</span>
-                <input
-                    type="range" min="50" max="1000" step="1" value={budget}
-                    onChange={(e) => setBudget(Number(e.target.value))}
-                    className="w-full accent-[#742E85] mt-1"
-                />
-                <span className="text-xs text-gray-600 mt-0.5 font-medium">
-                    ₹50L - ₹{budget >= 1000 ? "10Cr" : `${budget}L`}
-                </span>
-            </div>
-
-            {/* Status */}
-            <div className="flex flex-col flex-1 min-w-[120px] md:border-r border-gray-200 md:px-4">
-                <span className="font-semibold text-[#742E85] uppercase tracking-widest mb-1">Status</span>
-                <div className="relative">
-                    <select
-                        value={selectedStatus}
-                        onChange={(e) => setSelectedStatus(e.target.value)}
-                        className={selectClass}
-                        style={{ WebkitAppearance: "none", MozAppearance: "none" }}
-                    >
-                        <option value="">All</option>
-                        <option value="Ready">Ready</option>
-                        <option value="Under Construction">Under Construction</option>
-                        <option value="Late Possession">Late Possession</option>
-                    </select>
-                    <ChevronDown className="absolute right-0 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400 pointer-events-none" />
+                {/* Property */}
+                <div className="flex flex-col flex-1 min-w-[190px] md:border-r border-gray-200 md:px-4">
+                    <span className="font-semibold text-[#742E85] uppercase tracking-widest mb-1">Property</span>
+                    <div className="relative">
+                        <select
+                            value={selectedCategory}
+                            onChange={(e) => setSelectedCategory(e.target.value)}
+                            className={selectClass}
+                            style={{ WebkitAppearance: "none", MozAppearance: "none" }}
+                        >
+                            <option value="">All</option>
+                            <option value="Residential">Residential</option>
+                            <option value="Commercial">Commercial</option>
+                            <option value="Plot">Plots</option>
+                        </select>
+                        <ChevronDown className="absolute right-0 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400 pointer-events-none" />
+                    </div>
                 </div>
-            </div>
 
-            {/* Apply */}
-            <div className="md:pl-4">
-                <button
-                    onClick={applyFilters}
-                    className="bg-black text-white text-sm font-bold px-8 py-3 rounded-xl hover:bg-gray-900 transition whitespace-nowrap"
-                >
-                    Apply
-                </button>
+                {/* Budget */}
+                <div className="flex flex-col flex-1 min-w-[140px] md:border-r border-gray-200 md:px-4">
+                    <span className="font-semibold text-[#742E85] uppercase tracking-widest mb-1">Budget</span>
+                    <input
+                        type="range" min="50" max="1000" step="1" value={budget}
+                        onChange={(e) => setBudget(Number(e.target.value))}
+                        className="w-full accent-[#742E85] mt-1"
+                    />
+                    <span className="text-xs text-gray-600 mt-0.5 font-medium">
+                        ₹50L - ₹{budget >= 1000 ? "10Cr" : `${budget}L`}
+                    </span>
+                </div>
+
+                {/* Status */}
+                <div className="flex flex-col flex-1 min-w-[120px] md:border-r border-gray-200 md:px-4">
+                    <span className="font-semibold text-[#742E85] uppercase tracking-widest mb-1">Status</span>
+                    <div className="relative">
+                        <select
+                            value={selectedStatus}
+                            onChange={(e) => setSelectedStatus(e.target.value)}
+                            className={selectClass}
+                            style={{ WebkitAppearance: "none", MozAppearance: "none" }}
+                        >
+                            <option value="">All</option>
+                            <option value="Ready">Ready</option>
+                            <option value="Under Construction">Under Construction</option>
+                            <option value="Late Possession">Late Possession</option>
+                        </select>
+                        <ChevronDown className="absolute right-0 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400 pointer-events-none" />
+                    </div>
+                </div>
+
+                {/* Apply */}
+                <div className="md:pl-4">
+                    <button
+                        onClick={applyFilters}
+                        className="bg-black text-white text-sm font-bold px-8 py-3 rounded-xl hover:bg-gray-900 transition whitespace-nowrap"
+                    >
+                        Apply
+                    </button>
+                </div>
             </div>
         </div>
     );
@@ -1039,7 +1089,7 @@ export default function WebsitePage() {
             </div>
 
             <About showOn="homepage" />
-           
+
             <h2 className="text-md md:text-xl font-bold text-[#742E85] mb-5 text-center">
                 Google Reviews
             </h2>

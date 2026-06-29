@@ -71,7 +71,21 @@ function PropertyFilterBar({ projects, onFilteredProjects }) {
   const [budget, setBudget] = useState(99);
   const [selectedStatus, setSelectedStatus] = useState("");
   const router = useRouter();
+ const trustItems = [
+        "Brokerage",
+        "Service Fees",
+        "Hidden Charges",
+    ];
 
+    const [currentTrust, setCurrentTrust] = useState(0);
+
+    useEffect(() => {
+        const interval = setInterval(() => {
+            setCurrentTrust((prev) => (prev + 1) % trustItems.length);
+        }, 2500);
+
+        return () => clearInterval(interval);
+    }, []);
   const applyFilters = () => {
     const filtered = projects.filter((project) => {
       const matchesBudget = (project.pricing?.maxPrice || 0) / 100000 <= budget;
@@ -108,7 +122,41 @@ function PropertyFilterBar({ projects, onFilteredProjects }) {
     "appearance-none w-full text-sm text-gray-800 font-semibold bg-transparent outline-none pl-2 cursor-pointer rounded-xl border-0 focus:ring-0";
 
   return (
-    <div className="bg-white text-[15px] rounded-2xl shadow-2xl px-4 py-4 flex flex-wrap md:flex-nowrap items-center gap-3 md:gap-0 w-full max-w-6xl mx-auto">
+    <div className="w-full max-w-6xl mx-auto">
+
+            {/* Trust Bar */}
+            <div className="max-w-xl">
+                <div className="bg-white rounded-t-2xl px-4 py-2">
+
+                    {/* Mobile */}
+                    <div className="md:hidden flex items-start justify-start font-medium text-sm h-6">
+                        <span className="mr-1">No</span>
+
+                        <span
+                            key={currentTrust}
+                            className="animate-fade"
+                        >
+                            {trustItems[currentTrust]}
+                        </span>
+                    </div>
+
+                    {/* Desktop */}
+                    <div className="hidden md:flex items-center gap-6 text-base font-normal">
+                        <span>No Brokerage</span>
+
+                        <div className="w-px h-5 bg-gray-300"></div>
+
+                        <span>No Service Fees</span>
+
+                        <div className="w-px h-5 bg-gray-300"></div>
+
+                        <span>No Hidden Charges</span>
+                    </div>
+
+                </div>
+            </div>
+        
+    <div className="bg-white text-[15px] rounded-b-2xl md:rounded-tr-2xl shadow-2xl px-4 py-4 flex flex-wrap md:flex-nowrap items-center gap-3 md:gap-0 w-full max-w-6xl mx-auto">
       {/* Location */}
       <div className="flex flex-col flex-1 min-w-[190px] md:border-r border-gray-200 md:pr-4">
         <span className=" font-semibold text-[#742E85] uppercase tracking-widest mb-1">Location</span>
@@ -197,6 +245,7 @@ function PropertyFilterBar({ projects, onFilteredProjects }) {
           Apply
         </button>
       </div>
+    </div>
     </div>
   );
 }

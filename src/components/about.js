@@ -1,7 +1,7 @@
 "use client";
 import { useState, useEffect, useRef } from "react";
 import Image from "next/image";
-import { ChevronLeft, ChevronRight, Maximize2, X } from "lucide-react";
+import { ChevronLeft, ChevronRight, Maximize2, Play, X } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 
 // Blog tips data with screenshots details mapped to images and content
@@ -186,13 +186,26 @@ export default function About({ showOn }) {
   const [startIndex, setStartIndex] = useState(0);
   const [expandedVideo, setExpandedVideo] = useState(null);
 
-  // Blog section state variables
+  // Layout tracking states
   const [blogIndex, setBlogIndex] = useState(0);
   const [isBlogHovering, setIsBlogHovering] = useState(false);
+  const [isVideoHovering, setIsVideoHovering] = useState(false);
   const [selectedBlog, setSelectedBlog] = useState(null);
-  const [slideDirection, setSlideDirection] = useState("up"); // Direction of scroll animation
+  const [slideDirection, setSlideDirection] = useState("up");
+  
   const timerRef = useRef(null);
+  const videoTimerRef = useRef(null);
+  const [videos, setVideos] = useState([]);
+  const [currentVideoIndex, setCurrentVideoIndex] = useState(0);
 
+  useEffect(() => {
+    fetch("/api/youtube")
+      .then(res => res.json())
+      .then(data => setVideos(data));
+  }, []);
+
+  const currentVideo = videos[currentVideoIndex];
+  
   useEffect(() => {
     const fetchReviews = async () => {
       try {
@@ -207,7 +220,7 @@ export default function About({ showOn }) {
     fetchReviews();
   }, [showOn]);
 
-  // Blog auto-scrolling interval: scrolls every 3 seconds unless hovering or modal open
+  // Blog auto-scrolling interval logic
   useEffect(() => {
     if (isBlogHovering || selectedBlog) {
       if (timerRef.current) clearInterval(timerRef.current);
@@ -224,14 +237,31 @@ export default function About({ showOn }) {
     };
   }, [isBlogHovering, selectedBlog]);
 
+  // Video auto-scrolling interval logic
+  useEffect(() => {
+    if (!videos.length || isVideoHovering || expandedVideo) {
+      if (videoTimerRef.current) clearInterval(videoTimerRef.current);
+      return;
+    }
+
+    videoTimerRef.current = setInterval(() => {
+      setSlideDirection("up");
+      setCurrentVideoIndex((prev) => (prev + 1) % videos.length);
+    }, 3000);
+
+    return () => {
+      if (videoTimerRef.current) clearInterval(videoTimerRef.current);
+    };
+  }, [videos, isVideoHovering, expandedVideo]);
+
   const handleNextReview = () => {
-    if (reviews.length === 0) return;
-    setStartIndex((prev) => (prev + 1) % reviews.length);
+    setSlideDirection("up");
+    setCurrentVideoIndex((prev) => (prev + 1) % videos.length);
   };
 
   const handlePrevReview = () => {
-    if (reviews.length === 0) return;
-    setStartIndex((prev) => (prev - 1 + reviews.length) % reviews.length);
+    setSlideDirection("down");
+    setCurrentVideoIndex((prev) => (prev - 1 + videos.length) % videos.length);
   };
 
   const handleBlogNext = () => {
@@ -245,9 +275,8 @@ export default function About({ showOn }) {
   };
 
   const isVideo = (url) =>
-    url && (url.includes(".mp4") || url.includes("video/upload"));
+    url && (url.includes(".mp4") || url.includes("video/upload") || url.includes("youtube.com") || url.includes("youtu.be"));
 
-  // Formatter to render full content cleanly in modal popup
   const formatContent = (text) => {
     if (!text) return null;
     return text.split("\n").map((line, idx) => {
@@ -277,7 +306,6 @@ export default function About({ showOn }) {
   const currentReview = reviews[startIndex];
   const currentBlog = BLOG_TIPS[blogIndex];
 
-  // Framer Motion slide variants
   const slideVariants = {
     initial: (direction) => ({
       y: direction === "up" ? 40 : -40,
@@ -300,76 +328,99 @@ export default function About({ showOn }) {
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-10 lg:gap-14">
 
         {/* ================= LEFT SECTION: WHAT THEY SAY ABOUT US ================= */}
-        <div className="flex flex-col h-full justify-between">
+        <div 
+          className="flex flex-col h-full justify-between"
+          onMouseEnter={() => setIsVideoHovering(true)}
+          onMouseLeave={() => setIsVideoHovering(false)}
+        >
           <div>
             <h2 className="text-md md:text-xl font-bold text-[#E5097F] mb-6">
-              What They Say About Us
+             Explore Our Video Guides
             </h2>
 
-            {currentReview ? (
-              <div className="bg-[#F4F4F4] p-5 md:p-6 rounded-[21px] flex flex-col md:flex-row gap-6 items-center shadow-[4px_4px_7.3px_rgba(0,0,0,0.15)] w-full min-h-[305px]">
-
-                {/* Review Media Panel */}
-                <div className="relative w-full md:w-[220px] h-[160px] md:h-[180px] rounded-[21px] flex-shrink-0 overflow-hidden group bg-white border border-gray-100 shadow-inner flex items-center justify-center">
-                  {currentReview.videoUrl && isVideo(currentReview.videoUrl) ? (
-                    <video
-                      src={currentReview.videoUrl}
-                      className="w-full h-full object-cover"
-                      controls
-                    />
-                  ) : (
-                    <Image
-                      src={currentReview.videoUrl || "/piinggaksha.png"}
-                      alt={currentReview.customerName}
-                      fill
-                      className={currentReview.videoUrl ? "object-cover" : "object-contain p-10"}
-                      sizes="(max-width: 768px) 100vw, 220px"
-                    />
-                  )}
-                  {currentReview.videoUrl && (
-                    <button
-                      onClick={() => setExpandedVideo(currentReview.videoUrl)}
-                      className="absolute top-3 right-3 bg-black/60 hover:bg-black/80 text-white p-2 rounded-lg opacity-0 group-hover:opacity-100 transition-opacity duration-200"
-                      title="Enlarge"
+            <div className="bg-[#F4F4F4] p-5 md:p-6 rounded-[21px] flex flex-col md:flex-row gap-6 items-center shadow-[4px_4px_7.3px_rgba(0,0,0,0.15)] w-full min-h-[305px] overflow-hidden relative">
+              <AnimatePresence mode="wait" custom={slideDirection}>
+                {currentVideo ? (
+                  <motion.div
+                    key={currentVideoIndex}
+                    custom={slideDirection}
+                    variants={slideVariants}
+                    initial="initial"
+                    animate="animate"
+                    exit="exit"
+                    className="flex flex-col md:flex-row gap-6 items-center w-full h-full"
+                  >
+                    {/* Review Media Panel */}
+                    <div 
+                      onClick={() => {
+                        if (currentVideo?.videoId) {
+                          setExpandedVideo(`https://www.youtube.com/embed/${currentVideo.videoId}`);
+                        } else if (currentReview?.videoUrl) {
+                          setExpandedVideo(currentReview.videoUrl);
+                        }
+                      }}
+                      className="relative w-full md:w-[220px] h-[160px] md:h-[180px] rounded-[21px] flex-shrink-0 overflow-hidden group bg-slate-900 border border-gray-100 shadow-inner flex items-center justify-center cursor-pointer"
                     >
-                      <Maximize2 size={16} />
-                    </button>
-                  )}
-                </div>
-
-                {/* Review Details */}
-                <div className="flex-1 text-black w-full min-w-0">
-                  <div className="text-[#742E85] text-4xl h-6 leading-none">“</div>
-                  <p className="text-xs md:text-sm leading-relaxed mb-2 line-clamp-5">{currentReview.reviewText}</p>
-                  <div className="mb-2 text-yellow-500 text-md flex gap-1">
-                    {"★".repeat(currentReview.rating || 5)}
-                  </div>
-
-                  <div className="flex items-center gap-3 flex-wrap">
-                    <div className="w-8 h-8 rounded-full bg-gradient-to-br from-[#CCA4D6] to-[#742E85] flex items-center justify-center text-white font-bold uppercase text-xs">
-                      {currentReview.customerName?.charAt(0)}
-                    </div>
-                    <span className="text-xs md:text-sm font-bold text-black uppercase tracking-wider truncate">
-                      by {currentReview.customerName}
-                    </span>
-                    {currentReview.googleLink && (
-                      <a
-                        href={currentReview.googleLink}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="text-[11px] text-[#742E85] underline ml-auto"
+                      {currentVideo?.videoId ? (
+                        <>
+                          <Image
+                            src={`https://img.youtube.com/vi/${currentVideo.videoId}/mqdefault.jpg`}
+                            alt={currentVideo.title}
+                            fill
+                            sizes="(max-width: 768px) 100vw, 220px"
+                            className="object-cover opacity-80 group-hover:opacity-60 transition-opacity"
+                          />
+                          <div className="absolute inset-0 flex items-center justify-center bg-black/20 group-hover:bg-black/40 transition-colors">
+                            <div className="bg-red-500 text-white px-2 py-1 rounded-md shadow-md transform group-hover:scale-110 transition-transform">
+                              <Play size={15} fill="currentColor" className="ml-0.5" />
+                            </div>
+                          </div>
+                        </>
+                      ) : currentReview?.videoUrl && isVideo(currentReview.videoUrl) ? (
+                        <video
+                          src={currentReview.videoUrl}
+                          className="w-full h-full object-cover"
+                          muted
+                          playsInline
+                        />
+                      ) : (
+                        <Image
+                          src={currentReview?.videoUrl || "/piinggaksha.png"}
+                          alt={currentReview?.customerName || "Testimonial"}
+                          fill
+                          className={currentReview?.videoUrl ? "object-cover" : "object-contain p-10"}
+                        />
+                      )}
+                      
+                      <button
+                        className="absolute top-3 right-3 bg-black/60 hover:bg-black/80 text-white p-2 rounded-lg opacity-0 group-hover:opacity-100 transition-opacity duration-200 z-10"
+                        title="Enlarge"
                       >
-                        View
-                      </a>
-                    )}
-                  </div>
-                </div>
-              </div>
-            ) : (
-              <div className="bg-[#F4F4F4] rounded-[21px] flex items-center justify-center min-h-[305px] text-gray-400 text-sm shadow-[4px_4px_7.3px_rgba(0,0,0,0.15)]">
-                No testimonials found.
-              </div>
-            )}
+                        <Maximize2 size={16} />
+                      </button>
+                    </div>
+
+                    {/* Review Details */}
+                    <div className="flex-1 text-black w-full min-w-0">
+                      {/* <div className="text-[#742E85] text-4xl h-6 leading-none">“</div> */}
+                       <h3 className="font-bold text-[13px] md:text-[14px] text-slate-800 leading-snug mb-2">
+                     {currentVideo?.title}
+                      </h3>
+                      {/* <p className="text-sm text-gray-600 mt-2">
+                        {currentVideo?.publishedAt ? new Date(currentVideo.publishedAt).toLocaleDateString() : ""}
+                      </p> */}
+                    </div>
+                  </motion.div>
+                ) : (
+                  <motion.div
+                    key="no-testimonials"
+                    className="w-full h-full flex items-center justify-center text-gray-400 text-sm"
+                  >
+                    No testimonials found.
+                  </motion.div>
+                )}
+              </AnimatePresence>
+            </div>
           </div>
 
           {/* Testimonials Pagination Controls */}
@@ -390,9 +441,11 @@ export default function About({ showOn }) {
         </div>
 
         {/* ================= RIGHT SECTION: BLOG TIPS ================= */}
-        <div className="flex flex-col h-full justify-between"
+        <div 
+          className="flex flex-col h-full justify-between"
           onMouseEnter={() => setIsBlogHovering(true)}
-          onMouseLeave={() => setIsBlogHovering(false)}>
+          onMouseLeave={() => setIsBlogHovering(false)}
+        >
           <div>
             <h2 className="text-md md:text-xl font-bold text-[#E5097F] mb-6">
               Blog Tips
@@ -415,7 +468,7 @@ export default function About({ showOn }) {
                       src={currentBlog.image}
                       alt={currentBlog.title}
                       fill
-                      className="object-fill" 
+                      className="object-fill"
                       sizes="(max-width: 768px) 100vw, 220px"
                     />
                   </div>
@@ -427,7 +480,6 @@ export default function About({ showOn }) {
                       {currentBlog.title}
                     </h3>
 
-                    {/* Shortened preview of keywords or layout */}
                     <p className="text-[11px] md:text-[12px] text-gray-600 leading-relaxed mb-3 line-clamp-4 whitespace-pre-line">
                       {currentBlog.content.replace(/\*\*/g, "").replace(/•/g, "-")}
                     </p>
@@ -474,7 +526,7 @@ export default function About({ showOn }) {
           onClick={() => setExpandedVideo(null)}
         >
           <div
-            className="relative w-full max-w-4xl max-h-[90vh] rounded-2xl overflow-hidden shadow-2xl"
+            className="relative w-full max-w-4xl aspect-video rounded-2xl overflow-hidden shadow-2xl bg-black"
             onClick={(e) => e.stopPropagation()}
           >
             <button
@@ -483,15 +535,23 @@ export default function About({ showOn }) {
             >
               <X size={20} />
             </button>
-            {isVideo(expandedVideo) ? (
+            {expandedVideo.includes("youtube.com/embed") ? (
+              <iframe
+                src={`${expandedVideo}?autoplay=1`}
+                title="Expanded Video"
+                className="w-full h-full"
+                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                allowFullScreen
+              />
+            ) : isVideo(expandedVideo) ? (
               <video
                 src={expandedVideo}
-                className="w-full h-full max-h-[85vh] object-contain"
+                className="w-full h-full object-contain"
                 controls
                 autoPlay
               />
             ) : (
-              <div className="relative w-full aspect-video">
+              <div className="relative w-full h-full">
                 <Image
                   src={expandedVideo}
                   alt="Enlarged testimonial"
@@ -536,8 +596,6 @@ export default function About({ showOn }) {
 
               {/* Modal Content Area */}
               <div className="p-6 overflow-y-auto flex flex-col gap-6">
-
-                {/* Text Content */}
                 <div>
                   <h2 className="text-md md:text-lg font-bold text-slate-900 leading-snug mb-4">
                     {selectedBlog.title}

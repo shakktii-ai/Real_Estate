@@ -301,7 +301,7 @@ export default function AuthModal({ onClose, onAuthSuccess }) {
                             <div>
                                 <h2 className="text-2xl font-bold">Verify OTP</h2>
                                 <p className="text-sm text-gray-400 mt-1">
-                                    OTP sent to +91 {phone}
+                                    OTP sent to your Registered WhatsApp number.
                                 </p>
                             </div>
                             <button

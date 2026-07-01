@@ -178,9 +178,7 @@ const handleScroll = (index) => {
                   market expertise, transparency, and customer-first ethics,
                   ensuring that every client finds not just a house — but a
                   place they can proudly call home. <br/>
-                  <span className="font-normal">
-    RERA No - A52100026024 <br/> GSTIN - 27AEFPT4188M1ZP
-  </span>
+                  
                 </p>
               </div>
             </div>
@@ -314,7 +312,7 @@ const handleScroll = (index) => {
             <h2 className="text-md lg:text-[25px] font-bold text-primary-pink mb-8">
               Our Story
             </h2>
-            <div className="space-y-6 text-lg lg:text-[18px] leading-relaxed text-zinc-800">
+            <div className="space-y-6 text-lg lg:text-[15px] leading-relaxed text-zinc-800">
               <p>
                 Piinggaksha Realty was founded with a simple yet powerful
                 belief — buying a home should be exciting, not overwhelming.
@@ -346,7 +344,9 @@ const handleScroll = (index) => {
               <Image
                 src="/founder1.png"
                 alt="Founder"
-                fill
+                 width={390}
+                 height={500}
+                 
                 className="object-cover"
                 sizes="(max-width: 768px) 100vw, 40vw"
               />

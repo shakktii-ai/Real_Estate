@@ -103,11 +103,11 @@ const handleScroll = (index) => {
     if (isPaused) return;
 
     const interval = setInterval(() => {
-      setActiveIndex((prev) => (prev + 1) % awards.length);
+      setActiveIndex((prev) => (prev + 1) % strengths.length);
     }, 3000);
 
     return () => clearInterval(interval);
-  }, [isPaused, awards.length]);
+  }, [isPaused, strengths.length]);
 
   useEffect(() => {
     handleScroll(activeIndex);
@@ -177,7 +177,10 @@ const handleScroll = (index) => {
                   To be Pune's most trusted real estate advisory by combining
                   market expertise, transparency, and customer-first ethics,
                   ensuring that every client finds not just a house — but a
-                  place they can proudly call home.
+                  place they can proudly call home. <br/>
+                  <span className="font-normal">
+    RERA No - A52100026024 <br/> GSTIN - 27AEFPT4188M1ZP
+  </span>
                 </p>
               </div>
             </div>
@@ -187,7 +190,7 @@ const handleScroll = (index) => {
 
               
           {/* CORE STRENGTHS CARD - SLIDE AND PAUSE ONE-BY-ONE */}
-          <div className="relative h-[600] md:h-[450px] mx-auto w-full max-w-[402px]">
+          <div className="relative h-[600px] md:h-[450px] mx-auto w-full max-w-[402px]">
             <Image
               src="/about_2.jpg"
               alt="Our Core Strengths"
@@ -267,10 +270,10 @@ const handleScroll = (index) => {
             
             {/* Dynamic Card Sub-Footer Labeling Info text */}
             <div className="absolute bottom-4 left-0 right-0 z-20 text-center text-white">
-              <p className="text-[14px] font-bold leading-tight">
-                Rera – A031262503639 || A52100026024
+              <p className="text-[15px] font-bold leading-tight">
+                Rera No – A52100026024
                 <br />
-                GSTIN – 27AEFPT4188M1Z
+                GSTIN – 27AEFPT4188M1ZP
               </p>
             </div>
           </div>
@@ -341,7 +344,7 @@ const handleScroll = (index) => {
           <div className="lg:w-2/5">
             <div className="relative w-full aspect-[390/563] rounded-[20px] overflow-hidden">
               <Image
-                src="/founder.png"
+                src="/founder1.png"
                 alt="Founder"
                 fill
                 className="object-cover"

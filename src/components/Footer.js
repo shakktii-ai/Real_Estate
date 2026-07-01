@@ -177,7 +177,7 @@ const Footer = () => {
 
       {/* Copyright / Bottom Bar */}
       <div className="mt-1 pt-2 border-t border-zinc-400 text-center font-inter text-xs md:text-sm lg:text-[12px]">
-        <p className="font-bold">© 2026 PIINGGAKSHA. All rights reserved. | RERA No - A52100026024 | GSTIN - 27AEFPT4188M1ZP</p>
+        <p className="font-bold">© 2026 PIINGGAKSHA. All rights reserved. | RERA No - A52100026024 , A031262503639 | GSTIN - 27AEFPT4188M1ZP</p>
         <p className="mt-1 text-black text-[8px] md:text-[10px]">
           All projects displayed are RERA registered. Please verify RERA details before making any decision.
         </p>

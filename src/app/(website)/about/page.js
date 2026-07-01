@@ -269,7 +269,7 @@ const handleScroll = (index) => {
             {/* Dynamic Card Sub-Footer Labeling Info text */}
             <div className="absolute bottom-4 left-0 right-0 z-20 text-center text-white">
               <p className="text-[15px] font-bold leading-tight">
-                Rera No – A52100026024
+                Rera No – A52100026024 | A031262503639
                 <br />
                 GSTIN – 27AEFPT4188M1ZP
               </p>

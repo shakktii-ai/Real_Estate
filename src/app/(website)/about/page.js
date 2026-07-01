@@ -13,15 +13,15 @@ export default function AboutUs() {
   const awards = [65, 71, 60, 61];
   const strengths = [
   {
-    label: "RERA Registered & Industry Certified",
+    label: "RERA Registered and Industry Certified",
     points: [
       "Maharashtra RERA registered for complete transparency.",
-      "NAREDCO–REMI certified real estate professionals.",
+      "NAREDCO REMI certified real estate professionals.",
       "Trusted, compliant, and credible property advisory services."
     ]
   },
   {
-    label: "9+ Years of Real Estate Expertise",
+    label: "9 Plus Years of Real Estate Expertise",
     points: [
       "Deep understanding of Pune’s residential property market.",
       "Expert guidance to help you make informed decisions.",
@@ -29,16 +29,16 @@ export default function AboutUs() {
     ]
   },
   {
-    label: "GST-Compliant & Transparent Operations",
+    label: "GST Compliant and Transparent Operations",
     points: [
-      "Fully GST-compliant business practices.",
+      "Fully GST compliant business practices.",
       "Complete transparency in all transactions.",
       "Clear documentation and billing process.",
      
     ]
   },
   {
-    label: "100% No Brokerage, No Advisory Fees",
+    label: "Zero Brokerage, Zero Advisory Fees",
     points: [
       "Pay absolutely zero brokerage charges.",
       "No hidden advisory or consultation fees.",
@@ -49,13 +49,13 @@ export default function AboutUs() {
   {
     label: "Exclusive Developer Partnerships",
     points: [
-      "Access to pre-launch and exclusive project offers.",
-      "Special pricing through trusted developer tie-ups.",
+      "Access to early stage and exclusive project offers.",
+      "Special pricing through trusted developer tie ups.",
       "Opportunity to secure homes at competitive rates."
     ]
   },
   {
-    label: "Customer-First Approach",
+    label: "Customer First Approach",
     points: [
       "Personalized property recommendations.",
       "Honest and transparent buying guidance.",
@@ -63,7 +63,7 @@ export default function AboutUs() {
     ]
   },
   {
-    label: "End-to-End Property Assistance",
+    label: "Complete Property Assistance, Start to finish",
     points: [
       "Expert support from search to possession.",
       "Organized site visits and project walkthroughs.",
@@ -140,11 +140,9 @@ const handleScroll = (index) => {
             </h1>
             <p className="text-base lg:text-[18px] leading-relaxed lg:leading-[30px] text-black">
               Piinggaksha is a company focused on simplifying the home buying
-              process for its clients.{" "}
-              <span className="font-bold">PIINGGAKSHA REALTY</span> is a
-              Maharashtra RERA-Registered and NAREDCO–REMI Certified real estate
-              consultancy firm based in South Pune, proudly serving clients for
-              over 9+ years.
+              process for its clients.
+             <br/>Piinggaksha Realty is a Maharashtra RERA registered and NAREDCO REMI certified real estate
+consultancy based in South Pune, proudly serving clients for over 9 years.
               <br />
               We are a GST-compliant, performance-driven organization focused on
               delivering value, trust, and transparency in every real estate
@@ -174,10 +172,9 @@ const handleScroll = (index) => {
                   Our Vision
                 </h2>
                 <p className="bg-white p-3 rounded text-[12px] leading-relaxed text-black">
-                  To be Pune's most trusted real estate advisory by combining
-                  market expertise, transparency, and customer-first ethics,
-                  ensuring that every client finds not just a house — but a
-                  place they can proudly call home. <br/>
+                  To be Pune's most trusted real estate advisory by combining market expertise, transparency,
+and a customer first approach, ensuring every client finds not just a house, but a place they
+can proudly call home. <br/>
                   
                 </p>
               </div>
@@ -298,7 +295,7 @@ const handleScroll = (index) => {
                 </h2>
                 <p className="bg-white p-3 rounded text-[12px] leading-relaxed text-black">
                   To guide and empower our clients at every stage of the
-                  home-buying journey — from discovery to possession — ensuring
+                  home-buying journey from discovery to possession ensuring
                   their expectations are not just met, but consistently
                   exceeded.
                 </p>
@@ -314,27 +311,27 @@ const handleScroll = (index) => {
             </h2>
             <div className="space-y-6 text-lg lg:text-[15px] leading-relaxed text-zinc-800">
               <p>
-                Piinggaksha Realty was founded with a simple yet powerful
-                belief — buying a home should be exciting, not overwhelming.
+                Piinggaksha Realty was founded on a simple
+                belief: buying a home should be exciting, not overwhelming.
                 What started as a small initiative in South Pune has today grown
                 into a trusted real estate consultancy.
               </p>
               <p>
-                Over the years, we observed a common challenge faced by
-                homebuyers — confusing processes, hidden costs, and lack of
-                genuine guidance. That’s where Piinggaksha stepped in. We set
-                out to simplify the entire home-buying journey by offering clear
+                Over the years, we noticed a common challenge faced by
+                homebuyers: confusing processes, hidden costs, and a lack of
+                genuine guidance. That is where Piinggaksha stepped in. We set
+                out to simplify the entire home buying journey by offering clear, honest
                 advice.
               </p>
               <p>
                 From the first property search to the final possession, our goal
                 has always been to make the experience smooth, transparent, and
-                stress-free. Our 100% No Brokerage Policy reflects our
+                stress free. Our zero Brokerage Policy reflects our
                 commitment to putting customers first.
               </p>
               <p>
-                Being a Maharashtra RERA-Registered firm, we operate with full
-                compliance, accountability, and trust — values that have helped
+                As a Maharashtra RERA Registered firm, we operate with full
+                compliance, accountability, and trust, values that have helped
                 us serve hundreds of happy homebuyers across Pune.
               </p>
             </div>

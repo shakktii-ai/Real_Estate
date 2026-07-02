@@ -24,8 +24,11 @@ const robotoCondensed = Roboto_Condensed({
 });
 
 export const metadata = {
-  title: "Real Estate",
-  description: "",
+  title: "Piinggaksha",
+  description: "Zero Brokerage | Zero Fees | Zero Hidden Charges",
+   icons: {
+    icon: "/piinggaksha.png",
+  },
 };
 
 export default function RootLayout({ children }) {

@@ -396,22 +396,62 @@ const handleApplyFilters = () => {
                     </div>
                 </div>
 
-                {/* Cards */}
-                {/* <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-          {filteredProjects.map((project, idx) => (
-            <PropertyCard key={idx} project={project} />
-          ))}
-        </div> */}
-                <div className={viewMode === "grid"
-                    ? "grid grid-cols-1 md:grid-cols-4 gap-1"
-                    : "flex flex-col gap-6"
-                }>
-                    {filteredProjects.map((project) => (
-                        viewMode === "grid"
-                            ? <PropertyCard key={project._id} project={project} isWishlisted={wishlist.includes(project._id)} onToggleWishlist={handleToggleWishlist} onTourClick={handleTourClick} />
-                            : <PropertyCardHori key={project._id} project={project} isWishlisted={wishlist.includes(project._id)} onToggleWishlist={handleToggleWishlist} onTourClick={handleTourClick} />
-                    ))}
-                </div>
+            {loading ? (
+  <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
+    {[...Array(8)].map((_, i) => (
+      <div
+        key={i}
+        className="bg-white rounded-2xl shadow-md overflow-hidden animate-pulse"
+      >
+        <div className="h-56 bg-gray-200"></div>
+
+        <div className="p-4 space-y-3">
+          <div className="h-6 bg-gray-200 rounded w-3/4"></div>
+          <div className="h-4 bg-gray-200 rounded w-1/2"></div>
+          <div className="h-4 bg-gray-200 rounded w-full"></div>
+          <div className="h-10 bg-gray-200 rounded-xl"></div>
+        </div>
+      </div>
+    ))}
+  </div>
+) : filteredProjects.length === 0 ? (
+  <div className="py-24 text-center">
+    <h2 className="text-2xl font-semibold text-gray-600">
+      No Projects Found
+    </h2>
+    <p className="text-gray-500 mt-2">
+      Try changing your filters.
+    </p>
+  </div>
+) : (
+  <div
+    className={
+      viewMode === "grid"
+        ? "grid grid-cols-1 md:grid-cols-4 gap-1"
+        : "flex flex-col gap-6"
+    }
+  >
+    {filteredProjects.map((project) =>
+      viewMode === "grid" ? (
+        <PropertyCard
+          key={project._id}
+          project={project}
+          isWishlisted={wishlist.includes(project._id)}
+          onToggleWishlist={handleToggleWishlist}
+          onTourClick={handleTourClick}
+        />
+      ) : (
+        <PropertyCardHori
+          key={project._id}
+          project={project}
+          isWishlisted={wishlist.includes(project._id)}
+          onToggleWishlist={handleToggleWishlist}
+          onTourClick={handleTourClick}
+        />
+      )
+    )}
+  </div>
+)}
                 <TourSelectionModal
                     isOpen={showSelectionModal}
                     onClose={() => setShowSelectionModal(false)}

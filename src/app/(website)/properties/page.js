@@ -142,6 +142,7 @@ function PropertiesContent() {
     const [selectedCity, setSelectedCity] = useState(locationParam || "Pune");
     const [selectedCategory, setSelectedCategory] = useState(categoryParam || "");
     const [projects, setProjects] = useState([]);
+    const [loading, setLoading] = useState(true);
     const [viewMode, setViewMode] = useState("grid");
     const { user } = useAuth(); // Access current user
     const [wishlist, setWishlist] = useState([]);
@@ -200,12 +201,15 @@ const handleApplyFilters = () => {
     useEffect(() => {
         const fetchProjects = async () => {
             try {
+                    setLoading(true);
                 const res = await fetch("/api/properties");
                 const data = await res.json();
                 setProjects(data);
             } catch (error) {
                 console.error("Failed to fetch projects", error);
-            }
+            }finally {
+      setLoading(false);
+    }
         };
 
         fetchProjects();
@@ -346,9 +350,9 @@ const handleApplyFilters = () => {
                         <h1 className="text-[20px] md:text-[30px] leading-none font-bold text-[#742E85]">
                             New Projects in Pune
                         </h1>
-                        <p className="mt-4 text-[14px] md:text-[18px] text-black">
-                            {filteredProjects.length} Projects found
-                        </p>
+                     <p className="mt-4 text-[14px] md:text-[18px] text-black">
+  {loading ? "Loading projects..." : `${filteredProjects.length} Projects found`}
+</p>
                     </div>
 
                     <div className="flex items-center gap-4">

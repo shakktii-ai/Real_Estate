@@ -440,6 +440,7 @@ import BookVirtualTourModal from '@/components/BookVirtualTourModal';
 import AuthModal from '@/components/AuthModal';
 import { ChevronRight, ArrowRight, ChevronDown, Star } from "lucide-react";
 import { ShieldCheck, BadgeCheck, IndianRupee } from "lucide-react";
+import { Handshake, BadgeIndianRupee, ReceiptText } from "lucide-react";
 // ─── Slide data ───────────────────────────────────────────────────────────────
 const WHY_SLIDES = [
     {
@@ -550,38 +551,63 @@ function PropertyFilterBar({ projects, onFilteredProjects }) {
 
         <div className="w-full max-w-6xl mx-auto">
 
-            {/* Trust Bar */}
-            <div className="max-w-xl">
-                <div className="bg-white rounded-t-2xl px-4 py-2">
 
-                    {/* Mobile */}
-                    <div className="md:hidden flex items-start justify-start text-black font-medium text-sm h-6">
-                        <span className="mr-1">No</span>
-
-                        <span
-                            key={currentTrust}
-                            className="animate-fade"
-                        >
-                            {trustItems[currentTrust]}
-                        </span>
+            <div className="flex flex-row md:flex-cols flex-wrap gap-2 py-4">
+                {/* No Brokerage */}
+                <div className="flex items-center gap-2 w-full md:w-[160px] h-[70px] rounded-2xl border border-[#664997] bg-[#4B1F73]/50 px-2 shadow-lg">
+                    <div className="w-[45px] h-[58px] rounded-xl border border-[#664997] bg-[#000000]/40 backdrop-blur-md flex items-center justify-center">
+                        <img
+                            src="/hands 1.png"
+                            alt="No Brokerage"
+                            className="w-[32px] h-[30px]"
+                        />
                     </div>
 
-                    {/* Desktop */}
-                    <div className="hidden md:flex items-center gap-6 text-base font-normal">
-                        <span>No Brokerage</span>
+                    <h3 style={{
+                        WebkitTextStroke: "0.5px #664997",
+                    }}
+                        className="text-[#F5F5F5]  text-[16px] font-medium leading-6">
+                        No <br className='hidden md:block'/> Brokerage
+                    </h3>
+                </div>
 
-                        <div className="w-px h-5 bg-gray-300"></div>
-
-                        <span>No Service Fees</span>
-
-                        <div className="w-px h-5 bg-gray-300"></div>
-
-                        <span>No Hidden Charges</span>
+                {/* No Fees */}
+                <div className="flex items-center gap-2 w-full md:w-[160px] h-[70px] rounded-2xl border border-[#0A7050] bg-[#215348]/50 px-2 shadow-lg">
+                    <div className="w-[45px] h-[58px] rounded-xl border border-[#0A7050] bg-[#000000]/40 backdrop-blur-md flex items-center justify-center">
+                        <img
+                            src="/fees.png"
+                            alt="No Brokerage"
+                            className="w-[32px] h-[30px]"
+                        />
                     </div>
 
+                    <h3 style={{
+                        WebkitTextStroke: "0.5px #0A7050",
+                    }}
+                        className="text-[#F5F5F5]  text-[16px] font-medium leading-6">
+                        No <br className='hidden md:block'/> Fees 
+                    </h3>
+                </div>
+
+                {/* No Hidden Charges */}
+                <div className="flex items-center gap-2 w-full md:w-[160px] h-[70px] rounded-2xl border border-[#BC8213] bg-[#9C6C32]/50 px-2 shadow-lg">
+                    <div className="w-[45px] h-[58px] rounded-xl border border-[#BC8213] bg-[#000000]/40 backdrop-blur-md flex items-center justify-center ">
+                        <img
+                            src="/hiddencharges.png"
+                            alt="No Brokerage"
+                            className="w-[32px] h-[30px]"
+                        />
+                    </div>
+
+                    <h3 style={{
+                        WebkitTextStroke: "0.5px #BC8213",
+                    }}
+                        className="text-[#F5F5F5]  text-[16px] font-medium leading-6">
+                        No Hidden <br className='hidden md:block'/>Charges
+                    </h3>
                 </div>
             </div>
-            <div className="bg-white text-[15px] rounded-b-2xl md:rounded-tr-xl shadow-2xl px-4 py-2 flex flex-wrap md:flex-nowrap items-center gap-3 md:gap-0 w-full max-w-6xl mx-auto">
+            <div className="bg-white text-[15px] rounded-2xl md:rounded-xl shadow-2xl px-4 py-2 flex flex-wrap md:flex-nowrap items-center gap-3 md:gap-0 w-full max-w-6xl mx-auto">
                 {/* Location */}
 
                 <div className="flex flex-col flex-1 min-w-[110px] md:border-r border-gray-200 md:pr-4">

@@ -171,7 +171,7 @@ const Navbar = () => {
             </div>
           </Link>
 
-          <div className="flex flex-nowrap gap-4 xl:gap-6 items-center whitespace-nowrap">
+          <div className="flex flex-nowrap gap-2 xl:gap-3 items-center whitespace-nowrap">
             {navLinks.map((link) => (
               <Link
                 key={link.href}
@@ -182,12 +182,12 @@ const Navbar = () => {
               </Link>
             ))}
           </div>
-        </div>
+         </div>
 
-        <div className="flex items-center gap-2 xl:gap-3 shrink-0">
-          <SearchBar className="w-[180px] xl:w-[240px] mr-2" inputClassName="text-xs" />
+        <div className="flex items-center gap-2 xl:gap-2 shrink-0">
+          <SearchBar className="w-[180px] xl:w-[300px] mr-2" inputClassName="text-xs" />
 
-          <Link href="/contact" className="hidden xl:flex bg-[#742E85] text-white px-4 py-2 rounded-lg items-center gap-2 hover:bg-[#652674]">
+          <Link href="/contact" className="hidden xl:flex bg-[#742E85] text-white px-2 py-2 rounded-lg items-center gap-2 hover:bg-[#652674]">
             <Phone size={18} /> Contact
           </Link>
 
@@ -295,7 +295,7 @@ const Navbar = () => {
                 setShowModal(true);
                 setIsMobileMenuOpen(false);
               }}
-              className="mt-2 bg-[#E5097F] text-white px-4 py-3 rounded-xl font-medium"
+              className="mt-2 bg-[#E5097F] text-white px-2 py-3 rounded-xl font-medium"
             >
               SignUp
             </button>

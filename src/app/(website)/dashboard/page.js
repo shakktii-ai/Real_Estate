@@ -71,31 +71,31 @@ function PropertyFilterBar({ projects, onFilteredProjects }) {
   const [budget, setBudget] = useState(99);
   const [selectedStatus, setSelectedStatus] = useState("");
   const router = useRouter();
- const trustItems = [
-        "Brokerage",
-        "Service Fees",
-        "Hidden Charges",
-    ];
+  const trustItems = [
+    "Brokerage",
+    "Service Fees",
+    "Hidden Charges",
+  ];
 
-    const [currentTrust, setCurrentTrust] = useState(0);
+  const [currentTrust, setCurrentTrust] = useState(0);
 
-    useEffect(() => {
-        const interval = setInterval(() => {
-            setCurrentTrust((prev) => (prev + 1) % trustItems.length);
-        }, 2500);
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setCurrentTrust((prev) => (prev + 1) % trustItems.length);
+    }, 2500);
 
-        return () => clearInterval(interval);
-    }, []);
+    return () => clearInterval(interval);
+  }, []);
   const applyFilters = () => {
     const filtered = projects.filter((project) => {
       const matchesBudget = (project.pricing?.maxPrice || 0) / 100000 <= budget;
       const matchesCity =
-  selectedCity === "Pune"
-    ? project.address?.city === "Pune"
-    : (
-        project.address?.city?.toLowerCase().includes(selectedCity.toLowerCase()) ||
-        project.address?.area?.toLowerCase().includes(selectedCity.toLowerCase())
-      );
+        selectedCity === "Pune"
+          ? project.address?.city === "Pune"
+          : (
+            project.address?.city?.toLowerCase().includes(selectedCity.toLowerCase()) ||
+            project.address?.area?.toLowerCase().includes(selectedCity.toLowerCase())
+          );
       const matchesCategory = !selectedCategory || project.tags?.includes(selectedCategory);
       const matchesStatus = !selectedStatus || project.status === selectedStatus;
       return matchesBudget && matchesCity && matchesCategory && matchesStatus;
@@ -124,128 +124,152 @@ function PropertyFilterBar({ projects, onFilteredProjects }) {
   return (
     <div className="w-full max-w-6xl mx-auto">
 
-            {/* Trust Bar */}
-            <div className="max-w-xl">
-                <div className="bg-white rounded-t-2xl px-4 py-2">
+      {/* Trust Bar */}
+      <div className="flex flex-row md:flex-cols flex-wrap gap-2 py-4">
+        {/* No Brokerage */}
+        <div className="flex items-center gap-2 w-full md:w-[160px] h-[70px] rounded-2xl border border-[#664997] bg-[#4B1F73]/50 px-2 shadow-lg">
+          <div className="w-[45px] h-[58px] rounded-xl border border-[#664997] bg-[#000000]/40 backdrop-blur-md flex items-center justify-center">
+            <img
+              src="/hands 1.png"
+              alt="No Brokerage"
+              className="w-[32px] h-[30px]"
+            />
+          </div>
 
-                    {/* Mobile */}
-                    <div className="md:hidden flex items-start justify-start font-medium text-black text-sm h-6">
-                        <span className="mr-1">No</span>
+          <h3 style={{
+            WebkitTextStroke: "0.5px #664997",
+          }}
+            className="text-[#F5F5F5]  text-[16px] font-medium leading-6">
+            No <br className='hidden md:block' /> Brokerage
+          </h3>
+        </div>
 
-                        <span
-                            key={currentTrust}
-                            className="animate-fade"
-                        >
-                            {trustItems[currentTrust]}
-                        </span>
-                    </div>
+        {/* No Fees */}
+        <div className="flex items-center gap-2 w-full md:w-[160px] h-[70px] rounded-2xl border border-[#0A7050] bg-[#215348]/50 px-2 shadow-lg">
+          <div className="w-[45px] h-[58px] rounded-xl border border-[#0A7050] bg-[#000000]/40 backdrop-blur-md flex items-center justify-center">
+            <img
+              src="/fees.png"
+              alt="No Brokerage"
+              className="w-[32px] h-[30px]"
+            />
+          </div>
 
-                    {/* Desktop */}
-                    <div className="hidden md:flex items-center gap-6 text-base font-normal">
-                        <span>No Brokerage</span>
+          <h3 style={{
+            WebkitTextStroke: "0.5px #0A7050",
+          }}
+            className="text-[#F5F5F5]  text-[16px] font-medium leading-6">
+            No <br className='hidden md:block' /> Fees
+          </h3>
+        </div>
 
-                        <div className="w-px h-5 bg-gray-300"></div>
+        {/* No Hidden Charges */}
+        <div className="flex items-center gap-2 w-full md:w-[160px] h-[70px] rounded-2xl border border-[#BC8213] bg-[#9C6C32]/50 px-2 shadow-lg">
+          <div className="w-[45px] h-[58px] rounded-xl border border-[#BC8213] bg-[#000000]/40 backdrop-blur-md flex items-center justify-center ">
+            <img
+              src="/hiddencharges.png"
+              alt="No Brokerage"
+              className="w-[32px] h-[30px]"
+            />
+          </div>
 
-                        <span>No Service Fees</span>
-
-                        <div className="w-px h-5 bg-gray-300"></div>
-
-                        <span>No Hidden Charges</span>
-                    </div>
-
-                </div>
-            </div>
-        
-    <div className="bg-white text-[15px] rounded-b-2xl md:rounded-tr-2xl shadow-2xl px-4 py-4 flex flex-wrap md:flex-nowrap items-center gap-3 md:gap-0 w-full max-w-6xl mx-auto">
-      {/* Location */}
-      <div className="flex flex-col flex-1 min-w-[190px] md:border-r border-gray-200 md:pr-4">
-        <span className=" font-semibold text-[#742E85] uppercase tracking-widest mb-1">Location</span>
-        <div className="relative ">
-          <select
-            value={selectedCity}
-            onChange={(e) => setSelectedCity(e.target.value)}
-            className={selectClass}
-            style={{ WebkitAppearance: "none", MozAppearance: "none" }}
-          >
-            <option value="Pune">Pune</option>
-                      <option value="Hadapsar">Pune - Hadapsar</option>
-                      <option value="Kondhwa">Pune - Kondhwa</option>
-                      <option value="Pisoli">Pune - Pisoli</option>
-                    <option value="Undri">Pune - Undri</option>
-                     <option value="Mohammed Wadi">Pune - Mohammed Wadi</option>
-                   <option value="Salisbury Park">Pune - Salisbury Park</option>
-                  <option value="Gultekdi">Pune - Gultekdi</option>
-                   <option value="Wadachi Wadi">Pune - Wadachi Wadi</option>
-                    <option value="NIBM Road">Pune - NIBM Road</option>
-            {cities.filter(c => c !== "Pune").map(city => (
-              <option key={city} value={city}>{city}</option>
-            ))}
-          </select>
-          <ChevronDown className="absolute right-0 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400 pointer-events-none" />
+          <h3 style={{
+            WebkitTextStroke: "0.5px #BC8213",
+          }}
+            className="text-[#F5F5F5]  text-[16px] font-medium leading-6">
+            No Hidden <br className='hidden md:block' />Charges
+          </h3>
         </div>
       </div>
+      <div className="bg-white text-[15px] rounded-2xl md:rounded-2xl shadow-2xl px-4 py-4 flex flex-wrap md:flex-nowrap items-center gap-3 md:gap-0 w-full max-w-6xl mx-auto">
+        {/* Location */}
+        <div className="flex flex-col flex-1 min-w-[190px] md:border-r border-gray-200 md:pr-4">
+          <span className=" font-semibold text-[#742E85] uppercase tracking-widest mb-1">Location</span>
+          <div className="relative ">
+            <select
+              value={selectedCity}
+              onChange={(e) => setSelectedCity(e.target.value)}
+              className={selectClass}
+              style={{ WebkitAppearance: "none", MozAppearance: "none" }}
+            >
+              <option value="Pune">Pune</option>
+              <option value="Hadapsar">Pune - Hadapsar</option>
+              <option value="Kondhwa">Pune - Kondhwa</option>
+              <option value="Pisoli">Pune - Pisoli</option>
+              <option value="Undri">Pune - Undri</option>
+              <option value="Mohammed Wadi">Pune - Mohammed Wadi</option>
+              <option value="Salisbury Park">Pune - Salisbury Park</option>
+              <option value="Gultekdi">Pune - Gultekdi</option>
+              <option value="Wadachi Wadi">Pune - Wadachi Wadi</option>
+              <option value="NIBM Road">Pune - NIBM Road</option>
+              {cities.filter(c => c !== "Pune").map(city => (
+                <option key={city} value={city}>{city}</option>
+              ))}
+            </select>
+            <ChevronDown className="absolute right-0 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400 pointer-events-none" />
+          </div>
+        </div>
 
-      {/* Property */}
-      <div className="flex flex-col flex-1 min-w-[190px] md:border-r border-gray-200 md:px-4">
-        <span className=" font-semibold text-[#742E85] uppercase tracking-widest mb-1">Property</span>
-        <div className="relative">
-          <select
-            value={selectedCategory}
-            onChange={(e) => setSelectedCategory(e.target.value)}
-            className={selectClass}
-            style={{ WebkitAppearance: "none", MozAppearance: "none" }}
+        {/* Property */}
+        <div className="flex flex-col flex-1 min-w-[190px] md:border-r border-gray-200 md:px-4">
+          <span className=" font-semibold text-[#742E85] uppercase tracking-widest mb-1">Property</span>
+          <div className="relative">
+            <select
+              value={selectedCategory}
+              onChange={(e) => setSelectedCategory(e.target.value)}
+              className={selectClass}
+              style={{ WebkitAppearance: "none", MozAppearance: "none" }}
+            >
+              <option value="">All</option>
+              <option value="Residential">Residential</option>
+              <option value="Commercial">Commercial</option>
+              <option value="Plot">Plots</option>
+            </select>
+            <ChevronDown className="absolute right-0 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400 pointer-events-none" />
+          </div>
+        </div>
+
+        {/* Budget */}
+        <div className="flex flex-col flex-1 min-w-[140px] md:border-r border-gray-200 md:px-4">
+          <span className=" font-semibold text-[#742E85] uppercase tracking-widest mb-1">Budget</span>
+          <input
+            type="range" min="50" max="1000" step="1" value={budget}
+            onChange={(e) => setBudget(Number(e.target.value))}
+            className="w-full accent-[#742E85] mt-1"
+          />
+          <span className="text-xs text-gray-600 mt-0.5 font-medium">
+            ₹50L - ₹{budget >= 1000 ? "10Cr" : `${budget}L`}
+          </span>
+        </div>
+
+        {/* Status */}
+        <div className="flex flex-col flex-1 min-w-[120px] md:border-r border-gray-200 md:px-4">
+          <span className="font-semibold text-[#742E85] uppercase tracking-widest mb-1">Status</span>
+          <div className="relative">
+            <select
+              value={selectedStatus}
+              onChange={(e) => setSelectedStatus(e.target.value)}
+              className={selectClass}
+              style={{ WebkitAppearance: "none", MozAppearance: "none" }}
+            >
+              <option value="">All</option>
+              <option value="Ready">Ready</option>
+              <option value="Under Construction">Under Construction</option>
+              <option value="Late Possession">Late Possession</option>
+            </select>
+            <ChevronDown className="absolute right-0 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400 pointer-events-none" />
+          </div>
+        </div>
+
+        {/* Apply */}
+        <div className="md:pl-4">
+          <button
+            onClick={applyFilters}
+            className="bg-black text-white text-sm font-bold px-8 py-3 rounded-xl hover:bg-gray-900 transition whitespace-nowrap"
           >
-            <option value="">All</option>
-            <option value="Residential">Residential</option>
-            <option value="Commercial">Commercial</option>
-            <option value="Plot">Plots</option>
-          </select>
-          <ChevronDown className="absolute right-0 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400 pointer-events-none" />
+            Apply
+          </button>
         </div>
       </div>
-
-      {/* Budget */}
-      <div className="flex flex-col flex-1 min-w-[140px] md:border-r border-gray-200 md:px-4">
-        <span className=" font-semibold text-[#742E85] uppercase tracking-widest mb-1">Budget</span>
-        <input
-          type="range" min="50" max="1000" step="1" value={budget}
-          onChange={(e) => setBudget(Number(e.target.value))}
-          className="w-full accent-[#742E85] mt-1"
-        />
-        <span className="text-xs text-gray-600 mt-0.5 font-medium">
-          ₹50L - ₹{budget >= 1000 ? "10Cr" : `${budget}L`}
-        </span>
-      </div>
-
-      {/* Status */}
-      <div className="flex flex-col flex-1 min-w-[120px] md:border-r border-gray-200 md:px-4">
-        <span className="font-semibold text-[#742E85] uppercase tracking-widest mb-1">Status</span>
-        <div className="relative">
-          <select
-            value={selectedStatus}
-            onChange={(e) => setSelectedStatus(e.target.value)}
-            className={selectClass}
-            style={{ WebkitAppearance: "none", MozAppearance: "none" }}
-          >
-            <option value="">All</option>
-            <option value="Ready">Ready</option>
-            <option value="Under Construction">Under Construction</option>
-            <option value="Late Possession">Late Possession</option>
-          </select>
-          <ChevronDown className="absolute right-0 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400 pointer-events-none" />
-        </div>
-      </div>
-
-      {/* Apply */}
-      <div className="md:pl-4">
-        <button
-          onClick={applyFilters}
-          className="bg-black text-white text-sm font-bold px-8 py-3 rounded-xl hover:bg-gray-900 transition whitespace-nowrap"
-        >
-          Apply
-        </button>
-      </div>
-    </div>
     </div>
   );
 }
@@ -307,10 +331,10 @@ function HeroWhyChooseUs({ projects, onFilteredProjects }) {
             {/* Desktop */}
             <div
               className="absolute inset-0 hidden md:block"
-               style={{
-    width: "50%",
-    background: "rgba(0,0,0,0.40)",
-  }}
+              style={{
+                width: "50%",
+                background: "rgba(0,0,0,0.40)",
+              }}
             />
           </div>
         </div>
@@ -326,7 +350,7 @@ function HeroWhyChooseUs({ projects, onFilteredProjects }) {
           <p
             className="mb-5 font-bold"
             style={{
-                            background: "linear-gradient(to right, #ffffff, #e862ff)",
+              background: "linear-gradient(to right, #ffffff, #e862ff)",
               WebkitBackgroundClip: "text",
               WebkitTextFillColor: "transparent",
               backgroundClip: "text",
@@ -338,7 +362,7 @@ function HeroWhyChooseUs({ projects, onFilteredProjects }) {
 
             }}
           >
-                      The Address That Defines Success,
+            The Address That Defines Success,
             <br />
             Your Gateway to Premium Living in Pune South
 
@@ -444,14 +468,14 @@ function StepScrollRow({ projects, direction, onTourClick, showTopControls = fal
     if (!carouselRef.current) return;
     const firstCard = carouselRef.current.querySelector(':scope > div');
     if (!firstCard) return;
-if (window.innerWidth < 640) {
-  setCardStep(carouselRef.current.parentElement.offsetWidth);
-} else {
-  const gap = 12;
-  setCardStep(
-    Math.round(firstCard.getBoundingClientRect().width + gap)
-  );
-}
+    if (window.innerWidth < 640) {
+      setCardStep(carouselRef.current.parentElement.offsetWidth);
+    } else {
+      const gap = 12;
+      setCardStep(
+        Math.round(firstCard.getBoundingClientRect().width + gap)
+      );
+    }
   }, [projects.length, itemsPerView]);
 
   const autoDelta = STEP_COUNT;
@@ -904,33 +928,33 @@ export default function WebsitePage() {
       <About showOn="homepage" />
       <h2 className="text-md md:text-xl font-bold text-[#742E85]  flex items-center justify-center">Google Reviews</h2>
       <div className="flex flex-col md:flex-row items-center justify-center   gap-6 md:gap-26 mb-2">
-                {/* Rating */}
-                <div className="text-center">
-                    <div className="flex items-center justify-center gap-1 mb-1">
-                        <span className="text-3xl font-bold text-gray-900">4.8</span>
+        {/* Rating */}
+        <div className="text-center">
+          <div className="flex items-center justify-center gap-1 mb-1">
+            <span className="text-3xl font-bold text-gray-900">4.8</span>
 
-                        {[...Array(5)].map((_, i) => (
-                            <Star
-                                key={i}
-                                size={16}
-                                className="fill-[#FBBC05] text-[#FBBC05]"
-                            />
-                        ))}
-                    </div>
+            {[...Array(5)].map((_, i) => (
+              <Star
+                key={i}
+                size={16}
+                className="fill-[#FBBC05] text-[#FBBC05]"
+              />
+            ))}
+          </div>
 
-                    <p className="text-sm text-black">on Google</p>
-                </div>
+          <p className="text-sm text-black">on Google</p>
+        </div>
 
-                {/* Button */}
-                <a
-                    href="https://www.google.com/maps/place/PIINGGAKSHA/@18.4603827,73.9150395,17z/data=!4m8!3m7!1s0x3bc2eb291d95088b:0xbfae7509b6f71b86!8m2!3d18.4603827!4d73.9150395!9m1!1b1!16s%2Fg%2F11lsyb5yk1?hl=en&entry=ttu"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="inline-flex items-center gap-2 px-5 py-2 bg-blue-600 text-white rounded-full font-medium hover:bg-blue-700 transition-colors text-sm"
-                >
-                    Review Us on Google
-                </a>
-            </div>
+        {/* Button */}
+        <a
+          href="https://www.google.com/maps/place/PIINGGAKSHA/@18.4603827,73.9150395,17z/data=!4m8!3m7!1s0x3bc2eb291d95088b:0xbfae7509b6f71b86!8m2!3d18.4603827!4d73.9150395!9m1!1b1!16s%2Fg%2F11lsyb5yk1?hl=en&entry=ttu"
+          target="_blank"
+          rel="noopener noreferrer"
+          className="inline-flex items-center gap-2 px-5 py-2 bg-blue-600 text-white rounded-full font-medium hover:bg-blue-700 transition-colors text-sm"
+        >
+          Review Us on Google
+        </a>
+      </div>
 
       <Review />
 

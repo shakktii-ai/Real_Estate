@@ -2,6 +2,8 @@
 import { connectToDatabase } from "@/lib/db";
 import User from "@/models/User";
 import { NextResponse } from "next/server";
+
+import { createLeadPlussLead } from "@/lib/leadPluss";
 export async function POST(req) {
   try {
     await connectToDatabase();
@@ -92,6 +94,7 @@ export async function POST(req) {
       }
 
       await user.save();
+      
     } else {
       const generatedReferralCode =
         "USER" +
@@ -128,7 +131,34 @@ export async function POST(req) {
       await user.save();
       await referrer.save();
     }
+try {
+  await createLeadPlussLead({
+    FirstName: user.fullName,
+    Phone: user.phone,
+    EmailId: user.email || "",
+    State: "",
+    City: "",
+    Location: "",
+    Project: "",
+    Pincode: "",
+    PropertyFor: "",
+    Property: "",
+    PropertyType: "",
+    Message: `Profile Completed | Budget: ${user.budget} | Timeline: ${user.buyingTimeline} | Purpose: ${user.purpose}`,
+    LeadSource: "Website",
+    budget: user.budget || "",
+  });
+} catch (err) {
+  console.error("LeadPluss Error:", err);
+}
 
+return NextResponse.json(
+  {
+    message: "Profile saved successfully",
+    user,
+  },
+  { status: 200 }
+);
     return NextResponse.json(
       {
         message: "Profile saved successfully",

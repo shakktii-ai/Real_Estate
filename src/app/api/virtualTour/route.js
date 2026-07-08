@@ -5,6 +5,7 @@ import VirtualTour from "@/models/VirtualTour";
 import User from "@/models/User";
 import Project from "@/models/Project";
 import Notification from "@/models/Notification";
+import { createLeadPlussLead } from "@/lib/leadPluss";
 export async function POST(req) {
   try {
     await connectToDatabase();
@@ -33,6 +34,28 @@ export async function POST(req) {
      title: "New Booking",
      message: `New Virtual Tour booked by ${user.phone}`,
    });
+   const project = await Project.findById(body.propertyId);
+
+try {
+  await createLeadPlussLead({
+    FirstName: body.name,
+    Phone: body.phone,
+    EmailId: body.email || "",
+    State: project?.state || "",
+    City: project?.city || "",
+    Location: project?.location || "",
+    Project: project?.projectName || "",
+    Pincode: project?.pincode || "",
+    PropertyFor: "",
+    Property: "",
+    PropertyType:"",
+    Message: `Virtual Tour Booked | ${body.date} | ${body.time}`,
+    LeadSource: "Website",
+    budget:"",
+  });
+} catch (err) {
+  console.error("LeadPluss Error:", err);
+}
     return NextResponse.json(
       { success: true, data: newBooking },
       { status: 201 }

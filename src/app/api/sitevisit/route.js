@@ -5,6 +5,7 @@ import SiteVisit from "@/models/SiteVisit";
 import User from "@/models/User";
 import Notification from "@/models/Notification";
 import Project from "@/models/Project";
+import { createLeadPlussLead } from "@/lib/leadPluss";
 export async function POST(req) {
   try {
     await connectToDatabase();
@@ -12,8 +13,9 @@ export async function POST(req) {
     const body = await req.json();
 
     // Find the MongoDB user by Firebase uid or email
+    console.log("Received userId:", body.userId);
     const user = await User.findOne({ uid: body.userId });
-
+console.log("User:", user);
     if (!user) {
       return NextResponse.json(
         { success: false, error: "User not found" },
@@ -33,6 +35,30 @@ export async function POST(req) {
       title: "New Booking",
       message: `New Site Visit is booked by ${user.phone}`,
     });
+    const project = await Project.findById(body.propertyId);
+
+    try {
+  const leadResult = await createLeadPlussLead({
+    FirstName: user.fullName || body.name,
+    Phone: user.phone || body.phone,
+    EmailId: user.email || body.email || "",
+    State: project?.state || "",
+    City: project?.city || "",
+    Location: project?.location || "",
+    Project: project?.projectName || "",
+    Pincode: project?.pincode || "",
+    PropertyFor: "",
+    Property: "",
+    PropertyType: "",
+    Message: `Site Visit Booked | ${body.date} | ${body.time}`,
+    LeadSource: "Website",
+    budget: user?.budget || "",
+  });
+
+  console.log("LeadPluss Response:", leadResult);
+} catch (err) {
+  console.error("LeadPluss Error:", err);
+}
     return NextResponse.json(
       { success: true, data: newBooking },
       { status: 201 }

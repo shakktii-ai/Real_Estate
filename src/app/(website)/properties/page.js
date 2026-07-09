@@ -11,7 +11,8 @@ import TourSelectionModal from '@/components/TourSelectionModal';
 import BookSiteVisitModal from '@/components/BookSiteVisitModal';
 import BookVirtualTourModal from '@/components/BookVirtualTourModal';
 import MapModal from "@/components/map";
-
+import { toast} from 'react-toastify';
+import AuthModal from "@/components/AuthModal";
 // ─── Filter Bar Component ─────────────────────────────────────────────────────
 function PropertyFilterBar({ projects, selectedCity, setSelectedCity, selectedCategory, setSelectedCategory, budget, setBudget, selectedStatus, setSelectedStatus, onApply }) {
   const cities = [...new Set(projects.map(p => p.address?.city).filter(Boolean))];
@@ -151,7 +152,7 @@ function PropertiesContent() {
     const [showSiteVisitModal, setShowSiteVisitModal] = useState(false);
     const [showVirtualTourModal, setShowVirtualTourModal] = useState(false);
     const [isMapOpen, setIsMapOpen] = useState(false);
-
+   const [showAuthModal, setShowAuthModal] = useState(false);
     const officeDetails = {
         name: "PIINGGAKSHA Team Office",
         address: "ILESEUM CO-WORKING Space, GANGA GLITZ, Kad Nagar, Undri, Pune, Maharashtra 411060"
@@ -319,6 +320,15 @@ const handleApplyFilters = () => {
         locationParam
     ]);
     const handleTourClick = (project) => {
+      
+                  if (!user) {
+                    toast.error("Please SignUp first to book a site visit");
+                     setShowAuthModal(true);
+                    return;
+                  
+                  }
+                 
+              
         setActiveTourProject(project);
         setShowSelectionModal(true);
     };
@@ -498,7 +508,12 @@ const handleApplyFilters = () => {
                         </div>
                     </div>
                 )}
-
+  {showAuthModal && (
+                      <AuthModal
+                          onClose={() => setShowAuthModal(false)}
+                          onAuthSuccess={() => setShowAuthModal(false)}
+                      />
+                  )}
             </div>
         </main>
     );

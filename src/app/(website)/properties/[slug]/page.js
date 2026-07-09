@@ -136,7 +136,9 @@ const dropAmount = oldPrice - newPrice;
           <button onClick={() => {
             if (!user) {
               toast.error("Please SignUp first to book a site visit");
+               setShowAuthModal(true);
               return;
+            
             }
             setIsModalOpen(true)
           }}
@@ -145,6 +147,7 @@ const dropAmount = oldPrice - newPrice;
           onClick={() => {
             if (!user) {
               toast.error("Please SignUp first to book a vitual tour");
+               setShowAuthModal(true);
               return;
             }
             setIsVirtualModalOpen(true)

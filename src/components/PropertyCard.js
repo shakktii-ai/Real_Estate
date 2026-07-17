@@ -29,7 +29,7 @@ const PropertyCard = ({ project, isWishlisted, onToggleWishlist, onTourClick }) 
       <Link href={`/properties/${project.slug}`}>
         <div className="w-full">
 
-          <div className="relative h-30 sm:h-52 md:h-56 w-full">
+          <div className="relative h-48 sm:h-52 md:h-56 w-full">
 
             <img
               src={project.mainImage}

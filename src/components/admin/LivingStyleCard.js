@@ -101,7 +101,8 @@ export default function LivingStyleCard({ card, onEdit, onDelete }) {
       </div>
 
       {/* Button - mt-auto ensures it stays at the very bottom */}
-      <Link href={`/properties?category=${card.categoryTag}`}
+      <Link
+        href={`/properties?category=${card.categoryTag}${card.categoryTag === 'Luxury' ? '&budget=440' : ''}`}
         className={`mt-auto h-[36px] w-full rounded-[10px] border ${style.buttonBorder} ${style.text} bg-white font-bold text-[11px] flex items-center justify-center gap-1.5 hover:bg-white/80 transition-all shadow-sm`}
       >
         View {card.categoryTag} Homes

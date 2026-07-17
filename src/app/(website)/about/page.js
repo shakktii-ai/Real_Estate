@@ -266,7 +266,7 @@ can proudly call home. <br/>
             {/* Dynamic Card Sub-Footer Labeling Info text */}
             <div className="absolute bottom-4 left-0 right-0 z-20 text-center text-white">
               <p className="text-[15px] font-bold leading-tight">
-                Rera No – A52100026024 | A031262503639
+                Rera No – A031262503639 | A52100026024
                 <br />
                 GSTIN – 27AEFPT4188M1ZP
               </p>
@@ -305,7 +305,7 @@ can proudly call home. <br/>
         </section>
 
         <section className="px-6 py-8 lg:px-16 flex flex-col lg:flex-row gap-16 items-center">
-          <div className="lg:w-3/5">
+          <div className="">
             <h2 className="text-md lg:text-[25px] font-bold text-primary-pink mb-8">
               Our Story
             </h2>
@@ -336,7 +336,7 @@ can proudly call home. <br/>
               </p>
             </div>
           </div>
-          <div className="lg:w-2/5">
+          {/* <div className="lg:w-2/5">
             <div className="relative w-full aspect-[390/563] rounded-[20px] overflow-hidden">
               <Image
                 src="/founder1.png"
@@ -348,7 +348,7 @@ can proudly call home. <br/>
                 sizes="(max-width: 768px) 100vw, 40vw"
               />
             </div>
-          </div>
+          </div> */}
         </section>
 
         <section

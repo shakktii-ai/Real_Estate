@@ -28,6 +28,13 @@ function PropertyFilterBar({ projects, selectedCity, setSelectedCity, selectedCa
     setSelectedStatus("");
   };
 
+  const handleCategorySelect = (value) => {
+    setSelectedCategory(value);
+    if (["Luxury", "Plot"].includes(value) && budget < 250) {
+      setBudget(440);
+    }
+  };
+
   return (
     <div className="bg-white shadow-[0_-4px_10px_rgba(0,0,0,0.08),0_4px_10px_rgba(0,0,0,0.08)] px-4 py-4 mx-0 flex flex-wrap md:flex-nowrap items-center gap-3 md:gap-0 w-full max-w-full text-[14px] font-semibold"
     >
@@ -65,7 +72,7 @@ function PropertyFilterBar({ projects, selectedCity, setSelectedCity, selectedCa
         <div className="relative">
           <select
             value={selectedCategory}
-            onChange={(e) => setSelectedCategory(e.target.value)}
+            onChange={(e) => handleCategorySelect(e.target.value)}
             className="appearance-none w-full text-sm text-gray-800 font-semibold bg-transparent outline-none pr-6 cursor-pointer truncate"
           >
             <option value="">All</option>
@@ -81,12 +88,12 @@ function PropertyFilterBar({ projects, selectedCity, setSelectedCity, selectedCa
       <div className="flex flex-col flex-1 min-w-[220px] md:border-r border-gray-200 md:px-4">
         <span className=" text-[#742E85] uppercase tracking-widest mb-1">Budget</span>
         <input
-          type="range" min="50" max="1000" value={budget}
+          type="range" min="65" max="1000" value={budget}
           onChange={(e) => setBudget(Number(e.target.value))}
           className="w-full accent-[#742E85] mt-1"
         />
         <span className="text-xs text-gray-600 mt-0.5 font-medium">
-          ₹50L - ₹{budget >= 1000 ? "10Cr" : `${budget}L`}
+          ₹65L - ₹{budget >= 1000 ? "10Cr" : `${budget}L`}
         </span>
       </div>
 
@@ -137,7 +144,9 @@ function PropertiesContent() {
     const budgetParam = searchParams.get("budget");
     const statusParam = searchParams.get("status");
     const fromHomeParam = searchParams.get("fromHome");
-    const [budget, setBudget] = useState(budgetParam ? Number(budgetParam) : 99);
+    const [budget, setBudget] = useState(
+        budgetParam ? Number(budgetParam) : ["Luxury", "Plot"].includes(categoryParam) ? 400 : 99
+    );
     const [selectedConfig, setSelectedConfig] = useState("");
     const [selectedStatus, setSelectedStatus] = useState(statusParam || "");
     const [selectedCity, setSelectedCity] = useState(locationParam || "Pune");
@@ -236,6 +245,12 @@ const handleApplyFilters = () => {
             }
         }
     }, [categoryParam, locationParam, builderParam, queryParam, budgetParam, statusParam]);
+
+    useEffect(() => {
+        if (!budgetParam && ["Luxury", "Plot"].includes(selectedCategory)) {
+            setBudget(440);
+        }
+    }, [budgetParam, selectedCategory]);
 
     const cities = [
         ...new Set(projects.map((p) => p.address?.city).filter(Boolean)),

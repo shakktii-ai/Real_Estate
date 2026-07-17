@@ -400,14 +400,14 @@ export default function EditProjectModal({
           <div>
             <label className="text-sm font-semibold mb-2 block">Tags</label>
             <div className="flex gap-2 flex-wrap">
-              {["RERA Verified", "Residential", "Luxury", "Premium", "Affordable","Commercial", "Plot"].map(tag => (
+              {["RERA Verified", "Residential", "Luxury", "Premium", "Affordable","Commercial", "Plot", "Sold out"].map(tag => (
                 <button
                   type="button"
                   key={tag}
                   onClick={() => toggleTag(tag)}
                   className={`px-3 py-1 rounded-full text-sm ${formData.tags.includes(tag)
                     ? "bg-[#E5097F] text-white"
-                    : "bg-gray-100"
+                    : "bg-gray-100 text-black"
                     }`}
                 >
                   {tag}

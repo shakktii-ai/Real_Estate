@@ -10,6 +10,7 @@ import { useAuth } from "@/lib/context/AuthContext";
 import { toast } from "react-toastify";
 import AuthModal from "@/components/AuthModal";
 import { BsDash } from "react-icons/bs";
+import ShareProject from "@/components/ShareProject";
 export default function ProjectDetails() {
   const { user } = useAuth();
   const { slug } = useParams();
@@ -26,6 +27,7 @@ export default function ProjectDetails() {
          Featured: "bg-[#A566B8]",
     Residential: "bg-[#8B5CF6]",
     Commercial: "bg-black",
+     "Sold out": "bg-[#c80815]",
   
 
   };
@@ -117,6 +119,8 @@ const dropAmount = oldPrice - newPrice;
         </div>
 
         <div className="flex flex-wrap gap-2">
+            
+          <ShareProject project={project} showText={true} className="mt-4 w-8 w-8"/> 
           {project.brochureUrl && (
             <button
               onClick={() => handleDownload(project.brochureUrl, `${project.projectName}-Brochure.pdf`)}
@@ -157,11 +161,11 @@ const dropAmount = oldPrice - newPrice;
       </div>
 
       {/* 2. Main Hero Image Section */}
-      <div className="relative rounded-3xl overflow-hidden shadow-xl aspect-[10/7]">
+      <div className="relative rounded-3xl overflow-hidden shadow-xl aspect-[16/8]">
         <img
           src={project.mainImage || "https://via.placeholder.com/1200x500"}
           alt={project.projectName}
-          className="w-full h-full object-cover"
+          className="w-full h-full"
         />
         {project.tags?.includes("RERA Verified") && (
           <div className="absolute top-3 left-3 bg-[#DBFCE7] px-2 py-1 rounded-full flex items-center gap-1 text-[10px] text-[#009318] font-bold border border-green-200">

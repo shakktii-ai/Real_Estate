@@ -14,6 +14,7 @@ import { useRouter } from 'next/navigation';
 import TourSelectionModal from '@/components/TourSelectionModal';
 import BookSiteVisitModal from '@/components/BookSiteVisitModal';
 import BookVirtualTourModal from '@/components/BookVirtualTourModal';
+import { useSearchParams } from 'next/navigation';
 import {
   CalendarDays,
   TrendingDown,
@@ -66,9 +67,12 @@ const WHY_SLIDES = [
 
 // ─── Filter Bar ───────────────────────────────────────────────────────────────
 function PropertyFilterBar({ projects, onFilteredProjects }) {
+    const searchParams = useSearchParams();
+     const categoryParam = searchParams.get("category");
   const [selectedCity, setSelectedCity] = useState("Pune");
   const [selectedCategory, setSelectedCategory] = useState("");
-  const [budget, setBudget] = useState(99);
+  const budgetParam = searchParams.get("budget");
+  const [budget, setBudget] = useState(   budgetParam ? Number(budgetParam) : ["Plot"].includes(categoryParam) ? 440 : 99);
   const [selectedStatus, setSelectedStatus] = useState("");
   const router = useRouter();
   const trustItems = [
@@ -86,6 +90,12 @@ function PropertyFilterBar({ projects, onFilteredProjects }) {
 
     return () => clearInterval(interval);
   }, []);
+    const handleCategorySelect = (value) => {
+    setSelectedCategory(value);
+    if (["Plot"].includes(value) && budget < 250) {
+      setBudget(440);
+    }
+  };
   const applyFilters = () => {
     const filtered = projects.filter((project) => {
       const matchesBudget = (project.pricing?.maxPrice || 0) / 100000 <= budget;
@@ -127,7 +137,7 @@ function PropertyFilterBar({ projects, onFilteredProjects }) {
       {/* Trust Bar */}
       <div className="flex flex-row md:flex-cols flex-wrap gap-2 py-4">
         {/* No Brokerage */}
-        <div className="flex items-center gap-2 w-full md:w-[160px] h-[70px] rounded-2xl border border-[#664997] bg-[#4B1F73]/50 px-2 shadow-lg">
+        <div className="flex items-center gap-2 w-full md:w-[160px] h-[70px] rounded-2xl border border-[#664997] bg-[#4B1F73]/31 px-2 shadow-lg">
           <div className="w-[45px] h-[58px] rounded-xl border border-[#664997] bg-[#000000]/40 backdrop-blur-md flex items-center justify-center">
             <img
               src="/hands 1.png"
@@ -145,8 +155,8 @@ function PropertyFilterBar({ projects, onFilteredProjects }) {
         </div>
 
         {/* No Fees */}
-        <div className="flex items-center gap-2 w-full md:w-[160px] h-[70px] rounded-2xl border border-[#0A7050] bg-[#215348]/50 px-2 shadow-lg">
-          <div className="w-[45px] h-[58px] rounded-xl border border-[#0A7050] bg-[#000000]/40 backdrop-blur-md flex items-center justify-center">
+        <div className="flex items-center gap-2 w-full md:w-[160px] h-[70px] rounded-2xl border border-[#E5097F] bg-[#E5097F]/31 px-2 shadow-lg">
+          <div className="w-[45px] h-[58px] rounded-xl border border-[#E5097F] bg-[#000000]/40 backdrop-blur-md flex items-center justify-center">
             <img
               src="/fees.png"
               alt="No Brokerage"
@@ -163,8 +173,8 @@ function PropertyFilterBar({ projects, onFilteredProjects }) {
         </div>
 
         {/* No Hidden Charges */}
-        <div className="flex items-center gap-2 w-full md:w-[160px] h-[70px] rounded-2xl border border-[#BC8213] bg-[#9C6C32]/50 px-2 shadow-lg">
-          <div className="w-[45px] h-[58px] rounded-xl border border-[#BC8213] bg-[#000000]/40 backdrop-blur-md flex items-center justify-center ">
+        <div className="flex items-center gap-2 w-full md:w-[160px] h-[70px] rounded-2xl border border-[#DB61FA] bg-[#DB61FA]/31 px-2 shadow-lg">
+          <div className="w-[45px] h-[58px] rounded-xl border border-[#DB61FA] bg-[#000000]/40 backdrop-blur-md flex items-center justify-center ">
             <img
               src="/hiddencharges.png"
               alt="No Brokerage"
@@ -215,7 +225,7 @@ function PropertyFilterBar({ projects, onFilteredProjects }) {
           <div className="relative">
             <select
               value={selectedCategory}
-              onChange={(e) => setSelectedCategory(e.target.value)}
+              onChange={(e) => handleCategorySelect(e.target.value)}
               className={selectClass}
               style={{ WebkitAppearance: "none", MozAppearance: "none" }}
             >
@@ -232,12 +242,12 @@ function PropertyFilterBar({ projects, onFilteredProjects }) {
         <div className="flex flex-col flex-1 min-w-[140px] md:border-r border-gray-200 md:px-4">
           <span className=" font-semibold text-[#742E85] uppercase tracking-widest mb-1">Budget</span>
           <input
-            type="range" min="50" max="1000" step="1" value={budget}
+            type="range" min="65" max="1000" step="1" value={budget}
             onChange={(e) => setBudget(Number(e.target.value))}
             className="w-full accent-[#742E85] mt-1"
           />
           <span className="text-xs text-gray-600 mt-0.5 font-medium">
-            ₹50L - ₹{budget >= 1000 ? "10Cr" : `${budget}L`}
+            ₹65L - ₹{budget >= 1000 ? "10Cr" : `${budget}L`}
           </span>
         </div>
 
@@ -767,7 +777,7 @@ export default function WebsitePage() {
 
       <section className='mt-[2px] mx-4'>
         {user && (
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mt-10">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 mt-10">
             <Link
               href="/myvisit"
               className="bg-white rounded-3xl shadow-sm border border-gray-100 p-6 flex items-center justify-between hover:shadow-md transition"
@@ -788,7 +798,7 @@ export default function WebsitePage() {
               <ChevronRight className="text-black" size={30} />
             </Link>
 
-            <Link
+            {/* <Link
               href="/priceDrop"
               className="bg-white rounded-3xl shadow-sm border border-gray-100 p-6 flex items-center justify-between hover:shadow-md transition"
             >
@@ -806,7 +816,7 @@ export default function WebsitePage() {
               </div>
 
               <ChevronRight className="text-black" size={30} />
-            </Link>
+            </Link> */}
 
             <Link
               href="/referrals"
@@ -853,7 +863,7 @@ export default function WebsitePage() {
       <div className='mt-8'>
         <div className="px-4">
           <h2 className="text-xl md:text-[35px] font-bold text-[#742E85] mb-1.5 text-center">Featured Projects</h2>
-          <p className="text-center text-black text-xs md:text-sm max-w-3xl mx-auto mb-2 leading-relaxed">Hand-picked developments with verified details and instant transparency</p>
+          <p className="text-center text-black text-xs md:text-[15px] max-w-3xl mx-auto mb-2 leading-relaxed">Zero Spamming, Just Expert Insights</p>
         </div>
 
         {/* Row 1 — step-scroll left: top-right buttons */}
@@ -947,7 +957,7 @@ export default function WebsitePage() {
 
         {/* Button */}
         <a
-          href="https://www.google.com/maps/place/PIINGGAKSHA/@18.4603827,73.9150395,17z/data=!4m8!3m7!1s0x3bc2eb291d95088b:0xbfae7509b6f71b86!8m2!3d18.4603827!4d73.9150395!9m1!1b1!16s%2Fg%2F11lsyb5yk1?hl=en&entry=ttu"
+          href="https://g.page/r/CYYb97YJda6_EBM/review"
           target="_blank"
           rel="noopener noreferrer"
           className="inline-flex items-center gap-2 px-5 py-2 bg-blue-600 text-white rounded-full font-medium hover:bg-blue-700 transition-colors text-sm"
@@ -984,7 +994,7 @@ export default function WebsitePage() {
       {/* CTA Layer Block */}
       <section className='bg-[#F6F3F6] py-12 px-6 text-center'>
         <h2 className="text-sm md:text-xl font-bold text-black mb-2 flex items-center justify-center">Ready to Find Your Dream Home?</h2>
-        <p className='text-sm md:text-md text-gray-700 mb-2 flex items-center justify-center'>Explore verified projects in wakad with transparent pricing and expert guidance.</p>
+        <p className='text-sm md:text-md text-gray-700 mb-2 flex items-center justify-center'>Explore verified projects in South Pune, including NIBM, NIBM Annex, and Mahadevwadi, with transparent pricing and expert guidance.</p>
         <div className="flex items-center justify-center">
           <Link href="/properties" className="bg-[#742E85] text-white px-5 py-3 rounded-md text-sm md:text-base font-semibold inline-flex items-center gap-2 hover:bg-[#5e256b] transition-all duration-300">
             Explore Projects Now

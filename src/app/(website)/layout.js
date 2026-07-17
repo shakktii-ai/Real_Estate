@@ -43,7 +43,7 @@ export default function RootLayout({ children }) {
         <Navbar />
 
         {/* 3. The main content will render inside this tag */}
-        <main className="flex-grow">
+        <main className="flex-grow min-h-screen">
           {children}
           
         </main>

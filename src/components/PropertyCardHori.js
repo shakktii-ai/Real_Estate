@@ -4,6 +4,7 @@ import { useState } from "react";
 import HeartButton from "@/components/HeartButton"
 import { useAuth } from "@/lib/context/AuthContext";
 import { BsWhatsapp } from "react-icons/bs";
+import ShareProject from "@/components/ShareProject";
 export default function ProjectListCard({ project, isWishlisted, onToggleWishlist, onTourClick }) {
   const { user } = useAuth();
   const [showAllAmenities, setShowAllAmenities] = useState(false);
@@ -13,9 +14,10 @@ export default function ProjectListCard({ project, isWishlisted, onToggleWishlis
     Affordable: "bg-[#1447EA]",
     Holiday: "bg-[#1DA2B3]",
     Featured:"bg-[#A566B8]",
-     Residential: "bg-[#8B5CF6]",
+    Residential: "bg-[#8B5CF6]",
     Commercial: "bg-black",
     Plot:"bg-[#F59E0B]",
+    "Sold out": "bg-[#c80815]",
   };
   return (
     <div className="bg-white rounded-3xl border border-gray-100 shadow-sm hover:shadow-md transition-all flex flex-col md:flex-row overflow-hidden h-auto md:h-[350px]">
@@ -37,7 +39,7 @@ export default function ProjectListCard({ project, isWishlisted, onToggleWishlis
             .map((tag) => (
               <span
                 key={tag}
-                className={`px-2.5 py-0.5 rounded-full text-[8px] font-medium ${categoryColors[tag] || "text-gray-600 bg-gray-100"
+                className={`px-2.5 py-0.5 rounded-full text-[8px] font-medium text-white ${categoryColors[tag] || "text-gray-600 bg-gray-100"
                   }`}
               >
                 {tag}
@@ -56,7 +58,17 @@ export default function ProjectListCard({ project, isWishlisted, onToggleWishlis
                           onToggle={onToggleWishlist}
                         />
                       </span>
-                    )}s
+                    )}
+                     <div className="absolute top-1 right-10">
+                                  <div
+                                    onClick={(e) => {
+                                      e.preventDefault();
+                                      e.stopPropagation();
+                                    }}
+                                  >
+                                    <ShareProject project={project} />
+                                  </div>
+                                </div>
         {project.tags?.includes("RERA Verified") && (
           <div className="absolute bottom-3 left-3 bg-[#DBFCE7] px-2.5 py-0.5 rounded-full flex items-center gap-1 text-[8px] text-[#009318] font-medium border border-green-200">
             RERA Verified
@@ -105,7 +117,7 @@ export default function ProjectListCard({ project, isWishlisted, onToggleWishlis
             />
           </div>
         </div>
-        {project.amenities?.length > 0 && (
+        {/* {/* {project.amenities?.length > 0 && (
           <div className="my-2 flex flex-wrap gap-2">
             {(showAllAmenities
               ? project.amenities
@@ -129,8 +141,8 @@ export default function ProjectListCard({ project, isWishlisted, onToggleWishlis
               </button>
             )}
           </div>
-        )}
-        {/* Footer Buttons */}
+        )} */}
+     
       <div className="p-4 pt-0 w-full">
         <div className="flex gap-2 w-full">
           <button

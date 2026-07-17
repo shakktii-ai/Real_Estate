@@ -554,7 +554,7 @@ function PropertyFilterBar({ projects, onFilteredProjects }) {
 
             <div className="flex flex-row md:flex-cols flex-wrap gap-2 py-4">
                 {/* No Brokerage */}
-                <div className="flex items-center gap-2 w-full md:w-[160px] h-[70px] rounded-2xl border border-[#664997] bg-[#4B1F73]/50 px-2 shadow-lg">
+                <div className="flex items-center gap-2 w-full md:w-[160px] h-[70px] rounded-2xl border border-[#664997] bg-[#4B1F73]/31 px-2 shadow-lg">
                     <div className="w-[45px] h-[58px] rounded-xl border border-[#664997] bg-[#000000]/40 backdrop-blur-md flex items-center justify-center">
                         <img
                             src="/hands 1.png"
@@ -572,8 +572,8 @@ function PropertyFilterBar({ projects, onFilteredProjects }) {
                 </div>
 
                 {/* No Fees */}
-                <div className="flex items-center gap-2 w-full md:w-[160px] h-[70px] rounded-2xl border border-[#0A7050] bg-[#215348]/50 px-2 shadow-lg">
-                    <div className="w-[45px] h-[58px] rounded-xl border border-[#0A7050] bg-[#000000]/40 backdrop-blur-md flex items-center justify-center">
+                <div className="flex items-center gap-2 w-full md:w-[160px] h-[70px] rounded-2xl border border-[#E5097F] bg-[#E5097F]/31 px-2 shadow-lg">
+                    <div className="w-[45px] h-[58px] rounded-xl border border-[#E5097F] bg-[#000000]/40 backdrop-blur-md flex items-center justify-center">
                         <img
                             src="/fees.png"
                             alt="No Brokerage"
@@ -590,8 +590,8 @@ function PropertyFilterBar({ projects, onFilteredProjects }) {
                 </div>
 
                 {/* No Hidden Charges */}
-                <div className="flex items-center gap-2 w-full md:w-[160px] h-[70px] rounded-2xl border border-[#BC8213] bg-[#9C6C32]/50 px-2 shadow-lg">
-                    <div className="w-[45px] h-[58px] rounded-xl border border-[#BC8213] bg-[#000000]/40 backdrop-blur-md flex items-center justify-center ">
+                <div className="flex items-center gap-2 w-full md:w-[160px] h-[70px] rounded-2xl border border-[#DB61FA] bg-[#DB61FA]/31 px-2 shadow-lg">
+                    <div className="w-[45px] h-[58px] rounded-xl border border-[#DB61FA] bg-[#000000]/40 backdrop-blur-md flex items-center justify-center ">
                         <img
                             src="/hiddencharges.png"
                             alt="No Brokerage"
@@ -661,12 +661,12 @@ function PropertyFilterBar({ projects, onFilteredProjects }) {
                 <div className="flex flex-col flex-1 min-w-[140px] md:border-r border-gray-200 md:px-4">
                     <span className="font-semibold text-[#742E85] uppercase tracking-widest mb-1">Budget</span>
                     <input
-                        type="range" min="50" max="1000" step="1" value={budget}
+                        type="range" min="65" max="1000" step="1" value={budget}
                         onChange={(e) => setBudget(Number(e.target.value))}
                         className="w-full accent-[#742E85] mt-1"
                     />
                     <span className="text-xs text-gray-600 mt-0.5 font-medium">
-                        ₹50L - ₹{budget >= 1000 ? "10Cr" : `${budget}L`}
+                        ₹65L - ₹{budget >= 1000 ? "10Cr" : `${budget}L`}
                     </span>
                 </div>
 
@@ -1058,8 +1058,8 @@ export default function WebsitePage() {
             <div className="mt-8">
                 <div className="px-4">
                     <h2 className="text-xl md:text-[35px] font-bold text-[#742E85] mb-1.5 text-center">Featured Projects</h2>
-                    <p className="text-center text-black text-xs md:text-sm max-w-3xl mx-auto mb-2 leading-relaxed">
-                        Hand-picked developments with verified details and instant transparency
+                    <p className="text-center text-black text-xs md:text-[15px] max-w-3xl mx-auto  leading-relaxed">
+                        Zero Spamming, Just Expert Insights
                     </p>
                 </div>
 
@@ -1140,7 +1140,7 @@ export default function WebsitePage() {
 
                 {/* Button */}
                 <a
-                    href="https://www.google.com/maps/place/PIINGGAKSHA/@18.4603827,73.9150395,17z/data=!4m8!3m7!1s0x3bc2eb291d95088b:0xbfae7509b6f71b86!8m2!3d18.4603827!4d73.9150395!9m1!1b1!16s%2Fg%2F11lsyb5yk1?hl=en&entry=ttu"
+                    href="https://g.page/r/CYYb97YJda6_EBM/review"
                     target="_blank"
                     rel="noopener noreferrer"
                     className="inline-flex items-center gap-2 px-5 py-2 bg-blue-600 text-white rounded-full font-medium hover:bg-blue-700 transition-colors text-sm"
@@ -1186,8 +1186,7 @@ export default function WebsitePage() {
                     Ready to Find Your Dream Home?
                 </h2>
                 <p className="text-sm md:text-md text-gray-700 mb-2 flex items-center justify-center">
-                    Explore verified projects in wakad with transparent pricing and expert guidance.
-                </p>
+                   Explore verified projects in South Pune, including NIBM, NIBM Annex, and Mahadevwadi, with transparent pricing and expert guidance. </p>
                 <div className="flex items-center justify-center">
                     <Link
                         href="/properties"

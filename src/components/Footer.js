@@ -6,7 +6,7 @@ import { FaFacebookF, FaInstagram, FaWhatsapp } from "react-icons/fa";
 import { useAuth } from "@/lib/context/AuthContext";
 const Footer = () => {
   const { user } = useAuth();
-   const phone = "919172400250";
+  const phone = "919172400250";
   return (
     <footer className="bg-footer-gradient py-4 px-4 lg:px-4 text-black relative">
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-2 md:gap-10">
@@ -91,16 +91,48 @@ const Footer = () => {
 
           {/* Property Types */}
           <div>
-            <h3 className="text-[12px] md:text-[14px] font-bold text-[#742E85] mb-1">
-              Property
-            </h3>
-            <ul className="space-y-0.5 text-[10px] md:text-[12px]">
-              <li>Affordable</li>
-              <li>Premium</li>
-              <li>Luxury</li>
-              <li>Holiday</li>
-            </ul>
-          </div>
+  <h3 className="text-[12px] md:text-[14px] font-bold text-[#742E85] mb-1">
+    Property
+  </h3>
+
+  <ul className="space-y-0.5 text-[10px] md:text-[12px]">
+    <li>
+      <Link
+        href="/properties?category=Affordable"
+        className="hover:text-[#742E85] hover:underline transition"
+      >
+        Affordable
+      </Link>
+    </li>
+
+    <li>
+      <Link
+        href="/properties?category=Premium"
+        className="hover:text-[#742E85] hover:underline transition"
+      >
+        Premium
+      </Link>
+    </li>
+
+    <li>
+      <Link
+        href="/properties?category=Luxury"
+        className="hover:text-[#742E85] hover:underline transition"
+      >
+        Luxury
+      </Link>
+    </li>
+
+    <li>
+      <Link
+        href="/properties?category=Holiday"
+        className="hover:text-[#742E85] hover:underline transition"
+      >
+        Holiday
+      </Link>
+    </li>
+  </ul>
+</div>
 
           {/* Contact */}
           <div>
@@ -159,7 +191,7 @@ const Footer = () => {
               >
                 <FaInstagram size={12} />
               </a>
-             
+
               {/* const message = encodeURIComponent("Hi, I'm interested in your properties."); */}
 
               <a
@@ -177,7 +209,7 @@ const Footer = () => {
 
       {/* Copyright / Bottom Bar */}
       <div className="mt-1 pt-2 border-t border-zinc-400 text-center font-inter text-xs md:text-sm lg:text-[12px]">
-        <p className="font-bold">© 2026 PIINGGAKSHA. All rights reserved. | RERA No - A52100026024 , A031262503639 | GSTIN - 27AEFPT4188M1ZP</p>
+        <p className="font-bold">© 2026 PIINGGAKSHA. All rights reserved. | RERA No - A031262503639, A52100026024 | GSTIN - 27AEFPT4188M1ZP</p>
         <p className="mt-1 text-black text-[8px] md:text-[10px]">
           All projects displayed are RERA registered. Please verify RERA details before making any decision.
         </p>

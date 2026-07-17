@@ -120,7 +120,7 @@ const dropAmount = oldPrice - newPrice;
 
         <div className="flex flex-wrap gap-2">
             
-          <ShareProject project={project} showText={true} className="mt-4 w-8 w-8"/> 
+          <ShareProject project={project} showText={true} /> 
           {project.brochureUrl && (
             <button
               onClick={() => handleDownload(project.brochureUrl, `${project.projectName}-Brochure.pdf`)}

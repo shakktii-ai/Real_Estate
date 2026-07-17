@@ -103,7 +103,7 @@ ${projectUrl}`;
 
       {/* Dropdown */}
       {open && (
-        <div className="absolute right-0 top-full mt-2 min-w-[8rem] text-[12px] rounded-xl bg-white/95 border border-gray-200 z-[9999] overflow-hidden">
+        <div className="absolute right-0 top-full mt-2 min-w-[8rem] text-[12px] rounded-xl bg-white border border-gray-200 text-black z-[9999] overflow-hidden">
           
           {/* Clipboard */}
           <button

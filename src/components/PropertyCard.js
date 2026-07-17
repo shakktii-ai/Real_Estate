@@ -24,12 +24,12 @@ const PropertyCard = ({ project, isWishlisted, onToggleWishlist, onTourClick }) 
   };
 
   return (
-    <div className="bg-white rounded-2xl border border-gray-300 overflow-hidden relative transition-all duration-300 ease-in-out hover:-translate-y-1 hover:shadow-xl hover:scale-[1.02] h-full mx-2 flex flex-col justify-between">
+    <div className="bg-white rounded-2xl border border-gray-300 overflow-visible relative transition-all duration-300 ease-in-out hover:-translate-y-1 hover:shadow-xl hover:scale-[1.02] h-full mx-2 flex flex-col justify-between">
       {/* Top Image Section */}
       <Link href={`/properties/${project.slug}`}>
         <div className="w-full">
 
-          <div className="relative h-48 sm:h-52 md:h-56 w-full">
+          <div className="relative h-48 sm:h-52 md:h-56 w-full overflow-hidden rounded-t-2xl">
 
             <img
               src={project.mainImage}

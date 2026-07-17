@@ -6,7 +6,7 @@ import { FaWhatsapp, FaFacebook, FaTwitter, FaInstagram } from "react-icons/fa";
 import { toast } from "react-toastify";
 import { BsTwitterX } from "react-icons/bs";
 
-export default function ShareProject({ project,showText = false }) {
+export default function ShareProject({ project, showText = false, className = "" }) {
   const [open, setOpen] = useState(false);
   const ref = useRef(null);
 
@@ -81,7 +81,7 @@ ${projectUrl}`;
   };
 
   return (
-    <div className="relative inline-block" ref={ref}>
+    <div className={`relative inline-block z-[9999] ${className}`} ref={ref}>
       {/* Share Button */}
       <button
         onClick={(e) => {
@@ -92,8 +92,8 @@ ${projectUrl}`;
         // If showText is true: rectangular with text padding. If false: a clean square/circle wrapper for the icon.
         className={
           showText
-            ? "flex items-center gap-2 px-4 py-2 border bg-white rounded-lg text-sm font-bold shadow-sm hover:bg-gray-50 text-gray-700 transition hover:cursor-pointer"
-            : "flex items-center justify-center p-1.5  bg-white/50 rounded-full hover:bg-gray-50 text-gray-700 transition hover:cursor-pointer mt-2.5 z-[99999]"
+            ? "flex items-center gap-2 px-4 py-2 border bg-white rounded-lg text-sm font-bold shadow-sm hover:bg-gray-50 text-gray-700 transition hover:cursor-pointer relative z-[1000]"
+            : "flex items-center justify-center p-1.5 bg-white/80 rounded-full hover:bg-gray-50 text-gray-700 transition hover:cursor-pointer mt-2.5 relative z-[1000]"
         }
         title={!showText ? "Share project" : undefined}
       >
@@ -103,7 +103,7 @@ ${projectUrl}`;
 
       {/* Dropdown */}
       {open && (
-        <div className="absolute right-0 mt-2 w-32 text-[12px] rounded-md bg-white border border-gray-200 z-50">
+        <div className="absolute right-0 top-full mt-2 min-w-[8rem] text-[12px] rounded-xl bg-white/95 border border-gray-200 shadow-lg shadow-black/10 backdrop-blur-sm z-[9999] overflow-hidden">
           
           {/* Clipboard */}
           <button

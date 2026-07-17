@@ -20,10 +20,10 @@ export default function ProjectListCard({ project, isWishlisted, onToggleWishlis
     "Sold out": "bg-[#c80815]",
   };
   return (
-    <div className="bg-white rounded-3xl border border-gray-100 shadow-sm hover:shadow-md transition-all flex flex-col md:flex-row overflow-hidden h-auto md:h-[350px]">
+    <div className="bg-white rounded-3xl border border-gray-100 shadow-sm hover:shadow-md transition-all flex flex-col md:flex-row overflow-visible h-auto md:h-[350px]">
 
       {/* Left Image Section */}
-      <div className="relative w-full md:w-[45%] h-60 md:h-full">
+      <div className="relative w-full md:w-[45%] h-60 md:h-full overflow-hidden rounded-l-3xl">
           <Link href={`/properties/${project.slug}`}>
         <img
           src={project.mainImage}

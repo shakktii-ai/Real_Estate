@@ -81,7 +81,7 @@ ${projectUrl}`;
   };
 
   return (
-    <div className={`relative inline-block z-[9999] ${className}`} ref={ref}>
+    <div className={`relative inline-block ${className}`} ref={ref}>
       {/* Share Button */}
       <button
         onClick={(e) => {
@@ -93,7 +93,7 @@ ${projectUrl}`;
         className={
           showText
             ? "flex items-center gap-2 px-4 py-2 border bg-white rounded-lg text-sm font-bold shadow-sm hover:bg-gray-50 text-gray-700 transition hover:cursor-pointer relative"
-            : "flex items-center justify-center p-1.5 bg-white/50 rounded-full hover:bg-gray-50 text-gray-700 transition hover:cursor-pointer mt-2.5 relative z-[1000]"
+            : "flex items-center justify-center p-1.5 bg-white/50 rounded-full hover:bg-gray-50 text-gray-700 transition hover:cursor-pointer mt-2.5 relative "
         }
         title={!showText ? "Share project" : undefined}
       >
@@ -103,7 +103,7 @@ ${projectUrl}`;
 
       {/* Dropdown */}
       {open && (
-        <div className="absolute right-0 top-full mt-2 min-w-[8rem] text-[12px] rounded-xl bg-white border border-gray-200 text-black z-[9999] overflow-hidden">
+        <div className="absolute right-0 top-full mt-2 min-w-[8rem] text-[12px] rounded-xl bg-white border border-gray-200 text-black  overflow-hidden">
           
           {/* Clipboard */}
           <button

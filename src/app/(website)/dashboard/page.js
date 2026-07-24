@@ -332,7 +332,7 @@ function PropertyFilterBar({ projects, onFilteredProjects, onViewMore }) {
 
       {newLaunchProjects.length > 0 && (
         <div className="mt-6">
-          <div className="flex  gap-2 mb-3 bg-white/50 w-md rounded-xl pl-4">
+          <div className="flex gap-1 lg:gap-2 mb-3 bg-white/50 w-[380px] lg:w-md rounded-2xl px-2 lg:px-4 py-2 lg:py-0">
             <Image
               src="/rocket.png"
               alt="New Launch"

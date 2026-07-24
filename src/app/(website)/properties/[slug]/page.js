@@ -307,12 +307,12 @@ Team Piinggaksha`;
               className="w-full h-full"
             />
             {project.tags?.includes("RERA Verified") && (
-              <div className="absolute top-3 left-3 bg-[#DBFCE7] px-2 py-1 rounded-full flex items-center gap-1 text-[10px] text-[#009318] font-bold border border-green-200">
+              <div className="absolute bottom-3 left-3 bg-[#DBFCE7] px-2 py-1 rounded-full flex items-center gap-1 text-[10px] text-[#009318] font-bold border border-green-200">
                 RERA Verified
               </div>
             )}
             {project.tags?.includes("Highest Selling") && (
-              <div className="absolute top-3 left-26 bg-[#FFA900] px-2 py-1 rounded-full flex items-center gap-1 text-[10px] text-[#ffffff] font-normal  whitespace-nowrap shadow-md">
+              <div className="absolute bottom-3 left-26 bg-[#FFA900] px-2 py-1 rounded-full flex items-center gap-1 text-[10px] text-[#ffffff] font-normal  whitespace-nowrap shadow-md">
                 <Image
                   src="/fire.png"
                   alt="Highest Selling"

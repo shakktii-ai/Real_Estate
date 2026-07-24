@@ -10,7 +10,7 @@ import Image from 'next/image';
 const PropertyCard = ({ project, isWishlisted, onToggleWishlist, onTourClick }) => {
   const { user } = useAuth();
   const [showAllAmenities, setShowAllAmenities] = useState(false);
-
+const [showOverlay, setShowOverlay] = useState(false);
   const categoryColors = {
     Premium: "bg-[#00A529]",
     Luxury: "bg-[#F97316]",
@@ -32,15 +32,34 @@ const PropertyCard = ({ project, isWishlisted, onToggleWishlist, onTourClick }) 
       <Link href={`/properties/${project.slug}`}>
         <div className="w-full">
 
-          <div className="relative h-48 sm:h-52 md:h-56 w-full overflow-hidden rounded-t-2xl">
+          <div
+  className="relative h-48 sm:h-52 md:h-56 w-full overflow-hidden rounded-t-2xl"
+  onClick={(e) => {
+  if (window.innerWidth < 768) {
+    if (!showOverlay) {
+      e.preventDefault();
+      e.stopPropagation();
+      setShowOverlay(true);
+    }
+  }
+}}
+>
 
             <img
               src={project.mainImage}
               alt={project.projectName}
               className="w-full h-full object-cover rounded-t-2xl"
             />
-            <div className="absolute inset-0 bg-black/68 opacity-0 group-hover:opacity-100 transition-all duration-300 flex flex-col items-center justify-center z-20 hover:rounded-2xl">
-              <Phone size={20} className="text-white mb-2" />
+            <div
+  className={`absolute inset-0 bg-black/68 transition-all duration-300 flex flex-col items-center justify-center z-20
+  ${
+    showOverlay
+      ? "opacity-100"
+      : "opacity-0 pointer-events-none md:pointer-events-auto"
+  }
+  md:opacity-0 md:group-hover:opacity-100`}
+>
+    <Phone size={20} className="text-white mb-2" />
 
               <h3 className="text-white text-[12px] font-medium leading-tight">
                 Call Me Instantly!
@@ -67,6 +86,7 @@ const PropertyCard = ({ project, isWishlisted, onToggleWishlist, onTourClick }) 
                 onClick={(e) => {
                   e.preventDefault();
                   e.stopPropagation();
+                   setShowOverlay(false);
                   window.open("tel:+919284429197");
                 }}
                 className="w-[170px] text-center bg-[#E5097F] hover:bg-[#d10871] text-white py-2 rounded-full font-normal text-sm transition"
@@ -78,6 +98,7 @@ const PropertyCard = ({ project, isWishlisted, onToggleWishlist, onTourClick }) 
                 onClick={(e) => {
                   e.preventDefault();
                   e.stopPropagation();
+                   setShowOverlay(false);
                   window.open("tel:+919529249230");
                 }}
                 className="mt-3 w-[170px] text-center bg-[#742E85] hover:bg-[#5e256d] text-white py-2 rounded-full font-normal text-sm transition"

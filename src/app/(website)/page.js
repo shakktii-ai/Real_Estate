@@ -432,15 +432,24 @@ import About from '@/components/about';
 import Review from '@/components/Review';
 import WhyPiingkasha from '@/components/WhyPiingkasha';
 import Counter from '@/components/Counter';
+import JoinUs from '@/components/JoinUs';
+import ReferNow from '@/components/ReferNow';
+import NriDesk from '@/components/NriDesk';
 import { useAuth } from '@/lib/context/AuthContext';
 import { useRouter } from 'next/navigation';
 import TourSelectionModal from '@/components/TourSelectionModal';
 import BookSiteVisitModal from '@/components/BookSiteVisitModal';
 import BookVirtualTourModal from '@/components/BookVirtualTourModal';
 import AuthModal from '@/components/AuthModal';
-import { ChevronRight, ArrowRight, ChevronDown, Star } from "lucide-react";
+import { ChevronRight, ArrowRight, ChevronDown, Star, Phone } from "lucide-react";
 import { ShieldCheck, BadgeCheck, IndianRupee } from "lucide-react";
 import { Handshake, BadgeIndianRupee, ReceiptText } from "lucide-react";
+import CallUsNow from '@/components/CallNowPopup';
+import LiveAgentPopup from '@/components/LiveAgentPopup';
+import NewLaunchCard from '@/components/NewLaunchCard';
+import NewLaunchPopup from '@/components/NewLaunchPopup';
+import ConsultNow from '@/components/ConsultSection';
+import Image from 'next/image';
 // ─── Slide data ───────────────────────────────────────────────────────────────
 const WHY_SLIDES = [
     {
@@ -484,11 +493,12 @@ const WHY_SLIDES = [
 ];
 
 // ─── Filter Bar ───────────────────────────────────────────────────────────────
-function PropertyFilterBar({ projects, onFilteredProjects }) {
+function PropertyFilterBar({ projects, onFilteredProjects, onViewMore }) {
     const [selectedCity, setSelectedCity] = useState("Pune");
     const [selectedCategory, setSelectedCategory] = useState("");
     const [budget, setBudget] = useState(99);
     const [selectedStatus, setSelectedStatus] = useState("");
+
     const router = useRouter();
     const trustItems = [
         "Brokerage",
@@ -546,6 +556,9 @@ function PropertyFilterBar({ projects, onFilteredProjects }) {
 
     const selectClass =
         "appearance-none w-full text-sm text-gray-800 font-semibold bg-transparent outline-none pr-6 cursor-pointer rounded-none border-0 focus:ring-0";
+    const newLaunchProjects = projects
+        .filter((project) => project.tags?.includes("New Launch"))
+        .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
 
     return (
 
@@ -554,7 +567,7 @@ function PropertyFilterBar({ projects, onFilteredProjects }) {
 
             <div className="flex flex-row md:flex-cols flex-wrap gap-2 py-4">
                 {/* No Brokerage */}
-                <div className="flex items-center gap-2 w-full md:w-[160px] h-[70px] rounded-2xl border border-[#664997] bg-[#4B1F73]/31 px-2 shadow-lg">
+                <div className="flex items-center gap-2 w-full md:w-[160px] h-[70px] rounded-2xl border border-[#664997] bg-[#6D4491]/85 px-2 shadow-md shadow-gray-600">
                     <div className="w-[45px] h-[58px] rounded-xl border border-[#664997] bg-[#000000]/40 backdrop-blur-md flex items-center justify-center">
                         <img
                             src="/hands 1.png"
@@ -563,16 +576,14 @@ function PropertyFilterBar({ projects, onFilteredProjects }) {
                         />
                     </div>
 
-                    <h3 style={{
-                        WebkitTextStroke: "0.5px #664997",
-                    }}
+                    <h3
                         className="text-[#F5F5F5]  text-[16px] font-medium leading-6">
-                        No <br className='hidden md:block'/> Brokerage
+                        No <br className='hidden md:block' /> Brokerage
                     </h3>
                 </div>
 
                 {/* No Fees */}
-                <div className="flex items-center gap-2 w-full md:w-[160px] h-[70px] rounded-2xl border border-[#E5097F] bg-[#E5097F]/31 px-2 shadow-lg">
+                <div className="flex items-center gap-2 w-full md:w-[160px] h-[70px] rounded-2xl border border-[#E5097F] bg-[#E5097F]/56 px-2 shadow-md shadow-gray-600">
                     <div className="w-[45px] h-[58px] rounded-xl border border-[#E5097F] bg-[#000000]/40 backdrop-blur-md flex items-center justify-center">
                         <img
                             src="/fees.png"
@@ -581,16 +592,14 @@ function PropertyFilterBar({ projects, onFilteredProjects }) {
                         />
                     </div>
 
-                    <h3 style={{
-                        WebkitTextStroke: "0.5px #0A7050",
-                    }}
+                    <h3
                         className="text-[#F5F5F5]  text-[16px] font-medium leading-6">
-                        No <br className='hidden md:block'/> Fees 
+                        No <br className='hidden md:block' /> Fees
                     </h3>
                 </div>
 
                 {/* No Hidden Charges */}
-                <div className="flex items-center gap-2 w-full md:w-[160px] h-[70px] rounded-2xl border border-[#DB61FA] bg-[#DB61FA]/31 px-2 shadow-lg">
+                <div className="flex items-center gap-2 w-full md:w-[160px] h-[70px] rounded-2xl border border-[#DB61FA] bg-[#DB61FA]/72 px-2 shadow-md shadow-gray-600">
                     <div className="w-[45px] h-[58px] rounded-xl border border-[#DB61FA] bg-[#000000]/40 backdrop-blur-md flex items-center justify-center ">
                         <img
                             src="/hiddencharges.png"
@@ -599,112 +608,219 @@ function PropertyFilterBar({ projects, onFilteredProjects }) {
                         />
                     </div>
 
-                    <h3 style={{
-                        WebkitTextStroke: "0.5px #BC8213",
-                    }}
+                    <h3
                         className="text-[#F5F5F5]  text-[16px] font-medium leading-6">
-                        No Hidden <br className='hidden md:block'/>Charges
+                        No Hidden <br className='hidden md:block' />Charges
                     </h3>
                 </div>
             </div>
-            <div className="bg-white text-[15px] rounded-2xl md:rounded-xl shadow-2xl px-4 py-2 flex flex-wrap md:flex-nowrap items-center gap-3 md:gap-0 w-full max-w-6xl mx-auto">
-                {/* Location */}
 
-                <div className="flex flex-col flex-1 min-w-[110px] md:border-r border-gray-200 md:pr-4">
-                    <span className="font-semibold text-[#742E85] uppercase tracking-widest mb-1">Location</span>
-                    <div className="relative">
-                        <select
-                            value={selectedCity}
-                            onChange={(e) => setSelectedCity(e.target.value)}
-                            className={selectClass}
-                            style={{ WebkitAppearance: "none", MozAppearance: "none" }}
+            <div className="flex flex-col lg:flex-row items-center gap-4 w-full">
+                {/* ── 1. Filter Bar Component ── */}
+                <div className="bg-white text-[14px] rounded-xl shadow-lg px-5 py-3 flex flex-wrap md:flex-nowrap items-center gap-4 md:gap-0 w-full max-w-4xl border border-gray-100">
+
+                    {/* Location */}
+                    <div className="flex flex-col flex-1 min-w-[120px] md:border-r border-gray-200 md:pr-4">
+                        <span className="font-bold text-[12px] text-[#742E85] uppercase tracking-wider mb-0.5">
+                            LOCATION
+                        </span>
+                        <div className="relative flex items-center">
+                            <select
+                                value={selectedCity}
+                                onChange={(e) => setSelectedCity(e.target.value)}
+                                className={`${selectClass} w-full bg-transparent font-medium text-gray-800 pr-5 focus:outline-none cursor-pointer`}
+                                style={{ WebkitAppearance: "none", MozAppearance: "none" }}
+                            >
+                                <option value="Pune">Pune</option>
+                                <option value="Hadapsar">Pune - Hadapsar</option>
+                                <option value="Kondhwa">Pune - Kondhwa</option>
+                                <option value="Pisoli">Pune - Pisoli</option>
+                                <option value="Undri">Pune - Undri</option>
+                                <option value="Mohammed Wadi">Pune - Mohammed Wadi</option>
+                                <option value="Salisbury Park">Pune - Salisbury Park</option>
+                                <option value="Gultekdi">Pune - Gultekdi</option>
+                                <option value="Wadachi Wadi">Pune - Wadachi Wadi</option>
+                                <option value="NIBM Road">Pune - NIBM Road</option>
+                                {cities
+                                    .filter((c) => c !== "Pune")
+                                    .map((city) => (
+                                        <option key={city} value={city}>
+                                            {city}
+                                        </option>
+                                    ))}
+                            </select>
+                            <ChevronDown className="absolute right-0 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-800 pointer-events-none" />
+                        </div>
+                    </div>
+
+                    {/* Property */}
+                    <div className="flex flex-col flex-1 min-w-[170px] md:border-r border-gray-200 md:px-4">
+                        <span className="font-bold text-[12px] text-[#742E85] uppercase tracking-wider mb-0.5">
+                            PROPERTY
+                        </span>
+                        <div className="relative flex items-center">
+                            <select
+                                value={selectedCategory}
+                                onChange={(e) => setSelectedCategory(e.target.value)}
+                                className={`${selectClass} w-full bg-transparent font-medium text-gray-800 pr-5 focus:outline-none cursor-pointer`}
+                                style={{ WebkitAppearance: "none", MozAppearance: "none" }}
+                            >
+                                <option value="">All</option>
+                                <option value="Residential">Residential</option>
+                                <option value="Commercial">Commercial</option>
+                                <option value="Plot">Plots</option>
+                            </select>
+                            <ChevronDown className="absolute right-0 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-800 pointer-events-none" />
+                        </div>
+                    </div>
+
+                    {/* Budget */}
+
+                    <div className="flex flex-col flex-1 min-w-[140px] md:border-r border-gray-200 md:px-4">
+
+                        <span className="font-semibold text-[#742E85] uppercase tracking-widest mb-1">Budget</span>
+
+                        <input
+
+                            type="range" min="65" max="1000" step="1" value={budget}
+
+                            onChange={(e) => setBudget(Number(e.target.value))}
+
+                            className="w-full accent-[#742E85] mt-1"
+
+                        />
+
+                        <span className="text-xs text-gray-600 mt-0.5 font-medium">
+
+                            ₹65L - ₹{budget >= 1000 ? "10Cr" : `${budget}L`}
+
+                        </span>
+
+                    </div>
+
+
+
+                    {/* Status */}
+                    <div className="flex flex-col flex-1 min-w-[120px] md:border-r border-gray-200 md:px-4">
+                        <span className="font-bold text-[12px] text-[#742E85] uppercase tracking-wider mb-0.5">
+                            Status
+                        </span>
+                        <div className="relative flex items-center">
+                            <select
+                                value={selectedStatus}
+                                onChange={(e) => setSelectedStatus(e.target.value)}
+                                className={`${selectClass} w-full bg-transparent font-medium text-gray-800 pr-5 focus:outline-none cursor-pointer`}
+                                style={{ WebkitAppearance: "none", MozAppearance: "none" }}
+                            >
+                                <option value="">All</option>
+                                <option value="Ready">Ready</option>
+                                <option value="Under Construction">Under Construction</option>
+                                <option value="Late Possession">Late Possession</option>
+                            </select>
+                            <ChevronDown className="absolute right-0 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-800 pointer-events-none" />
+                        </div>
+                    </div>
+
+                    {/* Apply Button */}
+                    <div className="md:pl-3 w-full md:w-auto">
+                        <button
+                            onClick={applyFilters}
+                            className="w-full md:w-auto bg-[#1B1C22] text-white text-[15px] font-bold px-8 py-2.5 rounded-xl hover:bg-black transition-all shadow-md whitespace-nowrap active:scale-95 cursor-pointer"
                         >
-                            <option value="Pune">Pune</option>
-                            <option value="Hadapsar">Pune - Hadapsar</option>
-                            <option value="Kondhwa">Pune - Kondhwa</option>
-                            <option value="Pisoli">Pune - Pisoli</option>
-                            <option value="Undri">Pune - Undri</option>
-                            <option value="Mohammed Wadi">Pune - Mohammed Wadi</option>
-                            <option value="Salisbury Park">Pune - Salisbury Park</option>
-                            <option value="Gultekdi">Pune - Gultekdi</option>
-                            <option value="Wadachi Wadi">Pune - Wadachi Wadi</option>
-                            <option value="NIBM Road">Pune - NIBM Road</option>
-                            {/* <option value="Sindhudurg (Near Mopa, Goa)">Sindhudurg (Near Mopa, Goa)</option> */}
-                            {cities.filter(c => c !== "Pune").map(city => (
-                                <option key={city} value={city}>{city}</option>
-                            ))}
-                        </select>
-                        <ChevronDown className="absolute right-0 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400 pointer-events-none" />
+                            Apply
+                        </button>
                     </div>
                 </div>
 
-                {/* Property */}
-                <div className="flex flex-col flex-1 min-w-[190px] md:border-r border-gray-200 md:px-4">
-                    <span className="font-semibold text-[#742E85] uppercase tracking-widest mb-1">Property</span>
-                    <div className="relative">
-                        <select
-                            value={selectedCategory}
-                            onChange={(e) => setSelectedCategory(e.target.value)}
-                            className={selectClass}
-                            style={{ WebkitAppearance: "none", MozAppearance: "none" }}
-                        >
-                            <option value="">All</option>
-                            <option value="Residential">Residential</option>
-                            <option value="Commercial">Commercial</option>
-                            <option value="Plot">Plots</option>
-                        </select>
-                        <ChevronDown className="absolute right-0 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400 pointer-events-none" />
-                    </div>
-                </div>
-
-                {/* Budget */}
-                <div className="flex flex-col flex-1 min-w-[140px] md:border-r border-gray-200 md:px-4">
-                    <span className="font-semibold text-[#742E85] uppercase tracking-widest mb-1">Budget</span>
-                    <input
-                        type="range" min="65" max="1000" step="1" value={budget}
-                        onChange={(e) => setBudget(Number(e.target.value))}
-                        className="w-full accent-[#742E85] mt-1"
-                    />
-                    <span className="text-xs text-gray-600 mt-0.5 font-medium">
-                        ₹65L - ₹{budget >= 1000 ? "10Cr" : `${budget}L`}
-                    </span>
-                </div>
-
-                {/* Status */}
-                <div className="flex flex-col flex-1 min-w-[120px] md:border-r border-gray-200 md:px-4">
-                    <span className="font-semibold text-[#742E85] uppercase tracking-widest mb-1">Status</span>
-                    <div className="relative">
-                        <select
-                            value={selectedStatus}
-                            onChange={(e) => setSelectedStatus(e.target.value)}
-                            className={selectClass}
-                            style={{ WebkitAppearance: "none", MozAppearance: "none" }}
-                        >
-                            <option value="">All</option>
-                            <option value="Ready">Ready</option>
-                            <option value="Under Construction">Under Construction</option>
-                            <option value="Late Possession">Late Possession</option>
-                        </select>
-                        <ChevronDown className="absolute right-0 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400 pointer-events-none" />
-                    </div>
-                </div>
-
-                {/* Apply */}
-                <div className="md:pl-4">
-                    <button
-                        onClick={applyFilters}
-                        className="bg-black text-white text-sm font-bold px-8 py-3 rounded-xl hover:bg-gray-900 transition whitespace-nowrap"
+                {/* ── 2. Right Widgets Stack (Ping AI & Call Now) ── */}
+                {/* <div className="flex flex-col gap-6 min-w-[220px] "> */}
+                    {/* Ping AI Badge */}
+                    {/* <button
+                        type="button"
+                        onClick={() => {
+                            if (typeof window !== 'undefined') {
+                                window.dispatchEvent(new Event('open-chatbot'));
+                            }
+                        }}
+                        className="w-full rounded-[18px] bg-gradient-to-r from-[#742E85] to-[#E5097F] border border-white shadow-md shadow-white p-2.5 px-4 flex items-center gap-3 text-left transition-transform hover:scale-[1.01] hover:cursor-pointer"
                     >
-                        Apply
-                    </button>
-                </div>
+                        <div className="w-10 h-10 rounded-full border border-white flex items-center justify-center flex-shrink-0 bg-black/54">
+                            <Image
+                                src="/chatbot.png"
+                                alt="Ping AI"
+                                width={24}
+                                height={24}
+                                className="object-contain"
+                            />
+                        </div>
+                        <div className="flex flex-col justify-center">
+                            <h2 className="text-white text-[15px] font-semibold leading-tight tracking-tight mb-1">
+                                Ping AI
+                            </h2>
+                            <p className="text-white  text-[11px] lg:text-[10px] font-medium leading-tight">
+                                Find the Right HomeFaster
+                            </p>
+                        </div>
+                    </button> */}
+
+                    {/* Call Now Button */}
+                    {/* <a
+                        href="tel:+919284429197"
+                        className="bg-[#E5097F] ml-12 hover:bg-[#c8006e] text-white text-[12px] lg:text-[10px] font-medium px-4 py-2 rounded-full shadow-md shadow-black/25 flex items-center justify-center gap-2 transition-all cursor-pointer"
+                    >
+                        <Phone size={13} className=" text-white" />
+                        <span>Call Now: 9284429197</span>
+                    </a>
+                </div> */}
             </div>
+
+            {newLaunchProjects.length > 0 && (
+                <div className="mt-6">
+                    <div className="flex  gap-2 mb-3 bg-white/50 w-md rounded-xl pl-4">
+                        <Image
+                            src="/rocket.png"
+                            alt="New Launch"
+                            width={24}
+                            height={24}
+                            className="object-contain"
+                        />
+
+                        <h3 className="text-black font-semibold text-[18px] lg:text-[20px] " style={{ WebkitTextStroke: "0.5px #ffffff" }}>
+                            New Launches – Be the First to Know
+                        </h3>
+                    </div>
+
+                    <div className="flex flex-col lg:flex-row gap-3 ">
+                        {newLaunchProjects.slice(0, 3).map((project) => (
+                            <NewLaunchCard
+                                key={project._id}
+                                project={project}
+                            />
+                        ))}
+                        {newLaunchProjects.length > 3 && (
+
+                            <button
+                                onClick={onViewMore}
+                                className="text-black underline decoration-black  font-semibold text-[20px] hover:cursor-pointer"
+                                style={{
+                                    WebkitTextStroke: "0.2px #ffffff",
+                                }}
+                            >
+
+                                View More
+
+                            </button>
+
+                        )}
+                    </div>
+                </div>
+            )}
         </div>
     );
 }
 
 // ─── Hero Why Choose Us Slider ────────────────────────────────────────────────
-function HeroWhyChooseUs({ projects, onFilteredProjects }) {
+function HeroWhyChooseUs({ projects, onFilteredProjects, onViewMore }) {
     const [current, setCurrent] = useState(0);
     const timerRef = useRef(null);
 
@@ -723,148 +839,135 @@ function HeroWhyChooseUs({ projects, onFilteredProjects }) {
     const slide = WHY_SLIDES[current];
 
     return (
-        <section className="relative w-full overflow-hidden" style={{ minHeight: "92vh" }}>
+        <>
+            <div className='w-full  bg-[#742E85]/41 font-medium text-[12px] lg:text-[18px] flex justify-center items-center text-black p-2'>
+                <Phone size={15} className='text-black mr-2 ' />   Talk to Our Property Expert  : <a href="tel:+919284429197" className='mr-2'> 9284429197</a>  |  <a href="tel:+919529249230" className='ml-2'>9529249230</a>
+            </div>
+            <section className="relative w-full overflow-hidden " style={{ minHeight: "92vh" }}>
 
-            {/* ── Background layers with dissolve ── */}
-            {WHY_SLIDES.map((s, i) => (
-                <div
-                    key={i}
-                    className="absolute inset-0"
-                    style={{
-                        opacity: i === current ? 1 : 0,
-                        transition: "opacity 1s ease-in-out",
-                        zIndex: 0,
-                    }}
-                >
+                {/* ── Background layers with dissolve ── */}
+                {WHY_SLIDES.map((s, i) => (
                     <div
-                        className="absolute inset-0 bg-cover bg-center bg-no-repeat"
-                        style={{ backgroundImage: `url('${s.bg}')` }}
-                    />
-                    <img
-                        src={s.bg}
-                        alt=""
-                        className="absolute inset-0 w-full h-full object-cover md:object-center"
-                        aria-hidden="true"
-                    />
-
-                    {/* ✅ Sharp cut-line overlay — solid dark left panel, clear image right */}
-                    <div className="absolute inset-0">
-                        {/* Mobile */}
-                        <div
-                            className="absolute inset-0 md:hidden"
-                            style={{
-                                background:
-                                    "linear-gradient(to bottom, rgba(0,0,0,0.37) 0%, rgba(0,0,0,0.75) 55%, rgba(0,0,0,0.25) 55%)",
-                            }}
-                        />
-
-                        {/* Desktop */}
-                        <div
-                            className="absolute inset-0 hidden md:block"
-                            style={{
-                                width: "50%",
-                                background: "rgba(0,0,0,0.40)",
-                            }}
-                        />
-                    </div>
-                </div>
-            ))}
-
-            {/* ── Content ── */}
-            <div
-                className="relative flex flex-col justify-between px-6 md:px-14 lg:px-20 pt-6 pb-4"
-                style={{ zIndex: 10, minHeight: "82vh" }}
-            >
-                <div className="flex-1 flex flex-col justify-center max-w-2xl">
-
-                    <p
-                        className="mb-5 font-bold "
+                        key={i}
+                        className="absolute inset-0 "
                         style={{
-                            background: "linear-gradient(to right, #ffffff, #e862ff)",
-                            WebkitBackgroundClip: "text",
-                            WebkitTextFillColor: "transparent",
-                            backgroundClip: "text",
-                            fontSize: "clamp(14px, 1.8vw, 19px)",
-                            lineHeight: "28px",
-                            letterSpacing: "0em",
-                            width: "fit-content",
-                            filter: "drop-shadow(0px 2px 4px rgba(0, 0, 0, 0.35))",
-
+                            opacity: i === current ? 1 : 0,
+                            transition: "opacity 1s ease-in-out",
+                            zIndex: 0,
                         }}
                     >
-                        The Address That Defines Success,
-                        <br />
-                        Your Gateway to Premium Living in Pune South
+                        <div
+                            className="absolute inset-0 bg-cover bg-center bg-no-repeat"
+                            style={{ backgroundImage: `url('${s.bg}')` }}
+                        />
+                        <img
+                            src={s.bg}
+                            alt=""
+                            className="absolute inset-0 w-full h-full object-contain md:object-center"
+                            aria-hidden="true"
+                        />
 
-                    </p>
+                        {/* ✅ Sharp cut-line overlay — solid dark left panel, clear image right */}
+                        <div className="absolute inset-0">
 
-                    <AnimatePresence mode="wait">
-                        <motion.div
-                            key={current}
-                            initial={{ opacity: 0, y: 20 }}
-                            animate={{ opacity: 1, y: 0 }}
-                            exit={{ opacity: 0, y: -20 }}
-                            transition={{ duration: 0.5 }}
+                            <div
+                                className="absolute inset-0 md:hidden  bg-gradient-to-b from-[#ffffff] to-[#ffffff]/10"
+
+                            />
+
+
+                            <div
+                                className="absolute inset-0 hidden md:block bg-gradient-to-b from-[#ffffff] to-[#ffffff]/25"
+                            />
+                        </div>
+                    </div>
+                ))}
+
+                {/* ── Content ── */}
+                <div
+                    className="relative flex flex-col justify-between px-6 md:px-14 lg:px-20 pt-6 pb-4"
+                    style={{ zIndex: 10, minHeight: "82vh" }}
+                >
+                    <div className="flex-1 flex flex-col justify-center max-w-6xl">
+
+                        <p
+                            className="mb-5 font-semibold text-[24px] lg:text-[28px]"
+                            style={{
+                                background: "linear-gradient(to right, #000000, #E682FF)",
+                                WebkitBackgroundClip: "text",
+                                WebkitTextFillColor: "transparent",
+                                backgroundClip: "text",
+                                fontSize: "clamp(16px, 1.8vw, 20px)",
+                                lineHeight: "28px",
+                                letterSpacing: "0rem",
+                                width: "fit-content",
+                                // filter: "drop-shadow(0px 2px 4px rgba(0, 0, 0, 0.35))",
+                                WebkitTextStroke: "0.2px #ffffff"
+                            }}
                         >
-                            <div className="flex items-center gap-4 mb-6">
-                                <div
-                                    className="flex-shrink-0 flex items-center justify-center rounded-full"
-                                    style={{
-                                        width: 50,
-                                        height: 50,
-                                        background: "linear-gradient(135deg, #ffffff 0%, #E372FF 100%)",
-                                        boxShadow: "0 4px 18px rgba(227,114,255,0.35)",
-                                    }}
-                                >
-                                    <img
-                                        src={slide.icon}
-                                        alt=""
-                                        style={{ width: 22, height: 22, objectFit: "contain" }}
-                                    />
-                                </div>
+                            The Address That Defines Success,
+                            <br className="hidden sm:inline" />{" "}
+                            Your Gateway to Premium Living in Pune South
+                        </p>
 
-                                <h2
-                                    className="font-bold leading-tight text-[16px] md:text-[22px] w-full md:w-[440px]"
-                                    style={{
-
-                                        background: "linear-gradient(90deg, #ffffff 0%, #E372FF 100%)",
-                                        WebkitBackgroundClip: "text",
-                                        WebkitTextFillColor: "transparent",
-                                        backgroundClip: "text",
-                                    }}
-                                >
-                                    {slide.badge}
-                                </h2>
-                            </div>
-
-                            <ul className="space-y-3 w-full md:w-[500px] text-[14px] md:text-[15px] tracking-[1.5px]">
-                                {slide.points.map((pt, i) => (
-                                    <li
-                                        key={i}
-                                        className="flex items-start gap-3 leading-snug"
+                        <AnimatePresence mode="wait">
+                            <motion.div
+                                key={current}
+                                initial={{ opacity: 0, y: 20 }}
+                                animate={{ opacity: 1, y: 0 }}
+                                exit={{ opacity: 0, y: -20 }}
+                                transition={{ duration: 0.5 }}
+                                className="w-full"
+                            >
+                                {/* Header & Icon Container */}
+                                <div className="flex items-center gap-3 sm:gap-4 mb-2 sm:mb-3">
+                                    {/* Dynamic Icon Wrapper */}
+                                    <div
+                                        className="flex-shrink-0 flex items-center justify-center rounded-full shadow-md shadow-black/25 w-10 h-10 md:w-[50px] md:h-[50px]"
                                         style={{
-                                            color: "#ffffff",
-
-                                            fontWeight: 400,
+                                            background:
+                                                "linear-gradient(135deg, #ffffff 0%, #E579FF 100%)",
                                         }}
                                     >
-                                        <span
-                                            className="flex-shrink-0 rounded-full mt-2"
-                                            style={{ width: 5, height: 5, background: "#ffffff", marginTop: 8 }}
+                                        <img
+                                            src={slide.icon}
+                                            alt=""
+                                            className="w-6 h-6 md:w-9 md:h-9 object-contain"
                                         />
-                                        {pt}
-                                    </li>
-                                ))}
-                            </ul>
-                        </motion.div>
-                    </AnimatePresence>
-                </div>
+                                    </div>
 
-                <div className="flex flex-col items-center gap-5 mt-0">
-                    <PropertyFilterBar projects={projects} onFilteredProjects={onFilteredProjects} />
+                                    {/* Heading */}
+                                    <h2
+                                        className="font-semibold leading-tight text-[18px] sm:text-[22px] md:text-[28px] text-[#54315D] w-full"
+                                        style={{ WebkitTextStroke: "0.2px #ffffff" }}
+                                    >
+                                        {slide.badge}
+                                    </h2>
+                                </div>
+
+                                {/* Bullet Points List */}
+                                <ul className="space-y-2.5 sm:space-y-3 w-full md:max-w-[800px] text-[15px] sm:text-[16px] md:text-[18px] pl-[52px] md:pl-[66px]">
+                                    {slide.points.map((pt, i) => (
+                                        <li
+                                            key={i} className="flex items-start gap-2.5 sm:gap-3 leading-5 md:leading-[22px] text-[#54325D] font-medium"
+                                        >
+                                            <span
+                                                className="flex-shrink-0 rounded-full bg-[#54325D] w-1.5 h-1.5 mt-2"
+                                            />
+                                            <span>{pt}</span>
+                                        </li>
+                                    ))}
+                                </ul>
+                            </motion.div>
+                        </AnimatePresence>
+                    </div>
+
+                    <div className="flex flex-col items-center gap-5 mt-0">
+                        <PropertyFilterBar projects={projects} onFilteredProjects={onFilteredProjects} onViewMore={onViewMore} />
+                    </div>
                 </div>
-            </div>
-        </section>
+            </section>
+        </>
     );
 }
 
@@ -990,7 +1093,10 @@ export default function WebsitePage() {
     const [showAuthModal, setShowAuthModal] = useState(false);
     const [livingIndex, setLivingIndex] = useState(0);
     const [isLivingHovered, setIsLivingHovered] = useState(false);
-
+    const [showPopup, setShowPopup] = useState(false);
+    const newLaunchProjects = projects
+        .filter(p => p.tags?.includes("New Launch"))
+        .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
     useEffect(() => {
         if (!loading && user) { router.replace("/dashboard"); return; }
         if (!loading && !user) {
@@ -1045,7 +1151,7 @@ export default function WebsitePage() {
         <div className="bg-white">
 
             {/* ① HERO — Why Choose Us Slideshow */}
-            <HeroWhyChooseUs projects={projects} onFilteredProjects={handleFilteredProjects} />
+            <HeroWhyChooseUs projects={projects} onFilteredProjects={handleFilteredProjects} onViewMore={() => setShowPopup(true)} />
 
             {/* ② Explore Filtered Results (shown after Apply) */}
             {hasFiltered && (
@@ -1077,7 +1183,7 @@ export default function WebsitePage() {
                 </div>
 
                 {/* ④ Choose Your Living Style */}
-                <section className="py-8 md:py-10 bg-[#F6F3F6] my-8 px-4">
+                <section className="py-8 md:py-10 bg-[#F6F3F6]  px-4">
                     <div className="w-full max-w-[1200px] mx-auto px-4 md:px-8 flex flex-col items-center">
                         <div className="text-center mb-6 md:mb-8">
                             <h2 className="text-md md:text-xl font-bold text-[#742E85] drop-shadow-md mb-1.5">Choose Your Living Style</h2>
@@ -1113,10 +1219,11 @@ export default function WebsitePage() {
                     </div>
                 </section>
             </div>
-
+            <ConsultNow />
+            <NriDesk />
             <About showOn="homepage" />
 
-            <h2 className="text-md md:text-xl font-bold text-[#742E85] mb-5 text-center">
+            <h2 className="text-[24px] md:text-[36px] font-bold text-[#742E85] mb-5 text-center">
                 Google Reviews
             </h2>
 
@@ -1151,9 +1258,9 @@ export default function WebsitePage() {
 
             <Review />
             {/* ⑤ Builder Partners Marquee */}
-            <section className="bg-white overflow-hidden my-12">
+            <section className="bg-[#F6F3F6] overflow-hidden my-2 py-8">
                 <div className="max-w-7xl mx-auto px-4 mb-8 text-center">
-                    <h2 className="text-md md:text-xl font-bold text-[#742E85] mb-8 flex items-center justify-center">
+                    <h2 className="text-[24px] md:text-[36px] font-bold text-[#742E85] mb-8 flex items-center justify-center">
                         Our Builder Partners
                     </h2>
                 </div>
@@ -1176,17 +1283,45 @@ export default function WebsitePage() {
                     </div>
                 </div>
             </section>
-
+            <ReferNow />
             <WhyPiingkasha />
             <Counter />
-
+            <JoinUs />
+            {/* <CallUsNow /> */}
+            <LiveAgentPopup
+                delay={20000}
+                phoneNumbers={[
+                    {
+                        number: "9284429197",
+                        color: "green",
+                    },
+                    {
+                        number: "9529249230",
+                        color: "yellow",
+                    },
+                ]}
+                onCallbackSubmit={async (data) => {
+                    await fetch("/api/callback", {
+                        method: "POST",
+                        headers: {
+                            "Content-Type": "application/json",
+                        },
+                        body: JSON.stringify(data),
+                    });
+                }}
+            />
+            <NewLaunchPopup
+                open={showPopup}
+                onClose={() => setShowPopup(false)}
+                projects={newLaunchProjects}
+            />
             {/* ⑥ CTA */}
-            <section className="bg-[#F6F3F6] py-12 px-6 text-center">
+            {/* <section className="bg-[#F6F3F6] py-12 px-6 text-center">
                 <h2 className="text-sm md:text-xl font-bold text-black mb-2 flex items-center justify-center">
                     Ready to Find Your Dream Home?
                 </h2>
                 <p className="text-sm md:text-md text-gray-700 mb-2 flex items-center justify-center">
-                   Explore verified projects in South Pune, including NIBM, NIBM Annex, and Mahadevwadi, with transparent pricing and expert guidance. </p>
+                    Explore verified projects in South Pune, including NIBM, NIBM Annex, and Mahadevwadi, with transparent pricing and expert guidance. </p>
                 <div className="flex items-center justify-center">
                     <Link
                         href="/properties"
@@ -1196,7 +1331,7 @@ export default function WebsitePage() {
                         <ArrowRight size={18} />
                     </Link>
                 </div>
-            </section>
+            </section> */}
 
             {/* ⑦ Modals */}
             {user && (

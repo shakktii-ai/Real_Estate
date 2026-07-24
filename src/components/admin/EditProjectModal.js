@@ -400,7 +400,7 @@ export default function EditProjectModal({
           <div>
             <label className="text-sm font-semibold mb-2 block">Tags</label>
             <div className="flex gap-2 flex-wrap">
-              {["RERA Verified", "Residential", "Luxury", "Premium", "Affordable","Commercial", "Plot", "Sold out"].map(tag => (
+              {["RERA Verified", "Residential", "Luxury", "Premium", "Affordable","Commercial", "Plot", "Sold out","New Launch","Highest Selling"].map(tag => (
                 <button
                   type="button"
                   key={tag}

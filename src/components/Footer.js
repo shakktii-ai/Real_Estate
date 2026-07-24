@@ -12,7 +12,7 @@ const Footer = () => {
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-2 md:gap-10">
         {/* Brand / Logo + Address block - stays full width on mobile */}
         <div className="lg:col-span-1 flex flex-col items-center">
-          <div className="mb-2 relative w-[158px] h-[80px]">
+          <div className="mb-1 relative w-[140px] lg:w-[158px] h-[50px] lg:h-[80px]">
             <Image
               src="/piinggaksha.png"
               alt="PIINGGAKSHA REALTY"
@@ -21,7 +21,7 @@ const Footer = () => {
               sizes="158px"
             />
           </div>
-          <p className="text-[10px] md:text-[10px] leading-relaxed uppercase text-center lg:text-left">
+          <p className="text-[8px] md:text-[10px] leading-relaxed uppercase text-center lg:text-left">
             ILESEUM CO-WORKING SPACE, GANGA GLITZ, KAD NAGAR, UNDRI, PUNE,
             MAHARASHTRA 411060
           </p>
@@ -144,21 +144,22 @@ const Footer = () => {
                 <svg className="w-4 h-4 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
                   <path d="M2 3a1 1 0 011-1h2.153a1 1 0 01.986.836l.74 4.435a1 1 0 01-.54 1.06l-1.548.773a11.037 11.037 0 005.405 5.405l.774-1.548a1 1 0 011.059-.54l4.435.74a1 1 0 01.836.986V17a1 1 0 01-1 1h-2C7.82 18 2 12.18 2 5V3z" />
                 </svg>
-                9284429197
+               <a href="tel:+919284429197" className="hover:underline">9284429197</a> 
               </li>
               <li className="flex items-center gap-2">
                 <svg className="w-4 h-4 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
                   <path d="M2 3a1 1 0 011-1h2.153a1 1 0 01.986.836l.74 4.435a1 1 0 01-.54 1.06l-1.548.773a11.037 11.037 0 005.405 5.405l.774-1.548a1 1 0 011.059-.54l4.435.74a1 1 0 01.836.986V17a1 1 0 01-1 1h-2C7.82 18 2 12.18 2 5V3z" />
                 </svg>
-                9284570188
+                <a href="tel:+919284570188" className="hover:underline">9284570188</a>
               </li>
               <li className="flex items-center gap-2">
                 <svg className="w-4 h-4 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
                   <path d="M2 3a1 1 0 011-1h2.153a1 1 0 01.986.836l.74 4.435a1 1 0 01-.54 1.06l-1.548.773a11.037 11.037 0 005.405 5.405l.774-1.548a1 1 0 011.059-.54l4.435.74a1 1 0 01.836.986V17a1 1 0 01-1 1h-2C7.82 18 2 12.18 2 5V3z" />
                 </svg>
-                020-49001704
+                <a href="tel:+912049001704" className="hover:underline">  020-49001704</a>
+              
               </li>
-              <li className="flex items-center gap-2 underline">
+              <li className="flex items-center gap-2 ">
                 <svg className="w-4 h-4 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
                   <path d="M2.003 5.884L10 9.882l7.997-3.998A2 2 0 0016 4H4a2 2 0 00-1.997 1.884z" />
                   <path d="M18 8.118l-8 4-8-4V14a2 2 0 002 2h12a2 2 0 002-2V8.118z" />
@@ -208,8 +209,8 @@ const Footer = () => {
       </div>
 
       {/* Copyright / Bottom Bar */}
-      <div className="mt-1 pt-2 border-t border-zinc-400 text-center font-inter text-xs md:text-sm lg:text-[12px]">
-        <p className="font-bold">© 2026 PIINGGAKSHA. All rights reserved. | RERA No - A031262503639, A52100026024 | GSTIN - 27AEFPT4188M1ZP</p>
+      <div className="mt-1 pt-2 border-t border-zinc-400 text-center font-inter text-[10px] md:text-sm lg:text-[12px]">
+        <p className="font-semibold">© 2026 PIINGGAKSHA. All rights reserved. | RERA No - A031262503639, A52100026024 | GSTIN - 27AEFPT4188M1ZP</p>
         <p className="mt-1 text-black text-[8px] md:text-[10px]">
           All projects displayed are RERA registered. Please verify RERA details before making any decision.
         </p>

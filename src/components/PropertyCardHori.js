@@ -18,6 +18,8 @@ export default function ProjectListCard({ project, isWishlisted, onToggleWishlis
     Commercial: "bg-black",
     Plot:"bg-[#F59E0B]",
     "Sold out": "bg-[#c80815]",
+     "New Launch": "bg-[#E5097F]",
+     "Highest Selling": "bg-[FFA900]"
   };
   return (
     <div className="bg-white rounded-3xl border border-gray-100 shadow-sm hover:shadow-md transition-all flex flex-col md:flex-row overflow-visible h-auto md:h-[350px]">

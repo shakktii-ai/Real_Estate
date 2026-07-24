@@ -1,11 +1,12 @@
 import React from 'react';
-import { Heart, MapPin, Calendar, Home } from 'lucide-react';
+import { Heart, MapPin, Calendar, Home, Phone } from 'lucide-react';
 import { useState } from 'react';
 import HeartButton from "@/components/HeartButton"
 import Link from 'next/link';
 import { useAuth } from '@/lib/context/AuthContext';
 import { BsWhatsapp } from 'react-icons/bs';
 import ShareProject from '@/components/ShareProject';
+import Image from 'next/image';
 const PropertyCard = ({ project, isWishlisted, onToggleWishlist, onTourClick }) => {
   const { user } = useAuth();
   const [showAllAmenities, setShowAllAmenities] = useState(false);
@@ -20,11 +21,13 @@ const PropertyCard = ({ project, isWishlisted, onToggleWishlist, onTourClick }) 
     Commercial: "bg-black",
     Plot: "bg-[#F59E0B]",
     "Sold out": "bg-[#c80815]",
-
+    "New Launch": "bg-[#E5097F]",
+    "Highest Selling": "bg-[FFA900]"
   };
 
   return (
-    <div className="bg-white rounded-2xl border border-gray-300 overflow-visible relative transition-all duration-300 ease-in-out hover:-translate-y-1 hover:shadow-xl hover:scale-[1.02] h-full mx-2 flex flex-col justify-between">
+    // <div className="bg-white rounded-2xl border border-gray-300 overflow-visible relative transition-all duration-300 ease-in-out hover:-translate-y-1 hover:shadow-xl hover:scale-[1.02] h-full mx-2 flex flex-col justify-between">
+    <div className="group bg-white rounded-2xl border border-gray-300 overflow-hidden relative transition-all duration-300 hover:-translate-y-1 hover:shadow-xl hover:scale-[1.02] h-full mx-2 flex flex-col justify-between">
       {/* Top Image Section */}
       <Link href={`/properties/${project.slug}`}>
         <div className="w-full">
@@ -36,23 +39,69 @@ const PropertyCard = ({ project, isWishlisted, onToggleWishlist, onTourClick }) 
               alt={project.projectName}
               className="w-full h-full object-cover rounded-t-2xl"
             />
+            <div className="absolute inset-0 bg-black/68 opacity-0 group-hover:opacity-100 transition-all duration-300 flex flex-col items-center justify-center z-20 hover:rounded-2xl">
+              <Phone size={20} className="text-white mb-2" />
 
-            <div className="absolute top-3 left-3 flex flex-wrap gap-1.5 max-w-[80%]">
+              <h3 className="text-white text-[12px] font-medium leading-tight">
+                Call Me Instantly!
+              </h3>
+
+              <p className="text-white text-[12px] font-medium mb-2">
+                Talk to a property expert now
+              </p>
+
+              {/* <a
+                href="tel:+919284429197"
+                className="w-[170px] text-center bg-[#E5097F] hover:bg-[#d10871] text-white py-2 rounded-full font-semibold text-sm transition"
+              >
+                92844 29197
+              </a>
+
+              <a
+                href="tel:+919529249230"
+                className="mt-3 w-[170px] text-center bg-[#742E85] hover:bg-[#5e256d] text-white py-2 rounded-full font-semibold text-sm transition"
+              >
+                95292 49230
+              </a> */}
+              <button
+                onClick={(e) => {
+                  e.preventDefault();
+                  e.stopPropagation();
+                  window.open("tel:+919284429197");
+                }}
+                className="w-[170px] text-center bg-[#E5097F] hover:bg-[#d10871] text-white py-2 rounded-full font-normal text-sm transition"
+              >
+                92844 29197
+              </button>
+
+              <button
+                onClick={(e) => {
+                  e.preventDefault();
+                  e.stopPropagation();
+                  window.open("tel:+919529249230");
+                }}
+                className="mt-3 w-[170px] text-center bg-[#742E85] hover:bg-[#5e256d] text-white py-2 rounded-full font-normal text-sm transition"
+              >
+                95292 49230
+              </button>
+            </div>
+            <div className="absolute top-3 left-3  flex flex-wrap gap-1.5 max-w-[80%]">
               {project.tags
-                ?.filter((tag) => tag !== "RERA Verified")
+                ?.filter((tag) => tag !== "RERA Verified" && tag !== "Highest Selling" && tag !== "New Launch")
                 .map((tag) => (
                   <span
                     key={tag}
-                    className={`px-2.5 py-0.5 rounded-full text-[8px] sm:text-[8px] font-medium whitespace-nowrap shadow-md text-white ${categoryColors[tag] || "text-gray-600 bg-gray-100"}`}
+                    className={`px-2.5 py-0.5 rounded-full text-[8px] sm:text-[8px] font-normal whitespace-nowrap shadow-md text-white ${categoryColors[tag] || "text-gray-600 bg-gray-100"} `}
                   >
                     {tag}
                   </span>
                 ))}
+
             </div>
-            
+
             {user && (
               <span
-                className="absolute top-3 right-3 bg-white/50 rounded-full"
+                className="absolute top-3 right-3 z-30 bg-white/50 rounded-full"
                 onClick={(e) => {
                   e.preventDefault();
                   e.stopPropagation();
@@ -66,7 +115,7 @@ const PropertyCard = ({ project, isWishlisted, onToggleWishlist, onTourClick }) 
                 />
               </span>
             )}
-            <div className="absolute top-1 right-10">
+            <div className="absolute top-1 right-10 z-30">
               <div
                 onClick={(e) => {
                   e.preventDefault();
@@ -81,7 +130,18 @@ const PropertyCard = ({ project, isWishlisted, onToggleWishlist, onTourClick }) 
                 RERA Verified
               </div>
             )}
-
+            {project.tags?.includes("Highest Selling") && (
+              <div className="absolute bottom-3 right-3 bg-[#FFA900] px-2 py-1 rounded-full flex items-center gap-1 text-[10px] text-[#ffffff] font-normal  whitespace-nowrap shadow-md">
+                <Image
+                  src="/fire.png"
+                  alt="Highest Selling"
+                  width={12}
+                  height={12}
+                  className="object-contain flex-shrink-0"
+                />
+                <span>Highest Selling</span>
+              </div>
+            )}
           </div>
 
 

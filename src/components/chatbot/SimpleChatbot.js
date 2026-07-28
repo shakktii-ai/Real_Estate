@@ -172,8 +172,18 @@ export default function SimpleChatbot() {
 
         setIsOpen(Array.isArray(conversation.messages) && conversation.messages.length > 0);
         setMessages(Array.isArray(conversation.messages) ? conversation.messages : []);
-        setCurrentStepIndex(typeof conversation.currentStepIndex === 'number' ? conversation.currentStepIndex : -1);
-        setLeadData((prev) => ({
+        const submitted = Boolean(conversation.isSubmitted);
+
+setIsSubmitted(submitted);
+
+setCurrentStepIndex(
+  submitted
+    ? -1
+    : typeof conversation.currentStepIndex === "number"
+      ? conversation.currentStepIndex
+      : -1
+);
+ setLeadData((prev) => ({
           ...prev,
           ...(conversation.leadData || {}),
         }));
@@ -246,20 +256,25 @@ export default function SimpleChatbot() {
   ]);
 
   useEffect(() => {
-    if (currentStepIndex >= 0 && currentStepIndex < CHAT_QUESTIONNAIRE_STEPS.length) {
-      const step = CHAT_QUESTIONNAIRE_STEPS[currentStepIndex];
-      const lastMessage = messages[messages.length - 1];
-      const shouldAppendQuestion =
-        !lastMessage ||
-        lastMessage.type !== 'bot' ||
-        lastMessage.content !== step.question;
+  if (isSubmitted) return;   // <-- add this
 
-      if (shouldAppendQuestion) {
-        addMessage('bot', step.question);
-      }
+  if (
+    currentStepIndex >= 0 &&
+    currentStepIndex < CHAT_QUESTIONNAIRE_STEPS.length
+  ) {
+    const step = CHAT_QUESTIONNAIRE_STEPS[currentStepIndex];
+    const lastMessage = messages[messages.length - 1];
+
+    const shouldAppendQuestion =
+      !lastMessage ||
+      lastMessage.type !== "bot" ||
+      lastMessage.content !== step.question;
+
+    if (shouldAppendQuestion) {
+      addMessage("bot", step.question);
     }
-  }, [currentStepIndex, messages]);
-
+  }
+}, [currentStepIndex, messages, isSubmitted]);
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
   };
@@ -377,6 +392,7 @@ export default function SimpleChatbot() {
       }
 
       setIsSubmitted(true);
+      setCurrentStepIndex(-1);
       setActiveMenu('main');
       addLeadSuccessMessage();
     } catch (error) {

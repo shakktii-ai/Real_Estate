@@ -8,10 +8,10 @@ const Footer = () => {
   const { user } = useAuth();
   const phone = "919172400250";
   return (
-    <footer className="bg-footer-gradient py-4 px-4 lg:px-4 text-black relative">
+    <footer className="bg-footer-gradient pt-2 text-black relative">
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-2 md:gap-10">
         {/* Brand / Logo + Address block - stays full width on mobile */}
-        <div className="lg:col-span-1 flex flex-col items-center">
+        <div className="lg:col-span-1 flex flex-col items-center justify-center pl-2">
           <div className="mb-1 relative w-[140px] lg:w-[158px] h-[50px] lg:h-[80px]">
             <Image
               src="/piinggaksha.png"
@@ -21,7 +21,7 @@ const Footer = () => {
               sizes="158px"
             />
           </div>
-          <p className="text-[8px] md:text-[10px] leading-relaxed uppercase text-center lg:text-left">
+          <p className="flex justify-center items-center text-[8px] md:text-[10px] leading-relaxed uppercase text-center lg:text-left">
             ILESEUM CO-WORKING SPACE, GANGA GLITZ, KAD NAGAR, UNDRI, PUNE,
             MAHARASHTRA 411060
           </p>
@@ -91,48 +91,48 @@ const Footer = () => {
 
           {/* Property Types */}
           <div>
-  <h3 className="text-[12px] md:text-[14px] font-bold text-[#742E85] mb-1">
-    Property
-  </h3>
+            <h3 className="text-[12px] md:text-[14px] font-bold text-[#742E85] mb-1">
+              Property
+            </h3>
 
-  <ul className="space-y-0.5 text-[10px] md:text-[12px]">
-    <li>
-      <Link
-        href="/properties?category=Affordable"
-        className="hover:text-[#742E85] hover:underline transition"
-      >
-        Affordable
-      </Link>
-    </li>
+            <ul className="space-y-0.5 text-[10px] md:text-[12px]">
+              <li>
+                <Link
+                  href="/properties?category=Affordable"
+                  className="hover:text-[#742E85] hover:underline transition"
+                >
+                  Affordable
+                </Link>
+              </li>
 
-    <li>
-      <Link
-        href="/properties?category=Premium"
-        className="hover:text-[#742E85] hover:underline transition"
-      >
-        Premium
-      </Link>
-    </li>
+              <li>
+                <Link
+                  href="/properties?category=Premium"
+                  className="hover:text-[#742E85] hover:underline transition"
+                >
+                  Premium
+                </Link>
+              </li>
 
-    <li>
-      <Link
-        href="/properties?category=Luxury"
-        className="hover:text-[#742E85] hover:underline transition"
-      >
-        Luxury
-      </Link>
-    </li>
+              <li>
+                <Link
+                  href="/properties?category=Luxury"
+                  className="hover:text-[#742E85] hover:underline transition"
+                >
+                  Luxury
+                </Link>
+              </li>
 
-    <li>
-      <Link
-        href="/properties?category=Holiday"
-        className="hover:text-[#742E85] hover:underline transition"
-      >
-        Holiday
-      </Link>
-    </li>
-  </ul>
-</div>
+              <li>
+                <Link
+                  href="/properties?category=Holiday"
+                  className="hover:text-[#742E85] hover:underline transition"
+                >
+                  Holiday
+                </Link>
+              </li>
+            </ul>
+          </div>
 
           {/* Contact */}
           <div>
@@ -144,7 +144,7 @@ const Footer = () => {
                 <svg className="w-4 h-4 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
                   <path d="M2 3a1 1 0 011-1h2.153a1 1 0 01.986.836l.74 4.435a1 1 0 01-.54 1.06l-1.548.773a11.037 11.037 0 005.405 5.405l.774-1.548a1 1 0 011.059-.54l4.435.74a1 1 0 01.836.986V17a1 1 0 01-1 1h-2C7.82 18 2 12.18 2 5V3z" />
                 </svg>
-               <a href="tel:+919284429197" className="hover:underline">9284429197</a> 
+                <a href="tel:+919284429197" className="hover:underline">9284429197</a>
               </li>
               <li className="flex items-center gap-2">
                 <svg className="w-4 h-4 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
@@ -157,7 +157,7 @@ const Footer = () => {
                   <path d="M2 3a1 1 0 011-1h2.153a1 1 0 01.986.836l.74 4.435a1 1 0 01-.54 1.06l-1.548.773a11.037 11.037 0 005.405 5.405l.774-1.548a1 1 0 011.059-.54l4.435.74a1 1 0 01.836.986V17a1 1 0 01-1 1h-2C7.82 18 2 12.18 2 5V3z" />
                 </svg>
                 <a href="tel:+912049001704" className="hover:underline">  020-49001704</a>
-              
+
               </li>
               <li className="flex items-center gap-2 ">
                 <svg className="w-4 h-4 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
@@ -214,7 +214,16 @@ const Footer = () => {
         <p className="mt-1 text-black text-[8px] md:text-[10px]">
           All projects displayed are RERA registered. Please verify RERA details before making any decision.
         </p>
+       
       </div>
+     
+       <div className="w-full bg-[#742E85] py-2  text-center text-sm text-white">
+          Created with <span className="text-red-400">❤️</span> by{" "}
+          <Link href='https://www.shakktii.in/'  target="_blank"
+  rel="noopener noreferrer"
+    className="inline font-semibold hover:underline"> <span className="font-semibold">Shakktii AI</span> </Link>
+        </div>
+       
     </footer>
   );
 };

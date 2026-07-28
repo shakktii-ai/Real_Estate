@@ -7,14 +7,41 @@ export async function POST(request) {
 
     const body = await request.json();
 
+    // Compile a structured, human-readable summary of the 10-step questionnaire answers
+    // to map to the legacy "basicDetails" field in case the strict DB schema doesn't have the new properties yet.
+    const summaryParts = [];
+    if (body.configuration) summaryParts.push(`• Configuration: ${body.configuration}`);
+    if (body.possession) summaryParts.push(`• Possession Timeline: ${body.possession}`);
+    if (body.purchasePurpose) summaryParts.push(`• Purpose of Purchase: ${body.purchasePurpose}`);
+    if (body.visitedProject) summaryParts.push(`• Visited any project: ${body.visitedProject}`);
+    if (body.projectName) summaryParts.push(`• Project Name of interest: ${body.projectName}`);
+    if (body.siteVisit) summaryParts.push(`• Scheduled Site Visit: ${body.siteVisit}`);
+
+    const compiledDetails = summaryParts.length > 0 
+      ? summaryParts.join('\n') 
+      : body.basicDetails || 'No details provided.';
+
+    const compiledMessage = body.message || `10-step chatbot questionnaire lead form submitted.`;
+
+    // Create lead document mapping both explicit properties and compiled summaries safely
     const lead = await ChatbotLead.create({
       name: body.name,
       phone: body.phone,
-      email: body.email,
+      email: body.email || '',
       budget: body.budget,
       preferredLocation: body.preferredLocation,
-      message: body.message,
+      propertyType: body.propertyType || 'Residential',
+      basicDetails: compiledDetails,
+      message: compiledMessage,
       status: 'new',
+
+      // Explicitly saving the individual properties if your schema defines them (or strict is disabled)
+      configuration: body.configuration || '',
+      possession: body.possession || '',
+      purchasePurpose: body.purchasePurpose || '',
+      visitedProject: body.visitedProject || '',
+      projectName: body.projectName || '',
+      siteVisit: body.siteVisit || '',
     });
 
     return Response.json(

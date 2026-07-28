@@ -1,22 +1,29 @@
 "use client";
 
 import { useState } from "react";
+import { useRouter } from "next/navigation";
+import { useAuth } from "@/lib/context/AuthContext";
 import { X, Loader2 } from "lucide-react";
 import { toast } from "react-toastify";
 
 export default function UnlockPricesModal({ onClose, onAuthSuccess }) {
-  // Step management
+  const router = useRouter();
+  const { user, refreshUser } = useAuth();
+
+  // Flow & State Management
   const [isOtpSent, setIsOtpSent] = useState(false);
   const [isPhoneVerified, setIsPhoneVerified] = useState(false);
+  const [isNewUser, setIsNewUser] = useState(false);
+  const [pendingUid, setPendingUid] = useState(null);
   const [loading, setLoading] = useState(false);
 
-  // Form States
+  // Form Fields
   const [phone, setPhone] = useState("");
   const [otp, setOtp] = useState("");
   const [fullName, setFullName] = useState("");
   const [email, setEmail] = useState("");
 
-  // Step 1: Send OTP to WhatsApp
+  // Step 1: Send OTP via WhatsApp
   const handleSendOtp = async () => {
     if (!phone.trim() || phone.length !== 10) {
       toast.error("Please enter a valid 10-digit mobile number");
@@ -67,7 +74,27 @@ export default function UnlockPricesModal({ onClose, onAuthSuccess }) {
       }
 
       setIsPhoneVerified(true);
-      toast.success("Phone number verified successfully!");
+      setPendingUid(data.id || data.uid);
+
+      // Check if user exists with name & email configured
+      const userData = data.user;
+      const userExistsAndComplete =
+        userData && userData.name && userData.email;
+
+      if (userExistsAndComplete) {
+        // Existing User Flow -> Skip Profile Form & Complete Login
+        toast.success("Welcome back!");
+        if (refreshUser) await refreshUser();
+        if (onAuthSuccess) onAuthSuccess();
+        onClose();
+        router.replace("/dashboard");
+      } else {
+        // New User Flow -> Reveal Name & Email fields
+        setIsNewUser(true);
+        if (userData?.name) setFullName(userData.name);
+        if (userData?.email) setEmail(userData.email);
+        toast.success("Phone verified! Please complete your details.");
+      }
     } catch (err) {
       console.error("Verify OTP Error:", err);
       toast.error(err.message || "Invalid OTP. Please try again.");
@@ -76,19 +103,9 @@ export default function UnlockPricesModal({ onClose, onAuthSuccess }) {
     }
   };
 
-  // Step 3: Simple Consult Submission (No Profile API, just close modal & show success)
-  const handleSubmit = async (e) => {
+  // Step 3: Complete Profile (New Users Only)
+  const handleProfileSubmit = async (e) => {
     e.preventDefault();
-
-    if (!isOtpSent) {
-      toast.error("Please send OTP first");
-      return;
-    }
-
-    if (!isPhoneVerified) {
-      await handleVerifyOtp();
-      return;
-    }
 
     if (!fullName.trim()) {
       toast.error("Please enter your Full Name");
@@ -100,13 +117,36 @@ export default function UnlockPricesModal({ onClose, onAuthSuccess }) {
       return;
     }
 
-    // Direct success flow without database profile creation
-    toast.success("Our Legal Team Get Back To You.");
+    try {
+      setLoading(true);
+      const res = await fetch("/api/user/profile", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          id: user?._id || pendingUid,
+          phone: phone,
+          email: email,
+          name: fullName,
+        }),
+      });
 
-    if (onAuthSuccess) {
-      onAuthSuccess();
+      if (!res.ok) {
+        const errData = await res.json();
+        throw new Error(errData.error || "Failed to save profile.");
+      }
+
+      toast.success("Our Legal Team Will Get Back To You.");
+
+      if (refreshUser) await refreshUser();
+      if (onAuthSuccess) onAuthSuccess();
+      onClose();
+      router.replace("/dashboard");
+    } catch (err) {
+      console.error("Profile Save Error:", err);
+      toast.error(err.message || "Failed to process request.");
+    } finally {
+      setLoading(false);
     }
-    onClose();
   };
 
   return (
@@ -123,7 +163,7 @@ export default function UnlockPricesModal({ onClose, onAuthSuccess }) {
 
         {/* Title Section */}
         <div className="text-center mb-4">
-          <h2 className="text-[16px]  font-medium text-black tracking-tight">
+          <h2 className="text-[16px] font-medium text-black tracking-tight">
             Login To Unlock Bottom Prices - Don't Overpay
           </h2>
           <p className="text-[14px] text-gray-400 mt-1 font-normal">
@@ -136,7 +176,7 @@ export default function UnlockPricesModal({ onClose, onAuthSuccess }) {
           Trusted By 1 Lac+ Home Buyers
         </div>
 
-        <form onSubmit={handleSubmit} className="space-y-4">
+        <div className="space-y-4">
           
           {/* Phone Number Input */}
           <div>
@@ -182,7 +222,7 @@ export default function UnlockPricesModal({ onClose, onAuthSuccess }) {
             </div>
           </div>
 
-          {/* OTP Input - Visible after OTP is sent */}
+          {/* OTP Input Field */}
           {isOtpSent && (
             <div>
               <label className="block text-xs text-gray-600 font-medium mb-1 ml-1">
@@ -217,50 +257,74 @@ export default function UnlockPricesModal({ onClose, onAuthSuccess }) {
             </div>
           )}
 
-          {/* Full Name Field */}
-          <div>
-            <label className="block text-xs text-gray-600 font-medium mb-1 ml-1">
-              Enter Full Name
-            </label>
-            <input
-              type="text"
-              placeholder="Enter Full Name"
-              value={fullName}
-              onChange={(e) => setFullName(e.target.value)}
-              className="w-full border border-gray-300 rounded-xl px-3 py-2.5 text-sm outline-none text-black focus:border-purple-600 transition-colors placeholder:text-gray-300"
-            />
-          </div>
+          {/* Action Button for Phone/OTP Step */}
+          {!isPhoneVerified && (
+            <button
+              type="button"
+              onClick={isOtpSent ? handleVerifyOtp : handleSendOtp}
+              disabled={loading || (isOtpSent ? otp.length < 4 : phone.length !== 10)}
+              className="w-full bg-[#702C82] hover:bg-[#5a2269] text-white py-3 rounded-xl font-medium text-sm transition-all shadow-md flex items-center justify-center gap-2 mt-2 disabled:opacity-70"
+            >
+              {loading ? (
+                <>
+                  <Loader2 className="animate-spin" size={16} />
+                  Processing...
+                </>
+              ) : isOtpSent ? (
+                "Verify OTP"
+              ) : (
+                "Get OTP"
+              )}
+            </button>
+          )}
 
-          {/* Email Field */}
-          <div>
-            <label className="block text-xs text-gray-600 font-medium mb-1 ml-1">
-              Enter e-mail
-            </label>
-            <input
-              type="email"
-              placeholder="xyz.gamil.com"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              className="w-full border border-gray-300 rounded-xl px-3 py-2.5 text-sm outline-none text-black focus:border-purple-600 transition-colors placeholder:text-gray-300"
-            />
-          </div>
+          {/* Profile Form: Rendered only when phone is verified and user is new */}
+          {isPhoneVerified && isNewUser && (
+            <form onSubmit={handleProfileSubmit} className="space-y-4 pt-2 border-t border-gray-100">
+              <div>
+                <label className="block text-xs text-gray-600 font-medium mb-1 ml-1">
+                  Enter Full Name
+                </label>
+                <input
+                  type="text"
+                  placeholder="Enter Full Name"
+                  value={fullName}
+                  onChange={(e) => setFullName(e.target.value)}
+                  className="w-full border border-gray-300 rounded-xl px-3 py-2.5 text-sm outline-none text-black focus:border-purple-600 transition-colors placeholder:text-gray-300"
+                />
+              </div>
 
-          {/* Submit Button */}
-          <button
-            type="submit"
-            disabled={loading}
-            className="w-full bg-[#702C82] hover:bg-[#5a2269] text-white py-3 rounded-xl font-medium text-sm transition-all shadow-md active:scale-[0.99] flex items-center justify-center gap-2 mt-2 disabled:opacity-70"
-          >
-            {loading ? (
-              <>
-                <Loader2 className="animate-spin" size={16} />
-                Processing...
-              </>
-            ) : (
-              "Continue"
-            )}
-          </button>
-        </form>
+              <div>
+                <label className="block text-xs text-gray-600 font-medium mb-1 ml-1">
+                  Enter e-mail
+                </label>
+                <input
+                  type="email"
+                  placeholder="xyz@gmail.com"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  className="w-full border border-gray-300 rounded-xl px-3 py-2.5 text-sm outline-none text-black focus:border-purple-600 transition-colors placeholder:text-gray-300"
+                />
+              </div>
+
+              <button
+                type="submit"
+                disabled={loading}
+                className="w-full bg-[#702C82] hover:bg-[#5a2269] text-white py-3 rounded-xl font-medium text-sm transition-all shadow-md active:scale-[0.99] flex items-center justify-center gap-2 mt-2 disabled:opacity-70"
+              >
+                {loading ? (
+                  <>
+                    <Loader2 className="animate-spin" size={16} />
+                    Saving...
+                  </>
+                ) : (
+                  "Continue to Dashboard"
+                )}
+              </button>
+            </form>
+          )}
+
+        </div>
       </div>
     </div>
   );

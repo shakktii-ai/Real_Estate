@@ -36,7 +36,7 @@ import {
 // Step-scroll row: uses the same carousel mechanism as the Google Reviews section
 const WHY_SLIDES = [
   {
-    bg: "/Galaxy-04_1.png",
+    bg: "/Galaxy-04_1.webp",
     badge: "No Brokerage Policy",
     icon: "/img1.png",
     points: [
@@ -46,7 +46,7 @@ const WHY_SLIDES = [
     ],
   },
   {
-    bg: "/Galaxy-04.png",
+    bg: "/Galaxy-04.webp",
     badge: "Transparent Bottom-Line Pricing",
     icon: "/img4.png",
     points: [
@@ -56,7 +56,7 @@ const WHY_SLIDES = [
     ],
   },
   {
-    bg: "/Galaxy-04_3.png",
+    bg: "/Galaxy-04_3.webp",
     badge: "Virtual & On-Site Project Tours Explore",
     icon: "/img3.png",
     points: [
@@ -66,7 +66,7 @@ const WHY_SLIDES = [
     ],
   },
   {
-    bg: "/Galaxy-04_4.png",
+    bg: "/Galaxy-04_4.webp",
     badge: "100% Trusted Platform with End-to-End Support",
     icon: "/img2.png",
     points: [

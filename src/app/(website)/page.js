@@ -145,7 +145,7 @@ function PropertyFilterBar({ projects, onFilteredProjects, onViewMore }) {
             <div className="flex flex-row md:flex-cols flex-wrap gap-2 py-4">
                 {/* No Brokerage */}
                 <div className="flex items-center gap-2 w-full md:w-[160px] h-[70px] rounded-2xl border border-[#664997] bg-[#6D4491]/85 px-2 shadow-md shadow-gray-600">
-                    <div className="w-[45px] h-[58px] rounded-xl border border-[#664997] bg-[#000000]/40 backdrop-blur-md flex items-center justify-center">
+                    <div className="w-[45px] h-[58px] rounded-xl border border-[#664997] bg-[#000000]/60 flex items-center justify-center">
                         <img
                             src="/hands 1.png"
                             alt="No Brokerage"
@@ -161,7 +161,7 @@ function PropertyFilterBar({ projects, onFilteredProjects, onViewMore }) {
 
                 {/* No Fees */}
                 <div className="flex items-center gap-2 w-full md:w-[160px] h-[70px] rounded-2xl border border-[#E5097F] bg-[#E5097F]/56 px-2 shadow-md shadow-gray-600">
-                    <div className="w-[45px] h-[58px] rounded-xl border border-[#E5097F] bg-[#000000]/40 backdrop-blur-md flex items-center justify-center">
+                    <div className="w-[45px] h-[58px] rounded-xl border border-[#E5097F] bg-[#000000]/60 flex items-center justify-center">
                         <img
                             src="/fees.png"
                             alt="No Brokerage"
@@ -177,7 +177,7 @@ function PropertyFilterBar({ projects, onFilteredProjects, onViewMore }) {
 
                 {/* No Hidden Charges */}
                 <div className="flex items-center gap-2 w-full md:w-[160px] h-[70px] rounded-2xl border border-[#DB61FA] bg-[#DB61FA]/72 px-2 shadow-md shadow-gray-600">
-                    <div className="w-[45px] h-[58px] rounded-xl border border-[#DB61FA] bg-[#000000]/40 backdrop-blur-md flex items-center justify-center ">
+                    <div className="w-[45px] h-[58px] rounded-xl border border-[#DB61FA] bg-[#000000]/60 flex items-center justify-center ">
                         <img
                             src="/hiddencharges.png"
                             alt="No Brokerage"
@@ -308,47 +308,6 @@ function PropertyFilterBar({ projects, onFilteredProjects, onViewMore }) {
                         </button>
                     </div>
                 </div>
-
-                {/* ── 2. Right Widgets Stack (Ping AI & Call Now) ── */}
-                {/* <div className="flex flex-col gap-6 min-w-[220px] "> */}
-                    {/* Ping AI Badge */}
-                    {/* <button
-                        type="button"
-                        onClick={() => {
-                            if (typeof window !== 'undefined') {
-                                window.dispatchEvent(new Event('open-chatbot'));
-                            }
-                        }}
-                        className="w-full rounded-[18px] bg-gradient-to-r from-[#742E85] to-[#E5097F] border border-white shadow-md shadow-white p-2.5 px-4 flex items-center gap-3 text-left transition-transform hover:scale-[1.01] hover:cursor-pointer"
-                    >
-                        <div className="w-10 h-10 rounded-full border border-white flex items-center justify-center flex-shrink-0 bg-black/54">
-                            <Image
-                                src="/chatbot.png"
-                                alt="Ping AI"
-                                width={24}
-                                height={24}
-                                className="object-contain"
-                            />
-                        </div>
-                        <div className="flex flex-col justify-center">
-                            <h2 className="text-white text-[15px] font-semibold leading-tight tracking-tight mb-1">
-                                Ping AI
-                            </h2>
-                            <p className="text-white  text-[11px] lg:text-[10px] font-medium leading-tight">
-                                Find the Right HomeFaster
-                            </p>
-                        </div>
-                    </button> */}
-
-                    {/* Call Now Button */}
-                    {/* <a
-                        href="tel:+919284429197"
-                        className="bg-[#E5097F] ml-12 hover:bg-[#c8006e] text-white text-[12px] lg:text-[10px] font-medium px-4 py-2 rounded-full shadow-md shadow-black/25 flex items-center justify-center gap-2 transition-all cursor-pointer"
-                    >
-                        <Phone size={13} className=" text-white" />
-                        <span>Call Now: 9284429197</span>
-                    </a>
-                </div> */}
             </div>
 
             {newLaunchProjects.length > 0 && (
@@ -362,7 +321,7 @@ function PropertyFilterBar({ projects, onFilteredProjects, onViewMore }) {
                             className="object-contain"
                         />
 
-                        <h3 className="text-black font-semibold text-[18px] lg:text-[20px] " style={{ WebkitTextStroke: "0.5px #ffffff" }}>
+                        <h3 className="text-black font-semibold text-[18px] lg:text-[20px]">
                             New Launches – Be the First to Know
                         </h3>
                     </div>
@@ -378,10 +337,7 @@ function PropertyFilterBar({ projects, onFilteredProjects, onViewMore }) {
 
                             <button
                                 onClick={onViewMore}
-                                className="text-black underline decoration-black  font-semibold text-[20px] hover:cursor-pointer"
-                                style={{
-                                    WebkitTextStroke: "0.2px #ffffff",
-                                }}
+                                className="text-black underline decoration-black font-semibold text-[20px] hover:cursor-pointer"
                             >
 
                                 View More
@@ -399,19 +355,15 @@ function PropertyFilterBar({ projects, onFilteredProjects, onViewMore }) {
 // ─── Hero Why Choose Us Slider ────────────────────────────────────────────────
 function HeroWhyChooseUs({ projects, onFilteredProjects, onViewMore }) {
     const [current, setCurrent] = useState(0);
-    const timerRef = useRef(null);
-
-    const startTimer = () => {
-        clearInterval(timerRef.current);
-        timerRef.current = setInterval(() => {
-            setCurrent((prev) => (prev + 1) % WHY_SLIDES.length);
-        }, 4500);
-    };
+    const [isPaused, setIsPaused] = useState(false);
 
     useEffect(() => {
-        startTimer();
-        return () => clearInterval(timerRef.current);
-    }, []);
+        if (isPaused) return;
+        const timer = setInterval(() => {
+            setCurrent((prev) => (prev + 1) % WHY_SLIDES.length);
+        }, 4500);
+        return () => clearInterval(timer);
+    }, [isPaused]);
 
     const slide = WHY_SLIDES[current];
 
@@ -420,7 +372,16 @@ function HeroWhyChooseUs({ projects, onFilteredProjects, onViewMore }) {
             <div className='w-full  bg-[#742E85]/41 font-medium text-[12px] lg:text-[18px] flex justify-center items-center text-black p-2'>
                 <Phone size={15} className='text-black mr-2 ' />   Talk to Our Property Expert  : <a href="tel:+919284429197" className='mr-2'> 9284429197</a>  |  <a href="tel:+919529249230" className='ml-2'>9529249230</a>
             </div>
-            <section className="relative w-full overflow-hidden " style={{ minHeight: "92vh" }}>
+            <section
+                className="relative w-full overflow-hidden"
+                style={{ minHeight: "92vh" }}
+                onTouchStart={() => setIsPaused(true)}
+                onTouchEnd={() => setIsPaused(false)}
+                onMouseDown={() => setIsPaused(true)}
+                onMouseUp={() => setIsPaused(false)}
+                onMouseEnter={() => setIsPaused(true)}
+                onMouseLeave={() => setIsPaused(false)}
+            >
 
                 {/* ── Background layer ── */}
                 <div
@@ -450,17 +411,12 @@ function HeroWhyChooseUs({ projects, onFilteredProjects, onViewMore }) {
                     <div className="flex-1 flex flex-col justify-center max-w-6xl">
 
                         <p
-                            className="mb-5 font-semibold text-[24px] lg:text-[28px]"
+                            className="mb-5 font-semibold text-[24px] lg:text-[28px] text-[#2D1037]"
                             style={{
-                                background: "linear-gradient(to right, #000000, #E682FF)",
-                                WebkitBackgroundClip: "text",
-                                WebkitTextFillColor: "transparent",
-                                backgroundClip: "text",
                                 fontSize: "clamp(16px, 1.8vw, 20px)",
                                 lineHeight: "28px",
                                 letterSpacing: "0rem",
                                 width: "fit-content",
-                                WebkitTextStroke: "0.2px #ffffff"
                             }}
                         >
                             The Address That Defines Success,
@@ -481,11 +437,7 @@ function HeroWhyChooseUs({ projects, onFilteredProjects, onViewMore }) {
                                 <div className="flex items-center gap-3 sm:gap-4 mb-2 sm:mb-3">
                                     {/* Dynamic Icon Wrapper */}
                                     <div
-                                        className="flex-shrink-0 flex items-center justify-center rounded-full shadow-md shadow-black/25 w-10 h-10 md:w-[50px] md:h-[50px]"
-                                        style={{
-                                            background:
-                                                "linear-gradient(135deg, #ffffff 0%, #E579FF 100%)",
-                                        }}
+                                        className="flex-shrink-0 flex items-center justify-center rounded-full shadow-md shadow-black/25 w-10 h-10 md:w-[50px] md:h-[50px] bg-gradient-to-br from-white to-[#E579FF]"
                                     >
                                         <img
                                             src={slide.icon}
@@ -497,7 +449,6 @@ function HeroWhyChooseUs({ projects, onFilteredProjects, onViewMore }) {
                                     {/* Heading */}
                                     <h2
                                         className="font-semibold leading-tight text-[18px] sm:text-[22px] md:text-[28px] text-[#54315D] w-full"
-                                        style={{ WebkitTextStroke: "0.2px #ffffff" }}
                                     >
                                         {slide.badge}
                                     </h2>

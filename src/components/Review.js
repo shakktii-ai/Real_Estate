@@ -14,6 +14,7 @@ export default function ReviewsPage() {
   const [isTransitioning, setIsTransitioning] = useState(true);
 
   useEffect(() => {
+    let timeoutId = null;
     const updateItems = () => {
       if (window.innerWidth < 640) setItemsPerView(1);
       else if (window.innerWidth < 768) setItemsPerView(2);
@@ -21,9 +22,17 @@ export default function ReviewsPage() {
       else setItemsPerView(5);
     };
 
+    const handleResize = () => {
+      clearTimeout(timeoutId);
+      timeoutId = setTimeout(updateItems, 150);
+    };
+
     updateItems();
-    window.addEventListener("resize", updateItems);
-    return () => window.removeEventListener("resize", updateItems);
+    window.addEventListener("resize", handleResize);
+    return () => {
+      clearTimeout(timeoutId);
+      window.removeEventListener("resize", handleResize);
+    };
   }, []);
 
   useEffect(() => {

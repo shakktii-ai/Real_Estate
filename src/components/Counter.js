@@ -1,12 +1,16 @@
 "use client";
-import { useEffect, useRef } from "react";
-import { motion, useInView, useMotionValue, useTransform, animate } from "framer-motion";
+import { useEffect, useRef, useState } from "react";
+import { useInView, useMotionValue, animate, useMotionValueEvent } from "framer-motion";
 
 function Counter({ from, to, duration }) {
   const count = useMotionValue(from);
-  const rounded = useTransform(count, (latest) => Math.round(latest));
+  const [displayValue, setDisplayValue] = useState(from);
   const ref = useRef(null);
   const isInView = useInView(ref, { once: true });
+
+  useMotionValueEvent(count, "change", (latest) => {
+    setDisplayValue(Math.round(latest));
+  });
 
   useEffect(() => {
     if (isInView) {
@@ -15,7 +19,7 @@ function Counter({ from, to, duration }) {
     }
   }, [isInView, to, count, duration]);
 
-  return <motion.span ref={ref}>{rounded}</motion.span>;
+  return <span ref={ref}>{displayValue}</span>;
 }
 
 export default function StatsSection() {
@@ -43,4 +47,4 @@ export default function StatsSection() {
       </div>
     </section>
   );
-}
+}

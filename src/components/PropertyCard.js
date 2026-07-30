@@ -48,6 +48,8 @@ const [showOverlay, setShowOverlay] = useState(false);
             <img
               src={project.mainImage}
               alt={project.projectName}
+              loading="lazy"
+              decoding="async"
               className="w-full h-full object-cover rounded-t-2xl"
             />
             <div

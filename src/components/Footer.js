@@ -28,7 +28,7 @@ const Footer = () => {
         </div>
 
         {/* Mobile Wrapper: Combines the remaining 4 sections into a 2-column grid row on mobile, passes through seamlessly on desktop */}
-        <div className="grid grid-cols-2 gap-2 md:contents col-span-1 md:col-span-1 lg:col-span-4">
+        <div className="grid grid-cols-2 gap-2 md:contents col-span-1 md:col-span-1 lg:col-span-4 pl-6">
           {/* Quick Links */}
           <div>
             <h3 className="text-[12px] md:text-[14px] font-bold text-[#742E85] mb-1">

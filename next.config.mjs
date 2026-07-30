@@ -2,11 +2,6 @@
 const nextConfig = {
   /* config options here */
   reactCompiler: true,
-  experimental: {
-    turbopack: {
-      root: '.',
-    },
-  },
   images: {
     remotePatterns: [
       {

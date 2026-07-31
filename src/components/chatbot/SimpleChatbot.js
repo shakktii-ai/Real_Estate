@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useRef, useEffect, useEffectEvent } from 'react';
+import { useRouter } from 'next/navigation';
 import { X, SendHorizontal, MapPin, IndianRupee, ShieldCheck, Sparkles, Phone, Bot } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { BsWhatsapp } from 'react-icons/bs';
@@ -20,15 +21,6 @@ const WhatsAppIcon = ({ size = 20, className = "" }) => (
   </svg>
 );
 
-const useRouter = () => {
-  return {
-    push: (path) => {
-      if (typeof window !== 'undefined') {
-        window.location.href = path;
-      }
-    }
-  };
-};
 
 const CHAT_QUESTIONNAIRE_STEPS = [
   {
@@ -125,6 +117,7 @@ export default function SimpleChatbot() {
   const messageIdRef = useRef(0);
   const hasLoadedHistoryRef = useRef(false);
   const saveTimeoutRef = useRef(null);
+  const lastAppendedStepRef = useRef(-1);
   const { user } = useAuth();
   const router = useRouter();
 
@@ -256,25 +249,21 @@ setCurrentStepIndex(
   ]);
 
   useEffect(() => {
-  if (isSubmitted) return;   // <-- add this
+    if (isSubmitted || currentStepIndex < 0 || currentStepIndex >= CHAT_QUESTIONNAIRE_STEPS.length) return;
 
-  if (
-    currentStepIndex >= 0 &&
-    currentStepIndex < CHAT_QUESTIONNAIRE_STEPS.length
-  ) {
-    const step = CHAT_QUESTIONNAIRE_STEPS[currentStepIndex];
-    const lastMessage = messages[messages.length - 1];
-
-    const shouldAppendQuestion =
-      !lastMessage ||
-      lastMessage.type !== "bot" ||
-      lastMessage.content !== step.question;
-
-    if (shouldAppendQuestion) {
-      addMessage("bot", step.question);
+    if (lastAppendedStepRef.current !== currentStepIndex) {
+      const step = CHAT_QUESTIONNAIRE_STEPS[currentStepIndex];
+      setMessages((prev) => {
+        const lastMessage = prev[prev.length - 1];
+        if (!lastMessage || lastMessage.type !== "bot" || lastMessage.content !== step.question) {
+          const id = `${Date.now()}-${messageIdRef.current++}`;
+          return [...prev, { type: 'bot', content: step.question, id, variant: 'text' }];
+        }
+        return prev;
+      });
+      lastAppendedStepRef.current = currentStepIndex;
     }
-  }
-}, [currentStepIndex, messages, isSubmitted]);
+  }, [currentStepIndex, isSubmitted]);
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
   };

@@ -1,426 +1,3 @@
-// "use client";
-// import { useMemo, useState, useEffect, useRef } from 'react';
-// import LivingStyleCard from '@/components/admin/LivingStyleCard';
-// import PropertyCard from '@/components/PropertyCard';
-// import Link from 'next/link';
-// import { toast } from 'react-toastify';
-// import { motion } from "framer-motion";
-// import WhyChooseUs from '@/components/WhyChoose';
-// import About from '@/components/about';
-// import Review from '@/components/Review';
-// import WhyPiingkasha from '@/components/WhyPiingkasha';
-// import Counter from '@/components/Counter';
-// import { useAuth } from '@/lib/context/AuthContext';
-// import { useRouter } from 'next/navigation';
-// import TourSelectionModal from '@/components/TourSelectionModal';
-// import BookSiteVisitModal from '@/components/BookSiteVisitModal';
-// import BookVirtualTourModal from '@/components/BookVirtualTourModal';
-// import AuthModal from '@/components/AuthModal';
-// import {
-//     CalendarDays,
-//     TrendingDown,
-//     Gift,
-//     User,
-//     ChevronRight, ArrowBigRight, ArrowRight
-// } from "lucide-react";
-// import PropertySlider from '@/components/PropertySlidder';
-
-// function FeaturedProjectCarousel({ projects, direction, onTourClick, showTopControls = false, showBottomControls = false }) {
-//     const [index, setIndex] = useState(0);
-//     const [cardStep, setCardStep] = useState(0);
-//     const [isHovering, setIsHovering] = useState(false);
-//     const [isTransitioning, setIsTransitioning] = useState(true);
-//     const carouselRef = useRef(null);
-
-//     useEffect(() => {
-//         const measureStep = () => {
-//             if (!carouselRef.current) return;
-//             const firstCard = carouselRef.current.querySelector(':scope > div');
-//             if (!firstCard) return;
-
-//             const cardRect = firstCard.getBoundingClientRect();
-//             const style = window.getComputedStyle(firstCard);
-//             const gap = 1; // gap-4
-//             setCardStep(Math.round(cardRect.width + gap));
-//         };
-
-//         measureStep();
-//         window.addEventListener('resize', measureStep);
-//         return () => window.removeEventListener('resize', measureStep);
-//     }, [projects.length]);
-
-//     useEffect(() => {
-//         if (projects.length === 0 || isHovering || !cardStep) return;
-
-//         const interval = setInterval(() => {
-//             setIsTransitioning(true);
-//             setIndex((prev) => prev + 1);
-//         }, 3000);
-
-//         return () => clearInterval(interval);
-//     }, [projects.length, isHovering, cardStep]);
-
-//     useEffect(() => {
-//         if (projects.length === 0 || !cardStep) return;
-
-//         if (index >= projects.length) {
-//             const timeout = setTimeout(() => {
-//                 setIsTransitioning(false);
-//                 setIndex(0);
-//             }, 700);
-//             return () => clearTimeout(timeout);
-//         }
-
-//         if (index < 0) {
-//             const timeout = setTimeout(() => {
-//                 setIsTransitioning(false);
-//                 setIndex(Math.max(0, projects.length - 1));
-//             }, 700);
-//             return () => clearTimeout(timeout);
-//         }
-//     }, [index, projects.length, cardStep]);
-
-//     const carouselProjects = direction === 'right' ? [...projects].reverse() : projects;
-//     const displayProjects = [...carouselProjects, ...carouselProjects];
-
-//     const handleNext = () => {
-//         setIsTransitioning(true);
-//         setIndex((prev) => prev + 1);
-//     };
-
-//     const handlePrev = () => {
-//         setIsTransitioning(true);
-//         setIndex((prev) => prev - 1);
-//     };
-
-//     return (
-//         <div
-//             className="relative overflow-hidden py-4"
-//             onMouseEnter={() => setIsHovering(true)}
-//             onMouseLeave={() => setIsHovering(false)}
-//         >
-//             {showTopControls && (
-//                 <div className="flex justify-end px-3 mb-3 space-x-2">
-//                     <button
-//                         type="button"
-//                         onClick={handlePrev}
-//                         className="rounded-full bg-white/95 border border-[#742E85] p-3 shadow-lg text-[#742E85] transition duration-200 hover:bg-white hover:scale-105"
-//                         aria-label="Previous property"
-//                     >
-//                         <ChevronRight className="h-6 w-6 rotate-180" />
-//                     </button>
-//                     <button
-//                         type="button"
-//                         onClick={handleNext}
-//                         className="rounded-full bg-white/95 border border-[#742E85] p-3 shadow-lg text-[#742E85] transition duration-200 hover:bg-white hover:scale-105"
-//                         aria-label="Next property"
-//                     >
-//                         <ChevronRight className="h-6 w-6" />
-//                     </button>
-//                 </div>
-//             )}
-
-
-//             <div className="overflow-hidden px-3">
-//                 <div
-//                     ref={carouselRef}
-//                     className={`${isTransitioning ? 'transition-transform duration-700 ease-in-out' : ''} flex gap-3`}
-//                     style={{
-//                         transform: `translateX(-${index * cardStep}px)`,
-//                     }}
-//                 >
-//                     {displayProjects.map((project, i) => (
-//                         <div key={`${project._id ?? i}-${i}`} className="flex-shrink-0 w-[280px] md:w-[320px]">
-//                             <PropertyCard project={project} onTourClick={onTourClick} />
-//                         </div>
-//                     ))}
-//                 </div>
-//             </div>
-
-//             {showBottomControls && (
-//                 <div className="flex justify-end px-3 mt-3 space-x-2">
-//                     <button
-//                         type="button"
-//                         onClick={handlePrev}
-//                         className="rounded-full bg-white/95 border border-[#742E85] p-3 shadow-lg text-[#742E85] transition duration-200 hover:bg-white hover:scale-105"
-//                         aria-label="Previous property"
-//                     >
-//                         <ChevronRight className="h-6 w-6 rotate-180" />
-//                     </button>
-//                     <button
-//                         type="button"
-//                         onClick={handleNext}
-//                         className="rounded-full bg-white/95 border border-[#742E85] p-3 shadow-lg text-[#742E85] transition duration-200 hover:bg-white hover:scale-105"
-//                         aria-label="Next property"
-//                     >
-//                         <ChevronRight className="h-6 w-6" />
-//                     </button>
-//                 </div>
-//             )}
-
-//         </div>
-//     );
-// }
-
-// export default function WebsitePage() {
-//     const [cards, setCards] = useState([]);
-//     const [projects, setProjects] = useState([]);
-//     const { user, loading } = useAuth();
-
-//     const router = useRouter();
-//     const [activeTourProject, setActiveTourProject] = useState(null);
-//     const [showSelectionModal, setShowSelectionModal] = useState(false);
-//     const [showSiteVisitModal, setShowSiteVisitModal] = useState(false);
-//     const [showVirtualTourModal, setShowVirtualTourModal] = useState(false);
-//     const [showAuthModal, setShowAuthModal] = useState(false);
-
-//     useEffect(() => {
-//         if (!loading && user) {
-//             router.replace("/dashboard");
-//             return;
-//         }
-
-//         if (!loading && !user) {
-//             const timer = setTimeout(() => {
-//                 setShowAuthModal(true);
-//             }, 5000);
-
-//             return () => clearTimeout(timer);
-//         }
-//     }, [user, loading, router]);
-
-//     useEffect(() => {
-//         fetch('/api/living-styles')
-//             .then(res => res.json())
-//             .then(data => setCards(data));
-//     }, []);
-
-//     useEffect(() => {
-//         const fetchProjects = async () => {
-//             try {
-//                 const res = await fetch("/api/properties");
-//                 const data = await res.json();
-//                 setProjects(data);
-//             } catch (error) {
-//                 console.error("Failed to fetch projects", error);
-//             }
-//         };
-//         fetchProjects();
-//     }, []);    // Helper handler when a user clicks the "Tour" button on any Property Card
-//     const handleTourClick = (project) => {
-//         if (!user) {
-//             toast.error("Please Signup to book a tour");
-//             setShowAuthModal(true); // Automatically opens your login modal layout if guest
-//             return;
-//         }
-//         setActiveTourProject(project);
-//         setShowSelectionModal(true);
-//     };
-//     const [livingIndex, setLivingIndex] = useState(0);
-//     const [isLivingHovered, setIsLivingHovered] = useState(false);
-//     useEffect(() => {
-//         if (isLivingHovered || cards.length <= 1) return;
-
-//         const interval = setInterval(() => {
-//             setLivingIndex((prev) => (prev + 1) % cards.length);
-//         }, 2500); // pause time
-
-//         return () => clearInterval(interval);
-//     }, [cards.length, isLivingHovered]);
-
-//     if (loading || user) return null;
-
-//     return (
-//         <div className='bg-white max-h-full'>
-//             {/* Banner Section */}
-//             <section className="relative min-h-[50vh] md:min-h-[60vh] w-full flex flex-col items-center justify-center py-12 md:py-20">
-//                 <div className="absolute inset-0 z-0">
-//                     <img src='/banner.png' alt='banner image' className="w-full h-full object-cover object-center rounded-b-[2rem]" />
-//                     <div className="absolute inset-0 " />
-//                 </div>
-//                 <div className="relative z-10 w-full max-w-[1200px] mx-auto px-4 md:px-12 flex flex-col items-center">
-//                     <div className="text-center">
-//                         <h2 className="text-4xl md:text-7xl font-extrabold text-[#742E85] drop-shadow-md mb-4">Discover Your Perfect Home</h2>
-//                         <p className="text-black text-sm md:text-xl max-w-2xl mx-auto font-semibold opacity-90">Find a home that matches your lifestyle, comfort, and aspirations.</p>
-//                     </div>
-//                 </div>
-//             </section>
-
-//             {/* Featured Projects Section */}
-//             <div className='mt-8'>
-//                 <div className="px-4">
-//                     <h2 className="text-xl md:text-[35px] font-bold text-[#742E85] mb-1.5 text-center">Featured Projects</h2>
-//                     <p className="text-center text-black text-xs md:text-sm max-w-3xl mx-auto mb-2 leading-relaxed">Hand-picked developments with verified details and instant transparency</p>
-//                 </div>
-
-//                 {projects.length > 0 && (
-//                     <FeaturedProjectCarousel
-//                         projects={projects}
-//                         direction="left"
-//                         onTourClick={handleTourClick}
-//                         showTopControls
-//                     />
-//                 )}
-
-//                 {projects.length > 0 && (
-//                     <FeaturedProjectCarousel
-//                         projects={projects}
-//                         direction="right"
-//                         onTourClick={handleTourClick}
-//                         showBottomControls
-//                     />
-//                 )}
-
-//                 <div className="flex justify-center m-2">
-//                     <Link href="/properties" className="inline-flex items-center justify-center bg-[#ffffff] text-black px-6 py-3 rounded-lg text-sm font-semibold border border-[#969393]">Load More Projects</Link>
-//                 </div>
-
-
-
-//                 {/* Choose Your Living Style Section */}
-//                 <section className="py-8 md:py-10 bg-[#F6F3F6] my-8 px-4" 
-//                 style={{backgroundImage: "url('/backgroundImg.png')",backgroundSize: "cover"}}
-//                 >
-//                     <div className="w-full max-w-[1200px] mx-auto px-4 md:px-8 flex flex-col items-center">
-//                         <div className="text-center mb-6 md:mb-8">
-//                             <h2 className="text-md md:text-xl font-bold text-[#742E85] drop-shadow-md mb-1.5">Choose Your Living Style</h2>
-//                             <p className="text-black text-xs md:text-sm max-w-xl mx-auto font-medium opacity-80">Find a home that matches your lifestyle, comfort, and aspirations.</p>
-//                         </div>
-//                         <div className="w-full">
-//                             {/*Mobile Slider */}
-//                             <div
-//                                 className="sm:hidden overflow-hidden relative"
-//                                 onMouseEnter={() => setIsLivingHovered(true)}
-//                                 onMouseLeave={() => setIsLivingHovered(false)}
-//                             >
-//                                 <div
-//                                     className="flex transition-transform duration-500 ease-in-out"
-//                                     style={{
-//                                         transform: `translateX(-${livingIndex * 100}%)`,
-//                                     }}
-//                                 >
-//                                     {cards.map((card) => (
-//                                         <div key={card._id} className="min-w-full flex justify-center">
-//                                             <LivingStyleCard card={card} />
-//                                         </div>
-//                                     ))}
-//                                 </div>
-//                             </div>
-
-//                             {/*Desktop Grid */}
-//                             <div className="hidden sm:grid sm:grid-cols-2 lg:grid-cols-4 gap-2 w-full justify-items-center">
-//                                 {cards.map((card) => (
-//                                     <div key={card._id}>
-//                                         <LivingStyleCard card={card} />
-//                                     </div>
-//                                 ))}
-//                             </div>
-//                         </div>
-//                     </div>
-//                 </section>
-//             </div>
-
-//             {/* <WhyChooseUs /> */}
-//             <About showOn="homepage" />
-//             <h2 className="text-md md:text-xl font-bold text-[#742E85] flex items-center justify-center">Google Reviews</h2>
-//             <Review />
-
-//             {/* Builder Partners Marquee Section */}
-//             <section className="bg-white overflow-hidden my-12">
-//                 <div className="max-w-7xl mx-auto px-4 mb-2 text-center">
-//                     <h2 className="text-md md:text-xl font-bold text-[#742E85] mb-8 flex items-center justify-center">Our Builder Partners</h2>
-//                 </div>
-//                 <div className="relative overflow-hidden">
-//                     <div className="absolute left-0 top-0 z-10 h-full w-20 " />
-//                     <div className="absolute right-0 top-0 z-10 h-full w-20 " />
-//                     <div className="flex w-max animate-marquee gap-4">
-//                         {["/yooone.png", "/lodha.png", "/tribeca.png", "/kumarProperties.png", "/goelganga.png", "/majestic.png", "/shapoorji.png", "/kraheja.png", "/godrej.png", "/koltepatil.png", "/kohinoor.png", "/solitaire.png", "/nyati.png"]
-//                             .concat(["/yooone.png", "/lodha.png", "/tribeca.png", "/kumarProperties.png", "/goelganga.png", "/majestic.png", "/shapoorji.png", "/kraheja.png", "/godrej.png", "/koltepatil.png", "/kohinoor.png", "/solitaire.png", "/nyati.png"])
-//                             .map((logo, index) => (
-//                                 <div key={index} className="flex items-center justify-center min-w-[100px]">
-//                                     <img src={logo} alt="Builder Partner" className="h-9 md:h-6 w-auto object-contain transition duration-300" />
-//                                 </div>
-//                             ))}
-//                     </div>
-//                 </div>
-//             </section>
-//             <WhyPiingkasha />
-//             <Counter />
-
-//             {/* CTA Layer Block */}
-//            <section className='bg-[#F6F3F6] py-12 px-6 text-center'>
-//                 <h2 className="text-sm md:text-xl font-bold text-black mb-2 flex items-center justify-center">Ready to Find Your Dream Home?</h2>
-//                 <p className='text-sm md:text-md text-gray-700 mb-2 flex items-center justify-center'>Explore verified projects in wakad with transparent pricing and expert guidance.</p>
-//                 <div className="flex items-center justify-center">
-//                     <Link href="/properties" className="bg-[#742E85] text-white px-5 py-3 rounded-md text-sm md:text-base font-semibold inline-flex items-center gap-2 hover:bg-[#5e256b] transition-all duration-300">
-//                         Explore Projects Now
-//                         <ArrowRight size={18} />
-//                     </Link>
-//                 </div>
-//             </section>
-
-//             {/* ================= GLOBAL MODAL ENGINE LAYER ================= */}
-
-//             {/* 1. Type Selection Screen Panel */}
-//             {user && <TourSelectionModal
-//                 isOpen={showSelectionModal}
-//                 onClose={() => setShowSelectionModal(false)}
-//                 onSelectSiteVisit={() => {
-//                     setShowSelectionModal(false); // Close type selector
-//                     setShowSiteVisitModal(true);  // Mount visit form (activeTourProject is preserved)
-//                 }}
-//                 onSelectVirtualTour={() => {
-//                     setShowSelectionModal(false); // Close type selector
-//                     setShowVirtualTourModal(true); // Mount tour form (activeTourProject is preserved)
-//                 }}
-//             />}
-
-
-//             {/* 2. Site Visit Form Screen Panel */}
-//             {showSiteVisitModal && activeTourProject && (
-//                 <div className="fixed inset-0 z-[99999] flex items-center justify-center bg-black/50 backdrop-blur-sm p-4 w-screen h-screen top-0 left-0">
-//                     <div className="w-full max-w-[420px] mx-4 relative z-[100000]">
-//                         <BookSiteVisitModal
-//                             propertyId={activeTourProject._id}
-//                             propertyName={activeTourProject.projectName}
-//                             onClose={() => {
-//                                 setShowSiteVisitModal(false);
-//                                 setActiveTourProject(null); // Now safe to wipe out the data context reference!
-//                             }}
-//                             embedded={true}
-//                         />
-//                     </div>
-//                 </div>
-//             )}
-
-//             {/* 3. Virtual Tour Form Screen Panel */}
-//             {showVirtualTourModal && activeTourProject && (
-//                 <div className="fixed inset-0 z-[99999] flex items-center justify-center bg-black/50 backdrop-blur-sm p-4 w-screen h-screen top-0 left-0">
-//                     <div className="w-full max-w-[420px] mx-4 relative z-[100000]">
-//                         <BookVirtualTourModal
-//                             propertyId={activeTourProject._id}
-//                             propertyName={activeTourProject.projectName}
-//                             onClose={() => {
-//                                 setShowVirtualTourModal(false);
-//                                 setActiveTourProject(null); // Now safe to wipe out the data context reference!
-//                             }}
-//                             embedded={true}
-//                         />
-//                     </div>
-//                 </div>
-//             )}
-
-//             {showAuthModal && (
-//                 <AuthModal
-//                     onClose={() => setShowAuthModal(false)}
-//                     onAuthSuccess={() => setShowAuthModal(false)}
-//                 />
-//             )}
-//         </div>
-//     )
-// }
-
-
 "use client";
 import { useMemo, useState, useEffect, useRef } from 'react';
 import LivingStyleCard from '@/components/admin/LivingStyleCard';
@@ -453,7 +30,7 @@ import Image from 'next/image';
 // ─── Slide data ───────────────────────────────────────────────────────────────
 const WHY_SLIDES = [
     {
-        bg: "/Galaxy-04_1.png",
+        bg: "/Galaxy-04_1.webp",
         badge: "No Brokerage Policy",
         icon: "/img1.png",
         points: [
@@ -463,7 +40,7 @@ const WHY_SLIDES = [
         ],
     },
     {
-        bg: "/Galaxy-04.png",
+        bg: "/Galaxy-04.webp",
         badge: "Transparent Bottom-Line Pricing",
         icon: "/img4.png",
         points: [
@@ -473,7 +50,7 @@ const WHY_SLIDES = [
         ],
     },
     {
-        bg: "/Galaxy-04_3.png",
+        bg: "/Galaxy-04_3.webp",
         badge: "Virtual & On-Site Project Tours Explore",
         icon: "/img3.png",
         points: [
@@ -483,7 +60,7 @@ const WHY_SLIDES = [
         ],
     },
     {
-        bg: "/Galaxy-04_4.png",
+        bg: "/Galaxy-04_4.webp",
         badge: "100% Trusted Platform with End-to-End Support",
         icon: "/img2.png",
         points: [
@@ -568,7 +145,7 @@ function PropertyFilterBar({ projects, onFilteredProjects, onViewMore }) {
             <div className="flex flex-row md:flex-cols flex-wrap gap-2 py-4">
                 {/* No Brokerage */}
                 <div className="flex items-center gap-2 w-full md:w-[160px] h-[70px] rounded-2xl border border-[#664997] bg-[#6D4491]/85 px-2 shadow-md shadow-gray-600">
-                    <div className="w-[45px] h-[58px] rounded-xl border border-[#664997] bg-[#000000]/40 backdrop-blur-md flex items-center justify-center">
+                    <div className="w-[45px] h-[58px] rounded-xl border border-[#664997] bg-[#000000]/60 flex items-center justify-center">
                         <img
                             src="/hands 1.png"
                             alt="No Brokerage"
@@ -584,7 +161,7 @@ function PropertyFilterBar({ projects, onFilteredProjects, onViewMore }) {
 
                 {/* No Fees */}
                 <div className="flex items-center gap-2 w-full md:w-[160px] h-[70px] rounded-2xl border border-[#E5097F] bg-[#E5097F]/56 px-2 shadow-md shadow-gray-600">
-                    <div className="w-[45px] h-[58px] rounded-xl border border-[#E5097F] bg-[#000000]/40 backdrop-blur-md flex items-center justify-center">
+                    <div className="w-[45px] h-[58px] rounded-xl border border-[#E5097F] bg-[#000000]/60 flex items-center justify-center">
                         <img
                             src="/fees.png"
                             alt="No Brokerage"
@@ -600,7 +177,7 @@ function PropertyFilterBar({ projects, onFilteredProjects, onViewMore }) {
 
                 {/* No Hidden Charges */}
                 <div className="flex items-center gap-2 w-full md:w-[160px] h-[70px] rounded-2xl border border-[#DB61FA] bg-[#DB61FA]/72 px-2 shadow-md shadow-gray-600">
-                    <div className="w-[45px] h-[58px] rounded-xl border border-[#DB61FA] bg-[#000000]/40 backdrop-blur-md flex items-center justify-center ">
+                    <div className="w-[45px] h-[58px] rounded-xl border border-[#DB61FA] bg-[#000000]/60 flex items-center justify-center ">
                         <img
                             src="/hiddencharges.png"
                             alt="No Brokerage"
@@ -731,47 +308,6 @@ function PropertyFilterBar({ projects, onFilteredProjects, onViewMore }) {
                         </button>
                     </div>
                 </div>
-
-                {/* ── 2. Right Widgets Stack (Ping AI & Call Now) ── */}
-                {/* <div className="flex flex-col gap-6 min-w-[220px] "> */}
-                    {/* Ping AI Badge */}
-                    {/* <button
-                        type="button"
-                        onClick={() => {
-                            if (typeof window !== 'undefined') {
-                                window.dispatchEvent(new Event('open-chatbot'));
-                            }
-                        }}
-                        className="w-full rounded-[18px] bg-gradient-to-r from-[#742E85] to-[#E5097F] border border-white shadow-md shadow-white p-2.5 px-4 flex items-center gap-3 text-left transition-transform hover:scale-[1.01] hover:cursor-pointer"
-                    >
-                        <div className="w-10 h-10 rounded-full border border-white flex items-center justify-center flex-shrink-0 bg-black/54">
-                            <Image
-                                src="/chatbot.png"
-                                alt="Ping AI"
-                                width={24}
-                                height={24}
-                                className="object-contain"
-                            />
-                        </div>
-                        <div className="flex flex-col justify-center">
-                            <h2 className="text-white text-[15px] font-semibold leading-tight tracking-tight mb-1">
-                                Ping AI
-                            </h2>
-                            <p className="text-white  text-[11px] lg:text-[10px] font-medium leading-tight">
-                                Find the Right HomeFaster
-                            </p>
-                        </div>
-                    </button> */}
-
-                    {/* Call Now Button */}
-                    {/* <a
-                        href="tel:+919284429197"
-                        className="bg-[#E5097F] ml-12 hover:bg-[#c8006e] text-white text-[12px] lg:text-[10px] font-medium px-4 py-2 rounded-full shadow-md shadow-black/25 flex items-center justify-center gap-2 transition-all cursor-pointer"
-                    >
-                        <Phone size={13} className=" text-white" />
-                        <span>Call Now: 9284429197</span>
-                    </a>
-                </div> */}
             </div>
 
             {newLaunchProjects.length > 0 && (
@@ -785,7 +321,7 @@ function PropertyFilterBar({ projects, onFilteredProjects, onViewMore }) {
                             className="object-contain"
                         />
 
-                        <h3 className="text-black font-semibold text-[18px] lg:text-[20px] " style={{ WebkitTextStroke: "0.5px #ffffff" }}>
+                        <h3 className="text-black font-semibold text-[18px] lg:text-[20px]">
                             New Launches – Be the First to Know
                         </h3>
                     </div>
@@ -801,10 +337,7 @@ function PropertyFilterBar({ projects, onFilteredProjects, onViewMore }) {
 
                             <button
                                 onClick={onViewMore}
-                                className="text-black underline decoration-black  font-semibold text-[20px] hover:cursor-pointer"
-                                style={{
-                                    WebkitTextStroke: "0.2px #ffffff",
-                                }}
+                                className="text-black underline decoration-black font-semibold text-[20px] hover:cursor-pointer"
                             >
 
                                 View More
@@ -822,19 +355,15 @@ function PropertyFilterBar({ projects, onFilteredProjects, onViewMore }) {
 // ─── Hero Why Choose Us Slider ────────────────────────────────────────────────
 function HeroWhyChooseUs({ projects, onFilteredProjects, onViewMore }) {
     const [current, setCurrent] = useState(0);
-    const timerRef = useRef(null);
-
-    const startTimer = () => {
-        clearInterval(timerRef.current);
-        timerRef.current = setInterval(() => {
-            setCurrent((prev) => (prev + 1) % WHY_SLIDES.length);
-        }, 4500);
-    };
+    const [isPaused, setIsPaused] = useState(false);
 
     useEffect(() => {
-        startTimer();
-        return () => clearInterval(timerRef.current);
-    }, []);
+        if (isPaused) return;
+        const timer = setInterval(() => {
+            setCurrent((prev) => (prev + 1) % WHY_SLIDES.length);
+        }, 4500);
+        return () => clearInterval(timer);
+    }, [isPaused]);
 
     const slide = WHY_SLIDES[current];
 
@@ -843,45 +372,36 @@ function HeroWhyChooseUs({ projects, onFilteredProjects, onViewMore }) {
             <div className='w-full  bg-[#742E85]/41 font-medium text-[12px] lg:text-[18px] flex justify-center items-center text-black p-2'>
                 <Phone size={15} className='text-black mr-2 ' />   Talk to Our Property Expert  : <a href="tel:+919284429197" className='mr-2'> 9284429197</a>  |  <a href="tel:+919529249230" className='ml-2'>9529249230</a>
             </div>
-            <section className="relative w-full overflow-hidden " style={{ minHeight: "92vh" }}>
+            <section
+                className="relative w-full overflow-hidden"
+                style={{ minHeight: "92vh" }}
+                onTouchStart={() => setIsPaused(true)}
+                onTouchEnd={() => setIsPaused(false)}
+                onMouseDown={() => setIsPaused(true)}
+                onMouseUp={() => setIsPaused(false)}
+                onMouseEnter={() => setIsPaused(true)}
+                onMouseLeave={() => setIsPaused(false)}
+            >
 
-                {/* ── Background layers with dissolve ── */}
-                {WHY_SLIDES.map((s, i) => (
-                    <div
-                        key={i}
-                        className="absolute inset-0 "
-                        style={{
-                            opacity: i === current ? 1 : 0,
-                            transition: "opacity 1s ease-in-out",
-                            zIndex: 0,
-                        }}
-                    >
-                        <div
-                            className="absolute inset-0 bg-cover bg-center bg-no-repeat"
-                            style={{ backgroundImage: `url('${s.bg}')` }}
-                        />
-                        <img
-                            src={s.bg}
-                            alt=""
-                            className="absolute inset-0 w-full h-full object-contain md:object-center"
-                            aria-hidden="true"
-                        />
-
-                        {/* ✅ Sharp cut-line overlay — solid dark left panel, clear image right */}
-                        <div className="absolute inset-0">
-
-                            <div
-                                className="absolute inset-0 md:hidden  bg-gradient-to-b from-[#ffffff] to-[#ffffff]/10"
-
-                            />
-
-
-                            <div
-                                className="absolute inset-0 hidden md:block bg-gradient-to-b from-[#ffffff] to-[#ffffff]/25"
-                            />
-                        </div>
+                {/* ── Background layer ── */}
+                <div
+                    key={current}
+                    className="absolute inset-0 transition-opacity duration-700 ease-in-out"
+                    style={{ zIndex: 0 }}
+                >
+                    <img
+                        src={slide.bg}
+                        alt=""
+                        loading="eager"
+                        decoding="async"
+                        className="absolute inset-0 w-full h-full object-cover md:object-center"
+                        aria-hidden="true"
+                    />
+                    <div className="absolute inset-0">
+                        <div className="absolute inset-0 md:hidden bg-gradient-to-b from-[#ffffff] to-[#ffffff]/10" />
+                        <div className="absolute inset-0 hidden md:block bg-gradient-to-b from-[#ffffff] to-[#ffffff]/25" />
                     </div>
-                ))}
+                </div>
 
                 {/* ── Content ── */}
                 <div
@@ -891,18 +411,12 @@ function HeroWhyChooseUs({ projects, onFilteredProjects, onViewMore }) {
                     <div className="flex-1 flex flex-col justify-center max-w-6xl">
 
                         <p
-                            className="mb-5 font-semibold text-[24px] lg:text-[28px]"
+                            className="mb-5 font-semibold text-[24px] lg:text-[28px] text-[#2D1037]"
                             style={{
-                                background: "linear-gradient(to right, #000000, #E682FF)",
-                                WebkitBackgroundClip: "text",
-                                WebkitTextFillColor: "transparent",
-                                backgroundClip: "text",
                                 fontSize: "clamp(16px, 1.8vw, 20px)",
                                 lineHeight: "28px",
                                 letterSpacing: "0rem",
                                 width: "fit-content",
-                                // filter: "drop-shadow(0px 2px 4px rgba(0, 0, 0, 0.35))",
-                                WebkitTextStroke: "0.2px #ffffff"
                             }}
                         >
                             The Address That Defines Success,
@@ -923,11 +437,7 @@ function HeroWhyChooseUs({ projects, onFilteredProjects, onViewMore }) {
                                 <div className="flex items-center gap-3 sm:gap-4 mb-2 sm:mb-3">
                                     {/* Dynamic Icon Wrapper */}
                                     <div
-                                        className="flex-shrink-0 flex items-center justify-center rounded-full shadow-md shadow-black/25 w-10 h-10 md:w-[50px] md:h-[50px]"
-                                        style={{
-                                            background:
-                                                "linear-gradient(135deg, #ffffff 0%, #E579FF 100%)",
-                                        }}
+                                        className="flex-shrink-0 flex items-center justify-center rounded-full shadow-md shadow-black/25 w-10 h-10 md:w-[50px] md:h-[50px] bg-gradient-to-br from-white to-[#E579FF]"
                                     >
                                         <img
                                             src={slide.icon}
@@ -939,7 +449,6 @@ function HeroWhyChooseUs({ projects, onFilteredProjects, onViewMore }) {
                                     {/* Heading */}
                                     <h2
                                         className="font-semibold leading-tight text-[18px] sm:text-[22px] md:text-[28px] text-[#54315D] w-full"
-                                        style={{ WebkitTextStroke: "0.2px #ffffff" }}
                                     >
                                         {slide.badge}
                                     </h2>
@@ -980,6 +489,7 @@ function FeaturedProjectCarousel({ projects, direction, onTourClick, showTopCont
     const carouselRef = useRef(null);
 
     useEffect(() => {
+        let timerId = null;
         const measureStep = () => {
             if (!carouselRef.current) return;
             if (window.innerWidth < 640) {
@@ -990,9 +500,18 @@ function FeaturedProjectCarousel({ projects, direction, onTourClick, showTopCont
             if (!firstCard) return;
             setCardStep(Math.round(firstCard.getBoundingClientRect().width + 16));
         };
+
+        const handleResize = () => {
+            clearTimeout(timerId);
+            timerId = setTimeout(measureStep, 150);
+        };
+
         measureStep();
-        window.addEventListener('resize', measureStep);
-        return () => window.removeEventListener('resize', measureStep);
+        window.addEventListener('resize', handleResize);
+        return () => {
+            clearTimeout(timerId);
+            window.removeEventListener('resize', handleResize);
+        };
     }, [projects.length]);
 
     useEffect(() => {

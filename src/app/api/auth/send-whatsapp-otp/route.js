@@ -25,13 +25,13 @@ export async function POST(req) {
     }
 
     const apiKey = process.env.WHATSAPP_API_KEY;
-    const userid = process.env.WHATSAPP_USERID;
-    const wabaNumber = process.env.WHATSAPP_WABA_NUMBER;
+    // const userid = process.env.WHATSAPP_USERID;
+    // const wabaNumber = process.env.WHATSAPP_WABA_NUMBER;
     const templateName = process.env.WHATSAPP_TEMPLATE_NAME || "otp_temp_2";
-    const footer = process.env.WHATSAPP_TEMPLATE_FOOTER || "This code expires in 10 minute.";
-    const apiUrl = process.env.WHATSAPP_API_URL || "https://theultimate.io/WAApi/send";
+    // const footer = process.env.WHATSAPP_TEMPLATE_FOOTER || "This code expires in 10 minute.";
+    const apiUrl = process.env.WHATSAPP_API_URL || "https://api.pingmate.app/api/v1/messages/send";
 
-    if (!apiKey || !userid || !wabaNumber) {
+    if (!apiKey ) {
       return NextResponse.json(
         { error: "WhatsApp OTP provider is not configured properly." },
         { status: 500 }
@@ -50,25 +50,30 @@ export async function POST(req) {
     const existingUser = await User.findOne({ phone: normalizedMobile });
     const responseUid = existingUser ? existingUser.uid : `phone-${normalizedMobile}`;
 
-    const formData = new FormData();
-    formData.append("userid", userid);
-    formData.append("msg", `${otp} is your verification code.`);
-    formData.append("wabaNumber", wabaNumber);
-    formData.append("output", "json");
-    formData.append("mobile", `91${normalizedMobile}`);
-    formData.append("sendMethod", "quick");
-    formData.append("msgType", "text");
-    formData.append("templateName", templateName);
-    formData.append("footer", footer);
-
     const externalRes = await fetch(apiUrl, {
-      method: "POST",
-      headers: {
-        apikey: apiKey,
-      },
-      body: formData,
-    });
-
+  method: "POST",
+  headers: {
+    "Content-Type": "application/json",
+    Accept: "application/json",
+    "X-API-KEY": apiKey,
+  },
+  body: JSON.stringify({
+    to: `91${normalizedMobile}`,
+    message: {
+      message_type: "template",
+      template_name: templateName,
+      template_language:
+        process.env.WHATSAPP_TEMPLATE_LANGUAGE || "en",
+      body_variables: [otp],
+      buttons: [
+        {
+          button_type: "url",
+          button_payload: otp,
+        },
+      ],
+    },
+  }),
+});
     const externalPayload = await externalRes.json().catch(() => null);
     if (!externalRes.ok) {
       console.error("WhatsApp API error:", externalPayload || "No response body");

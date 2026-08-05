@@ -11,7 +11,8 @@ export default function LiveAgentPopup({
     { number: "9529249230", color: "yellow" },
   ],
   onCallbackSubmit,
-  open=false
+  open=false,
+  onClose
 }) {
   const [show, setShow] = useState(false);
   const [form, setForm] = useState({
@@ -19,9 +20,7 @@ export default function LiveAgentPopup({
     phone: "",
   });
 useEffect(() => {
-  if (open) {
-    setShow(true);
-  }
+  setShow(open);
 }, [open]);
   useEffect(() => {
     // Don't show again during this browser session
@@ -34,7 +33,7 @@ useEffect(() => {
 
     const timer = setTimeout(() => {
       setShow(true);
-      sessionStorage.setItem("liveAgentPopupShown", "true");
+      // sessionStorage.setItem("liveAgentPopupShown", "true");
     }, delay);
 
     return () => clearTimeout(timer);
@@ -55,19 +54,22 @@ useEffect(() => {
     }
 
     setShow(false);
+    onClose?.();
   };
 
   if (!show) return null;
 
   return (
     <div className="fixed inset-0 z-[99999] pointer-events-none">
-  <div className="absolute right-4 bottom-6 md:right-6 md:bottom-8 pointer-events-auto">
-      <div className="w-[350px] max-w-sm rounded-3xl bg-white shadow-2xl overflow-hidden">
+ <div className="absolute right-4 bottom-28 md:right-6 md:bottom-30 pointer-events-auto">
+      <div className="w-[340px] md:w-[320px]  max-w-sm rounded-3xl bg-white shadow-2xl overflow-hidden">
 
         {/* Header */}
-        <div className="bg-gradient-to-r from-[#00A11B] to-[#60D669] text-white p-4 relative">
+        <div className="bg-gradient-to-r from-[#00A11B] to-[#60D669] text-white p-3 relative">
           <button
-            onClick={() => setShow(false)}
+            onClick={() =>{ setShow(false)
+                onClose?.();
+             } }
             className="absolute right-4 top-4 hover:cursor-pointer"
           >
             <X size={20} />
@@ -77,13 +79,13 @@ useEffect(() => {
             • Live Agent Available!
           </h2>
 
-          <p className="text-[14px] mt-2">
+          <p className="text-[14px] mt-1">
             Our real estate experts are online right<br/> now – 9 AM to 8 PM
           </p>
         </div>
 
         {/* Body */}
-        <div className="p-5">
+        <div className="px-5 py-2">
 
           {phoneNumbers.map((phone, index) => (
             <a
@@ -113,7 +115,7 @@ useEffect(() => {
               onChange={(e) =>
                 setForm({ ...form, name: e.target.value })
               }
-              className="w-full border border-[#969393] rounded-lg px-4 py-2 mb-3 outline-none focus:border-gray-700"
+              className="w-full border border-[#969393] rounded-lg px-4 py-2 mb-2 outline-none focus:border-gray-700"
             />
 
             <input
@@ -123,12 +125,12 @@ useEffect(() => {
               onChange={(e) =>
                 setForm({ ...form, phone: e.target.value })
               }
-              className="w-full border border-[#969393] rounded-lg px-4 py-2 mb-3 outline-none focus:border-gray-700"
+              className="w-full border border-[#969393] rounded-lg px-4 py-2 mb-2 outline-none focus:border-gray-700"
             />
 
             <button
               type="submit"
-              className="w-full bg-[#7B2D8F] hover:bg-[#6B247C] text-white text-[16px] font-medium py-3 rounded-xl transition"
+              className="w-full bg-[#7B2D8F] hover:bg-[#6B247C] text-white text-[16px] font-medium py-1 rounded-xl transition"
             >
               {/* <PhoneCall className="inline mr-2" size={18} /> */}
               Request Callback

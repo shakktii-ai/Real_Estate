@@ -582,7 +582,7 @@ setCurrentStepIndex(
   };
 
   return (
-    <div className="fixed bottom-6 right-6 z-50 font-sans sm:bottom-25">
+    <div className="fixed bottom-24 md:bottom-26 right-6 z-50 font-sans sm:bottom-25">
       <AnimatePresence mode="wait">
         {isOpen && (
           <motion.div
@@ -594,7 +594,7 @@ setCurrentStepIndex(
             className="mb-4"
           >
             {/* Main Chat Window Panel */}
-            <div className="relative z-[70] w-screen sm:w-[320px] max-w-[calc(100vw-32px)] bg-[#f4f4f7] rounded-3xl shadow-2xl flex flex-col overflow-hidden h-[580px] sm:h-[400px] max-h-[calc(100vh-120px)] border border-slate-200">
+            <div className="relative z-[70] w-[90vw] max-w-[380px] md:max-w-[310px] bg-[#f4f4f7] rounded-3xl shadow-2xl flex flex-col overflow-hidden h-[500px] sm:h-[390px] max-h-[calc(100vh-120px)] border border-slate-200">
 
               {/* Exact Header matching Screenshot */}
               <div className="bg-gradient-to-br from-[#742E85] to-[#E5097F] p-4 text-white shadow-md relative">
@@ -931,7 +931,9 @@ setCurrentStepIndex(
               setIsOpen(false);
               return;
             }
+             setShowLiveAgent(false);
             openChatbotPanel();
+           
           }}
           className="w-[240px] rounded-[18px] bg-gradient-to-r from-[#80147B] to-[#C41484] border border-white shadow-md shadow-white py-2 px-2 flex items-center gap-3 text-left transition-transform hover:scale-[1.01] hover:cursor-pointer"
         >
@@ -954,9 +956,11 @@ setCurrentStepIndex(
           </div>
         </motion.button>
 
-        <div className="flex items-center justify-end gap-2 w-full mb-2 mt-2">
+        <div className="flex items-center justify-end gap-2 w-full mb-1 mt-1">
           <button
-            onClick={() => setShowLiveAgent(true)}
+            onClick={() =>{ setIsOpen(false);
+               setShowLiveAgent(true);
+               }}
             className="animate-bounce bg-[#E5097F] hover:bg-[#c8006e] text-white text-[10px] font-medium px-3.5 py-2 rounded-full shadow-md shadow-black/25 flex items-center justify-center gap-1.5 transition-all cursor-pointer"
           >
             <Phone size={12} className="text-white" />
@@ -984,6 +988,8 @@ setCurrentStepIndex(
 
         <LiveAgentPopup
           open={showLiveAgent}
+            onClose={() => setShowLiveAgent(false)}
+            
           delay={20000}
           phoneNumbers={[
             {

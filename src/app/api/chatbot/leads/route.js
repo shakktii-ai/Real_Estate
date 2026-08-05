@@ -1,6 +1,6 @@
 import { connectToDatabase } from '@/lib/db';
 import ChatbotLead from '@/models/ChatbotLead';
-
+import { createLeadPlussLead } from "../../../../lib/leadPluss";
 export async function POST(request) {
   try {
     await connectToDatabase();
@@ -17,13 +17,14 @@ export async function POST(request) {
     if (body.projectName) summaryParts.push(`• Project Name of interest: ${body.projectName}`);
     if (body.siteVisit) summaryParts.push(`• Scheduled Site Visit: ${body.siteVisit}`);
 
-    const compiledDetails = summaryParts.length > 0 
-      ? summaryParts.join('\n') 
+    const compiledDetails = summaryParts.length > 0
+      ? summaryParts.join('\n')
       : body.basicDetails || 'No details provided.';
 
     const compiledMessage = body.message || `10-step chatbot questionnaire lead form submitted.`;
 
     // Create lead document mapping both explicit properties and compiled summaries safely
+    console.log("Lead Request Body:", body);
     const lead = await ChatbotLead.create({
       name: body.name,
       phone: body.phone,
@@ -43,7 +44,53 @@ export async function POST(request) {
       projectName: body.projectName || '',
       siteVisit: body.siteVisit || '',
     });
+    try {
+      const [firstName, ...lastNameParts] = (lead.name || "").trim().split(" ");
 
+      await createLeadPlussLead({
+        FirstName: firstName || "Customer",
+        LastName: lastNameParts.join(" "),
+
+        ISD: "+91",
+
+        Phone: lead.phone,
+
+        EmailId: lead.email || "",
+
+        State: "Maharashtra",
+
+        City: "Pune",
+
+        Location: lead.preferredLocation || "",
+
+        budget: lead.budget || "",
+
+        Project: lead.projectName || "",
+
+        Pincode: "",
+
+        PropertyFor: "",
+
+        Property: "",
+
+        PropertyType: lead.configuration || "",
+
+        LeadSource: "AI Chatbot",
+
+        Message: ` Chatbot Lead Details:
+Configuration: ${lead.configuration || ""}
+Budget: ${lead.budget || ""}
+Preferred Location: ${lead.preferredLocation || ""}
+Possession Timeline: ${lead.possession || ""}
+Purchase Purpose: ${lead.purchasePurpose || ""}
+Visited Project: ${lead.visitedProject || ""}
+Project Name: ${lead.projectName || ""}
+Preferred Site Visit: ${lead.siteVisit || ""}
+  `.trim(),
+      });
+    } catch (error) {
+      console.error("LeadPluss Error:", error);
+    }
     return Response.json(
       { message: 'Lead saved successfully', lead },
       { status: 201 }

@@ -27,7 +27,7 @@ const CHAT_QUESTIONNAIRE_STEPS = [
     id: 'configuration',
     type: 'options',
     question: "Which home are you looking for?",
-    options: ['2 BHK / 2.5 BHK', '3 BHK / 3.5 BHK', '4 BHK / Villa / Jodi Flat', '4.5 BHK+']
+    options: ['2 BHK', '3 BHK', '4 BHK', '4.5 BHK']
   },
   {
     id: 'budget',
@@ -77,14 +77,14 @@ const CHAT_QUESTIONNAIRE_STEPS = [
     question: "Great!\n\nPlease share your Full Name.",
     placeholder: "Enter your name"
   },
-  {
-    id: 'phone',
-    type: 'input',
-    question: "Please share your Mobile Number.",
-    placeholder: "Enter your mobile number",
-    validate: (val) => /^[6-9]\d{9}$/.test(val),
-    errorMsg: "Please enter a valid mobile number with 10 digits."
-  }
+  // {
+  //   id: 'phone',
+  //   type: 'input',
+  //   question: "Please share your Mobile Number.",
+  //   placeholder: "Enter your mobile number",
+  //   validate: (val) => /^[6-9]\d{9}$/.test(val),
+  //   errorMsg: "Please enter a valid mobile number with 10 digits."
+  // }
 ];
 
 export default function SimpleChatbot() {
@@ -122,8 +122,15 @@ export default function SimpleChatbot() {
   const router = useRouter();
 
   const locations = ['Hadapsar', 'NIBM', 'Kharadi', 'Wakad'];
-  const priceRanges = ['20-30L', '30-50L', '50-75L', '75L+'];
+  const priceRanges = ['65-80L', '80-1.20Cr', '1.20Cr-1.75Cr', '1.75Cr+'];
+  const [isMobileVerified, setIsMobileVerified] = useState(!!user);
 
+  const [otpStep, setOtpStep] = useState("mobile"); // mobile | otp
+
+  const [mobileData, setMobileData] = useState({
+    mobile: "",
+    otp: "",
+  });
   const handleAutoOpenChatbot = useEffectEvent(() => {
     openChatbotPanel();
   });
@@ -131,7 +138,18 @@ export default function SimpleChatbot() {
   useEffect(() => {
     scrollToBottom();
   }, [messages]);
+useEffect(() => {
+  if (!user) return;
 
+  setLeadData((prev) => ({
+    ...prev,
+    name: user.fullName || prev.name,
+    phone: user.phone || prev.phone,
+    email: user.email || prev.email,
+  }));
+
+  setIsMobileVerified(true);
+}, [user]);
   useEffect(() => {
     if (!user || !hasLoadedHistoryRef.current) return;
     const timer = setTimeout(() => {
@@ -167,16 +185,16 @@ export default function SimpleChatbot() {
         setMessages(Array.isArray(conversation.messages) ? conversation.messages : []);
         const submitted = Boolean(conversation.isSubmitted);
 
-setIsSubmitted(submitted);
+        setIsSubmitted(submitted);
 
-setCurrentStepIndex(
-  submitted
-    ? -1
-    : typeof conversation.currentStepIndex === "number"
-      ? conversation.currentStepIndex
-      : -1
-);
- setLeadData((prev) => ({
+        setCurrentStepIndex(
+          submitted
+            ? -1
+            : typeof conversation.currentStepIndex === "number"
+              ? conversation.currentStepIndex
+              : -1
+        );
+        setLeadData((prev) => ({
           ...prev,
           ...(conversation.leadData || {}),
         }));
@@ -296,11 +314,29 @@ setCurrentStepIndex(
       return msgs;
     });
     if (currentStepIndex === -1) {
-      setCurrentStepIndex(0);
+      if (user || isMobileVerified) {
+        setCurrentStepIndex(0);
+      } else {
+        setOtpStep("mobile");
+
+        const alreadyExists = messages.some(
+          (m) =>
+            m.type === "bot" &&
+            m.content === "Welcome! Please verify your mobile number before we continue."
+        );
+
+        if (!alreadyExists) {
+          addMessage(
+            "bot",
+            "Welcome! Please verify your mobile number before we continue."
+          );
+        }
+      }
     }
   };
 
   const moveToNextQuestionStep = (currentDataState) => {
+
     const currentStep = CHAT_QUESTIONNAIRE_STEPS[currentStepIndex];
     if (!currentStep) return;
 
@@ -330,6 +366,7 @@ setCurrentStepIndex(
 
     const updatedLeadData = {
       ...leadData,
+      phone: leadData.phone ,
       [currentStep.id]: optionValue
     };
 
@@ -342,7 +379,98 @@ setCurrentStepIndex(
 
     const trimmedValue = inputValue.trim();
     if (!trimmedValue || loading) return;
+    if (!user && !isMobileVerified) {
 
+      // STEP 1 - Mobile Number
+      if (otpStep === "mobile") {
+
+        if (!/^[6-9]\d{9}$/.test(trimmedValue)) {
+          addMessage("bot", "Please enter a valid 10-digit mobile number.");
+          setInputValue("");
+          return;
+        }
+
+        addMessage("user", trimmedValue);
+
+        const res = await fetch("/api/chatbot/send-otp", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            mobile: trimmedValue,
+          }),
+        });
+
+        const data = await res.json();
+
+        if (!data.success) {
+          addMessage("bot", data.message);
+          return;
+        }
+
+        setMobileData({
+          mobile: trimmedValue,
+          otp: "",
+        });
+
+        setOtpStep("otp");
+
+        setInputValue("");
+
+        addMessage(
+          "bot",
+          "OTP sent to your WhatsApp. Enter the 6-digit OTP."
+        );
+
+        return;
+      }
+
+      // STEP 2 - OTP
+      if (otpStep === "otp") {
+
+        addMessage("user", trimmedValue);
+
+        const res = await fetch("/api/chatbot/verify-otp", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            mobile: mobileData.mobile,
+            otp: trimmedValue,
+          }),
+        });
+
+        const data = await res.json();
+
+        if (!data.success) {
+          addMessage("bot", data.message);
+          setInputValue("");
+          return;
+        }
+
+        setIsMobileVerified(true);
+        setLeadData(prev => ({
+          ...prev,
+          phone: mobileData.mobile,
+        }));
+        setMobileData({
+          mobile: "",
+          otp: "",
+        });
+        setInputValue("");
+        setOtpStep("mobile");
+        addMessage(
+          "bot",
+          "Mobile verified successfully."
+        );
+
+        setCurrentStepIndex(0);
+
+        return;
+      }
+    }
     const currentStep = CHAT_QUESTIONNAIRE_STEPS[currentStepIndex];
     if (!currentStep) return;
 
@@ -424,22 +552,39 @@ setCurrentStepIndex(
     return Math.min(...prices);
   };
 
-  const projectMatchesPriceRange = (project, rangeLabel) => {
-    if (!rangeLabel) return true;
-    const rangeText = rangeLabel.replace(/\s+/g, '').toLowerCase();
-    let min = 0;
-    let max = Infinity;
-    if (rangeText.endsWith('l+')) {
-      min = parseFloat(rangeText.replace('l+', '')) || 0;
-    } else {
-      const [from, to] = rangeText.replace('l', '').split('-');
-      min = parseFloat(from) || 0;
-      max = parseFloat(to) || Infinity;
-    }
-    const price = getProjectPriceLakhs(project);
-    return !Number.isNaN(price) && price >= min && price <= max;
-  };
+  const convertToLakhs = (value) => {
+  const text = value.toString().trim().toLowerCase();
 
+  if (text.includes("cr")) {
+    return parseFloat(text.replace("cr", "")) * 100;
+  }
+
+  if (text.includes("l")) {
+    return parseFloat(text.replace("l", ""));
+  }
+
+  return parseFloat(text);
+};
+
+const projectMatchesPriceRange = (project, rangeLabel) => {
+  if (!rangeLabel) return true;
+
+  let min = 0;
+  let max = Infinity;
+
+  if (rangeLabel.endsWith("+")) {
+    min = convertToLakhs(rangeLabel.replace("+", ""));
+  } else {
+    const [from, to] = rangeLabel.split("-");
+
+    min = convertToLakhs(from);
+    max = convertToLakhs(to);
+  }
+
+  const price = getProjectPriceLakhs(project);
+
+  return !Number.isNaN(price) && price >= min && price <= max;
+};
   const filterProjectsByPrice = (projectsList, rangeLabel) => {
     if (!rangeLabel) return projectsList;
     return projectsList.filter((project) => projectMatchesPriceRange(project, rangeLabel));
@@ -667,8 +812,8 @@ setCurrentStepIndex(
 
                     <div
                       className={`max-w-[85%] px-3.5 py-3 rounded-2xl text-[12px] leading-relaxed break-words whitespace-pre-line shadow-xs ${msg.type === 'bot'
-                          ? 'bg-white text-slate-800 rounded-tl-xs border border-slate-100 font-medium'
-                          : 'bg-[#80147B] text-white rounded-tr-xs font-medium'
+                        ? 'bg-white text-slate-800 rounded-tl-xs border border-slate-100 font-medium'
+                        : 'bg-[#80147B] text-white rounded-tr-xs font-medium'
                         }`}
                     >
                       {renderMessageContent(msg)}
@@ -710,14 +855,20 @@ setCurrentStepIndex(
               {/* Footer Input Controls */}
               <div className="bg-white border-t border-slate-200 p-3 shadow-xs">
                 {!isSubmitted ? (
-                  currentStep && currentStep.type === 'input' ? (
+                  ((!user && !isMobileVerified) || (currentStep && currentStep.type === "input")) ? (
                     <form onSubmit={handleSendMessage} className="space-y-2">
                       <div className="rounded-2xl border border-slate-200 bg-slate-50 px-3 py-1">
                         <div className="mt-1 flex items-center gap-2">
                           <input
                             value={inputValue}
                             onChange={(event) => setInputValue(event.target.value)}
-                            placeholder={currentStep.placeholder || "Enter details..."}
+                            placeholder={
+                              !user && !isMobileVerified
+                                ? otpStep === "mobile"
+                                  ? "Enter mobile number"
+                                  : "Enter OTP"
+                                : currentStep?.placeholder || "Enter details..."
+                            }
                             className="flex-1 bg-transparent text-xs text-black outline-hidden placeholder:text-black"
                             disabled={loading}
                           />
@@ -733,7 +884,11 @@ setCurrentStepIndex(
                     </form>
                   ) : (
                     <div className="text-center text-xs text-black py-1 italic">
-                      Please select an option above to continue...
+                      {!user && !isMobileVerified
+                        ? otpStep === "mobile"
+                          ? "Enter your mobile number to continue."
+                          : "Enter the OTP sent to your WhatsApp."
+                        : "Please select an option above to continue..."}
                     </div>
                   )
                 ) : (
@@ -931,9 +1086,9 @@ setCurrentStepIndex(
               setIsOpen(false);
               return;
             }
-             setShowLiveAgent(false);
+            setShowLiveAgent(false);
             openChatbotPanel();
-           
+
           }}
           className="w-[240px] rounded-[18px] bg-gradient-to-r from-[#80147B] to-[#C41484] border border-white shadow-md shadow-white py-2 px-2 flex items-center gap-3 text-left transition-transform hover:scale-[1.01] hover:cursor-pointer"
         >
@@ -958,9 +1113,10 @@ setCurrentStepIndex(
 
         <div className="flex items-center justify-end gap-2 w-full mb-1 mt-1">
           <button
-            onClick={() =>{ setIsOpen(false);
-               setShowLiveAgent(true);
-               }}
+            onClick={() => {
+              setIsOpen(false);
+              setShowLiveAgent(true);
+            }}
             className="animate-bounce bg-[#E5097F] hover:bg-[#c8006e] text-white text-[10px] font-medium px-3.5 py-2 rounded-full shadow-md shadow-black/25 flex items-center justify-center gap-1.5 transition-all cursor-pointer"
           >
             <Phone size={12} className="text-white" />
@@ -988,8 +1144,8 @@ setCurrentStepIndex(
 
         <LiveAgentPopup
           open={showLiveAgent}
-            onClose={() => setShowLiveAgent(false)}
-            
+          onClose={() => setShowLiveAgent(false)}
+
           delay={20000}
           phoneNumbers={[
             {

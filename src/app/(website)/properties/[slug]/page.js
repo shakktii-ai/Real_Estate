@@ -27,6 +27,7 @@ export default function ProjectDetails() {
   const [activeSimilarIndex, setActiveSimilarIndex] = useState(0);
   const [showReviewPopup, setShowReviewPopup] = useState(false);
   const [showLiveAgent, setShowLiveAgent] = useState(false);
+
   const categoryColors = {
     Premium: "bg-[#009966]",
     Luxury: "bg-[#F97316]",
@@ -166,34 +167,34 @@ export default function ProjectDetails() {
     if (slug) fetchProjectAndSimilar();
   }, [slug]);
   useEffect(() => {
-  if (!slug) return;
+    if (!slug) return;
 
-  const viewedProjects = JSON.parse(
-    sessionStorage.getItem("viewedProjects") || "[]"
-  );
-
-  // Count only unique projects
-  if (!viewedProjects.includes(slug)) {
-    viewedProjects.push(slug);
-
-    sessionStorage.setItem(
-      "viewedProjects",
-      JSON.stringify(viewedProjects)
+    const viewedProjects = JSON.parse(
+      sessionStorage.getItem("viewedProjects") || "[]"
     );
-  }
 
-  const viewedCount = viewedProjects.length;
+    // Count only unique projects
+    if (!viewedProjects.includes(slug)) {
+      viewedProjects.push(slug);
 
-  // 1st = 5s, 2nd = 10s, 3rd+ = 15s
-  const delay = Math.min(viewedCount * 5000, 15000);
+      sessionStorage.setItem(
+        "viewedProjects",
+        JSON.stringify(viewedProjects)
+      );
+    }
 
-  const timer = setTimeout(() => {
-    setShowLiveAgent(true);
-  }, delay);
+    const viewedCount = viewedProjects.length;
 
-  return () => clearTimeout(timer);
+    // 1st = 5s, 2nd = 10s, 3rd+ = 15s
+    const delay = Math.min(viewedCount * 5000, 15000);
 
-}, [slug]);
+    const timer = setTimeout(() => {
+      setShowLiveAgent(true);
+    }, delay);
+
+    return () => clearTimeout(timer);
+
+  }, [slug]);
   // for similar project showcase slider
   useEffect(() => {
     if (similarProjects.length <= 1) return;
@@ -251,6 +252,10 @@ Warm Regards,
 Team Piinggaksha`;
 
   const whatsappUrl = `https://wa.me/?text=${encodeURIComponent(message)}`;
+  const actionCount =
+    3 + // Share + Site Visit + Virtual Tour
+    (project.brochureUrl ? 1 : 0) +
+    (project.priceSheetUrl ? 1 : 0);
   return (
 
     <div className="max-w-7xl mx-auto mx-auto p-4 md:p-8 bg-[#F8F9FA] min-h-screen text-black">
@@ -285,46 +290,52 @@ Team Piinggaksha`;
             <MapPin size={14} /> {project.address.area}, {project.address.city}
           </p>
         </div>
+       <div className="space-y-3 lg:space-y-0 lg:flex lg:items-center lg:justify-between lg:gap-3">
 
-        <div className="flex flex-wrap lg:flex-nowrap w-full lg:w-auto gap-2">
+          {/* Secondary actions */}
+          <div className="flex flex-wrap gap-2">
+            <ShareProject project={project} showText={true} />
+            {project.brochureUrl && (
+              <button
+                onClick={() => handleDownload(project.brochureUrl, `${project.projectName}-Brochure.pdf`)}
+                className="flex items-center gap-2 px-4 py-2 border bg-white rounded-lg text-sm font-bold shadow-sm hover:bg-gray-50"
+              >
+                <Download size={16} /> Brochure
+              </button>
+            )}
+            {project.priceSheetUrl && (
+              <button
+                onClick={() => handleDownload(project.priceSheetUrl, `${project.projectName}-PriceSheet.pdf`)}
+                className="flex items-center gap-2 px-4 py-2 border bg-white rounded-lg text-sm font-bold shadow-sm hover:bg-gray-50"
+              >
+                <FileText size={16} /> Price Sheet
+              </button>
+            )}
+          </div>
 
-          <ShareProject project={project} showText={true} />
-          {project.brochureUrl && (
-            <button
-              onClick={() => handleDownload(project.brochureUrl, `${project.projectName}-Brochure.pdf`)}
-              className="flex items-center gap-2 px-4 py-2 border bg-white rounded-lg text-sm font-bold shadow-sm hover:bg-gray-50"
-            >
-              <Download size={16} /> Brochure
-            </button>
-          )}
-          {project.priceSheetUrl && (
-            <button
-              onClick={() => handleDownload(project.priceSheetUrl, `${project.projectName}-PriceSheet.pdf`)}
-              className="flex items-center gap-2 px-4 py-2 border bg-white rounded-lg text-sm font-bold shadow-sm hover:bg-gray-50"
-            >
-              <FileText size={16} /> Price Sheet
-            </button>
-          )}
-          <button onClick={() => {
-            if (!user) {
-              toast.error("Please SignUp first to book a site visit");
-              setShowAuthModal(true);
-              return;
-
-            }
-            setIsModalOpen(true)
-          }}
-            className="flex-1 lg:flex-none px-4 py-3 text-sm bg-[#742E85] text-white rounded-lg text-sm font-bold shadow-md hover:cursor-pointer">Book Site Visit</button>
-          <button
-            onClick={() => {
+          {/* Primary actions */}
+          <div className="grid grid-cols-2 gap-2 lg:flex lg:gap-2">
+            <button onClick={() => {
               if (!user) {
-                toast.error("Please SignUp first to book a vitual tour");
+                toast.error("Please SignUp first to book a site visit");
                 setShowAuthModal(true);
                 return;
+
               }
-              setIsVirtualModalOpen(true)
+              setIsModalOpen(true)
             }}
-            className="flex-1 lg:flex-none px-4 py-3 text-sm bg-[#E5097F] text-white rounded-lg text-sm font-bold shadow-md hover:cursor-pointer">Book Virtual Tour</button>
+              className="flex-1 lg:flex-none px-4 py-3 text-sm bg-[#742E85] text-white rounded-lg text-sm font-bold shadow-md hover:cursor-pointer">Book Site Visit</button>
+            <button
+              onClick={() => {
+                if (!user) {
+                  toast.error("Please SignUp first to book a vitual tour");
+                  setShowAuthModal(true);
+                  return;
+                }
+                setIsVirtualModalOpen(true)
+              }}
+              className="flex-1 lg:flex-none px-4 py-3 text-sm bg-[#E5097F] text-white rounded-lg text-sm font-bold shadow-md hover:cursor-pointer">Book Virtual Tour</button>
+          </div>
         </div>
       </div>
 
@@ -738,30 +749,30 @@ Team Piinggaksha`;
         </div>
       )}
       <LiveAgentPopup
-  open={showLiveAgent}
-  onClose={() => setShowLiveAgent(false)}
-  phoneNumbers={[
-    {
-      number: "9284429197",
-      color: "green",
-    },
-    {
-      number: "9529249230",
-      color: "yellow",
-    },
-  ]}
-  onCallbackSubmit={async (data) => {
-    await fetch("/api/callback", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(data),
-    });
+        open={showLiveAgent}
+        onClose={() => setShowLiveAgent(false)}
+        phoneNumbers={[
+          {
+            number: "9284429197",
+            color: "green",
+          },
+          {
+            number: "9529249230",
+            color: "yellow",
+          },
+        ]}
+        onCallbackSubmit={async (data) => {
+          await fetch("/api/callback", {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify(data),
+          });
 
-    setShowLiveAgent(false);
-  }}
-/>
+          setShowLiveAgent(false);
+        }}
+      />
       {showAuthModal && (
         <AuthModal
           onClose={() => setShowAuthModal(false)}

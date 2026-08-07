@@ -11,7 +11,7 @@ export default function LiveAgentPopup({
     { number: "9529249230", color: "yellow" },
   ],
   onCallbackSubmit,
-  open=false,
+  open = false,
   onClose
 }) {
   const [show, setShow] = useState(false);
@@ -19,25 +19,25 @@ export default function LiveAgentPopup({
     name: "",
     phone: "",
   });
-useEffect(() => {
-  setShow(open);
-}, [open]);
   useEffect(() => {
-    // Don't show again during this browser session
-    // if (sessionStorage.getItem("liveAgentPopupShown")) return;
+    setShow(open);
+  }, [open]);
+  // useEffect(() => {
+  //   // Don't show again during this browser session
+  //   // if (sessionStorage.getItem("liveAgentPopupShown")) return;
 
-    const hour = new Date().getHours();
+  //   const hour = new Date().getHours();
 
-    // Show only between 9 AM and 8 PM
-    if (hour < 9 || hour >= 20) return;
+  //   // Show only between 9 AM and 8 PM
+  //   if (hour < 9 || hour >= 20) return;
 
-    const timer = setTimeout(() => {
-      setShow(true);
-      // sessionStorage.setItem("liveAgentPopupShown", "true");
-    }, delay);
+  //   const timer = setTimeout(() => {
+  //     setShow(true);
+  //     // sessionStorage.setItem("liveAgentPopupShown", "true");
+  //   }, delay);
 
-    return () => clearTimeout(timer);
-  }, [delay]);
+  //   return () => clearTimeout(timer);
+  // }, [delay]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -60,86 +60,69 @@ useEffect(() => {
   if (!show) return null;
 
   return (
-    <div className="fixed inset-0 z-[99999] pointer-events-none">
- <div className="absolute right-4 bottom-28 md:right-6 md:bottom-30 pointer-events-auto">
-      <div className="w-[340px] md:w-[320px]  max-w-sm rounded-3xl bg-white shadow-2xl overflow-hidden">
+   <div className="fixed inset-0 z-[999] pointer-events-none">
+  <div className="absolute bottom-30 right-5 pointer-events-auto">
+  <div className="w-full max-w-[340px] overflow-hidden rounded-[26px] bg-white shadow-2xl">
 
-        {/* Header */}
-        <div className="bg-gradient-to-r from-[#00A11B] to-[#60D669] text-white p-3 relative">
-          <button
-            onClick={() =>{ setShow(false)
-                onClose?.();
-             } }
-            className="absolute right-4 top-4 hover:cursor-pointer"
-          >
-            <X size={20} />
-          </button>
+    {/* Header */}
+    <div className="relative bg-gradient-to-r from-[#00A11B] to-[#60D669] px-4 py-5 text-white">
 
-          <h2 className="font-semibold text-[18px] flex items-center gap-2 ml-4">
-            • Live Agent Available!
-          </h2>
+      <button
+        onClick={() => {
+          setShow(false);
+          onClose?.();
+        }}
+        className="absolute right-4 top-4 rounded-full p-1 hover:bg-white/15 hover:cursor-pointer transition"
+      >
+        <X size={20} />
+      </button>
 
-          <p className="text-[14px] mt-1">
-            Our real estate experts are online right<br/> now – 9 AM to 8 PM
-          </p>
+      <div className="flex items-center gap-3">
+        <div className="flex h-8 w-8 items-center justify-center rounded-full bg-white/20">
+          <Phone size={12} />
         </div>
 
-        {/* Body */}
-        <div className="px-5 py-2">
+        <div>
+          <h2 className="text-[15px] font-semibold">
+            Live Agent Available!
+          </h2>
 
-          {phoneNumbers.map((phone, index) => (
-            <a
-              key={phone.number}
-              href={`tel:+91${phone.number}`}
-              className={`mb-3 flex items-center justify-center gap-2 rounded-xl py-2 text-white font-medium transition text-[16px]
-                ${
-                  phone.color === "green"
-                    ? "bg-[#02B11F] hover:bg-green-700"
-                    : "bg-[#FBBC05] hover:bg-yellow-500"
-                }`}
-            >
-              {/* <Phone size={18} /> */}
-              Connect Now - {phone.number}
-            </a>
-          ))}
-
-          <p className="text-[#6F6F6F] text-[14px] mt-4 mb-2">
-            Or request a callback:
+          <p className="mt-1 text-[12px] text-white/95 leading-5 mr-6">
+            Our real estate experts are online <br/>right now –
+            
+            9 AM to 8 PM
           </p>
-
-          <form onSubmit={handleSubmit}>
-            <input
-              type="text"
-              placeholder="Your Name"
-              value={form.name}
-              onChange={(e) =>
-                setForm({ ...form, name: e.target.value })
-              }
-              className="w-full border border-[#969393] rounded-lg px-4 py-2 mb-2 outline-none focus:border-gray-700"
-            />
-
-            <input
-              type="tel"
-              placeholder="Phone Number"
-              value={form.phone}
-              onChange={(e) =>
-                setForm({ ...form, phone: e.target.value })
-              }
-              className="w-full border border-[#969393] rounded-lg px-4 py-2 mb-2 outline-none focus:border-gray-700"
-            />
-
-            <button
-              type="submit"
-              className="w-full bg-[#7B2D8F] hover:bg-[#6B247C] text-white text-[16px] font-medium py-1 rounded-xl transition"
-            >
-              {/* <PhoneCall className="inline mr-2" size={18} /> */}
-              Request Callback
-            </button>
-          </form>
-
         </div>
       </div>
     </div>
+
+    {/* Body */}
+    <div className="px-5 py-2">
+
+      <div className="mb-1 flex items-center justify-center rounded-full bg-[#F3FFF5] py-2 text-[12px] font-medium text-[#009318]">
+        • No Spam Calls • Free Service
+      </div>
+
+      {phoneNumbers.map((phone) => (
+        <a
+          key={phone.number}
+          href={`tel:+91${phone.number}`}
+          className={`mb-3 flex items-center justify-center gap-3 rounded-2xl py-3 text-[17px] font-semibold text-white transition-all hover:scale-[1.02]
+          ${
+            phone.color === "green"
+              ? "bg-[#02B11F] hover:bg-[#009318]"
+              : "bg-[#FBBC05] hover:bg-[#E6A800]"
+          }`}
+        >
+          <Phone size={18} />
+          {phone.number}
+        </a>
+      ))}
+
     </div>
+
+  </div>
+</div>
+</div>
   );
 }

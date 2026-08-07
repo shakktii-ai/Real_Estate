@@ -807,28 +807,7 @@ export default function WebsitePage() {
             <Counter />
             <JoinUs />
             {/* <CallUsNow /> */}
-            <LiveAgentPopup
-                delay={20000}
-                phoneNumbers={[
-                    {
-                        number: "9284429197",
-                        color: "green",
-                    },
-                    {
-                        number: "9529249230",
-                        color: "yellow",
-                    },
-                ]}
-                onCallbackSubmit={async (data) => {
-                    await fetch("/api/callback", {
-                        method: "POST",
-                        headers: {
-                            "Content-Type": "application/json",
-                        },
-                        body: JSON.stringify(data),
-                    });
-                }}
-            />
+            
             <NewLaunchPopup
                 open={showPopup}
                 onClose={() => setShowPopup(false)}

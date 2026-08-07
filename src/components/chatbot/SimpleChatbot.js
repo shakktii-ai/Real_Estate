@@ -71,12 +71,12 @@ const CHAT_QUESTIONNAIRE_STEPS = [
     question: "When would you like to schedule your FREE Site Visit?",
     options: ['Today', 'Tomorrow', 'This Weekend', 'Talk to an Expert First']
   },
-  {
-    id: 'name',
-    type: 'input',
-    question: "Great!\n\nPlease share your Full Name.",
-    placeholder: "Enter your name"
-  },
+  // {
+  //   id: 'name',
+  //   type: 'input',
+  //   question: "Great!\n\nPlease share your Full Name.",
+  //   placeholder: "Enter your name"
+  // },
   // {
   //   id: 'phone',
   //   type: 'input',
@@ -125,7 +125,7 @@ export default function SimpleChatbot() {
   const priceRanges = ['65-80L', '80-1.20Cr', '1.20Cr-1.75Cr', '1.75Cr+'];
   const [isMobileVerified, setIsMobileVerified] = useState(!!user);
 
-  const [otpStep, setOtpStep] = useState("mobile"); // mobile | otp
+  const [otpStep, setOtpStep] = useState("name"); //name | mobile | otp
 
   const [mobileData, setMobileData] = useState({
     mobile: "",
@@ -317,18 +317,18 @@ useEffect(() => {
       if (user || isMobileVerified) {
         setCurrentStepIndex(0);
       } else {
-        setOtpStep("mobile");
+        setOtpStep("name");
 
         const alreadyExists = messages.some(
           (m) =>
             m.type === "bot" &&
-            m.content === "Welcome! Please verify your mobile number before we continue."
+            m.content === "Welcome! Please enter your full name to continue."
         );
 
         if (!alreadyExists) {
           addMessage(
             "bot",
-            "Welcome! Please verify your mobile number before we continue."
+           "Welcome! Please enter your full name to continue."
           );
         }
       }
@@ -380,7 +380,31 @@ useEffect(() => {
     const trimmedValue = inputValue.trim();
     if (!trimmedValue || loading) return;
     if (!user && !isMobileVerified) {
+  // STEP 1 - Name
+if (otpStep === "name") {
+  if (trimmedValue.length < 3) {
+    addMessage("bot", "Please enter your full name.");
+    setInputValue("");
+    return;
+  }
 
+  addMessage("user", trimmedValue);
+
+  setLeadData(prev => ({
+    ...prev,
+    name: trimmedValue,
+  }));
+
+  setOtpStep("mobile");
+  setInputValue("");
+
+  addMessage(
+    "bot",
+    "Please enter your mobile number."
+  );
+
+  return;
+}
       // STEP 1 - Mobile Number
       if (otpStep === "mobile") {
 
@@ -862,13 +886,15 @@ const projectMatchesPriceRange = (project, rangeLabel) => {
                           <input
                             value={inputValue}
                             onChange={(event) => setInputValue(event.target.value)}
-                            placeholder={
-                              !user && !isMobileVerified
-                                ? otpStep === "mobile"
-                                  ? "Enter mobile number"
-                                  : "Enter OTP"
-                                : currentStep?.placeholder || "Enter details..."
-                            }
+                           placeholder={
+  !user && !isMobileVerified
+    ? otpStep === "name"
+      ? "Enter your full name"
+      : otpStep === "mobile"
+        ? "Enter mobile number"
+        : "Enter OTP"
+    : currentStep?.placeholder || "Enter details..."
+}
                             className="flex-1 bg-transparent text-xs text-black outline-hidden placeholder:text-black"
                             disabled={loading}
                           />
@@ -884,11 +910,13 @@ const projectMatchesPriceRange = (project, rangeLabel) => {
                     </form>
                   ) : (
                     <div className="text-center text-xs text-black py-1 italic">
-                      {!user && !isMobileVerified
-                        ? otpStep === "mobile"
-                          ? "Enter your mobile number to continue."
-                          : "Enter the OTP sent to your WhatsApp."
-                        : "Please select an option above to continue..."}
+                {!user && !isMobileVerified
+  ? otpStep === "name"
+    ? "Enter your full name to continue."
+    : otpStep === "mobile"
+      ? "Enter your mobile number to continue."
+      : "Enter the OTP sent to your WhatsApp."
+  : "Please select an option above to continue..."}
                     </div>
                   )
                 ) : (

@@ -9,6 +9,7 @@ import BookVirtualTourModal from "@/components/BookVirtualTourModal";
 import { useAuth } from "@/lib/context/AuthContext";
 import { toast } from "react-toastify";
 import AuthModal from "@/components/AuthModal";
+import LiveAgentPopup from "@/components/LiveAgentPopup";
 import { BsDash } from "react-icons/bs";
 import ShareProject from "@/components/ShareProject";
 import { RiTelegram2Fill } from "react-icons/ri";
@@ -25,6 +26,7 @@ export default function ProjectDetails() {
   const [showAuthModal, setShowAuthModal] = useState(false);
   const [activeSimilarIndex, setActiveSimilarIndex] = useState(0);
   const [showReviewPopup, setShowReviewPopup] = useState(false);
+  const [showLiveAgent, setShowLiveAgent] = useState(false);
   const categoryColors = {
     Premium: "bg-[#009966]",
     Luxury: "bg-[#F97316]",
@@ -163,6 +165,35 @@ export default function ProjectDetails() {
 
     if (slug) fetchProjectAndSimilar();
   }, [slug]);
+  useEffect(() => {
+  if (!slug) return;
+
+  const viewedProjects = JSON.parse(
+    sessionStorage.getItem("viewedProjects") || "[]"
+  );
+
+  // Count only unique projects
+  if (!viewedProjects.includes(slug)) {
+    viewedProjects.push(slug);
+
+    sessionStorage.setItem(
+      "viewedProjects",
+      JSON.stringify(viewedProjects)
+    );
+  }
+
+  const viewedCount = viewedProjects.length;
+
+  // 1st = 5s, 2nd = 10s, 3rd+ = 15s
+  const delay = Math.min(viewedCount * 5000, 15000);
+
+  const timer = setTimeout(() => {
+    setShowLiveAgent(true);
+  }, delay);
+
+  return () => clearTimeout(timer);
+
+}, [slug]);
   // for similar project showcase slider
   useEffect(() => {
     if (similarProjects.length <= 1) return;
@@ -706,6 +737,31 @@ Team Piinggaksha`;
           </div>
         </div>
       )}
+      <LiveAgentPopup
+  open={showLiveAgent}
+  onClose={() => setShowLiveAgent(false)}
+  phoneNumbers={[
+    {
+      number: "9284429197",
+      color: "green",
+    },
+    {
+      number: "9529249230",
+      color: "yellow",
+    },
+  ]}
+  onCallbackSubmit={async (data) => {
+    await fetch("/api/callback", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(data),
+    });
+
+    setShowLiveAgent(false);
+  }}
+/>
       {showAuthModal && (
         <AuthModal
           onClose={() => setShowAuthModal(false)}

@@ -50,13 +50,15 @@ export default function ChatbotLeadsPage() {
 
   const handleExport = () => {
     const csv = [
-      ['Name', 'Phone', 'Email', 'Budget', 'Location', 'Status', 'Date'],
+      ['Name', 'Phone', 'Email', 'Budget', 'Location', 'Property Type', 'Basic Details', 'Status', 'Date'],
       ...leads.map((lead) => [
         lead.name,
         lead.phone,
         lead.email || '',
         lead.budget || '',
         lead.preferredLocation || '',
+        lead.propertyType || '',
+        lead.basicDetails || lead.message || '',
         lead.status,
         new Date(lead.createdAt).toLocaleDateString(),
       ]),
@@ -143,6 +145,9 @@ export default function ChatbotLeadsPage() {
                     <th className="px-4 sm:px-6 py-3 text-left font-semibold text-gray-700 hidden md:table-cell">
                       Location
                     </th>
+                    <th className="px-4 sm:px-6 py-3 text-left font-semibold text-gray-700 hidden lg:table-cell">
+                      Property Type
+                    </th>
                     <th className="px-4 sm:px-6 py-3 text-left font-semibold text-gray-700">
                       Status
                     </th>
@@ -173,6 +178,9 @@ export default function ChatbotLeadsPage() {
                       </td>
                       <td className="px-4 sm:px-6 py-4 text-gray-600 hidden md:table-cell">
                         {lead.preferredLocation || '-'}
+                      </td>
+                      <td className="px-4 sm:px-6 py-4 text-gray-600 hidden lg:table-cell">
+                        {lead.propertyType || '-'}
                       </td>
                       <td className="px-4 sm:px-6 py-4">
                         <span

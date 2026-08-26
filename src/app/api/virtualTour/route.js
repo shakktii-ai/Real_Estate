@@ -6,6 +6,7 @@ import User from "@/models/User";
 import Project from "@/models/Project";
 import Notification from "@/models/Notification";
 import { createLeadPlussLead } from "@/lib/leadPluss";
+import Lead from "@/models/LeadsAll"; // Import the LeadsAll model
 export async function POST(req) {
   try {
     await connectToDatabase();
@@ -35,7 +36,31 @@ export async function POST(req) {
      message: `New Virtual Tour booked by ${user.phone}`,
    });
    const project = await Project.findById(body.propertyId);
+await Lead.create({
+  userId: user._id,
+  propertyId: body.propertyId,
 
+  firstName: body.name || user.fullName || "",
+  phone: body.phone || user.phone || "",
+  email: body.email || user.email || "",
+
+  state: project?.state || "",
+  city: project?.city || "",
+  location: project?.location || "",
+  project: project?.projectName || "",
+  pincode: project?.pincode || "",
+
+  propertyFor: "",
+  property: "",
+  propertyType: "",
+
+  budget: "",
+
+  message: `Virtual Tour Booked | ${body.date} | ${body.time}`,
+
+  sourceType: "virtual_tour",
+  leadSource: "Website",
+});
 try {
   await createLeadPlussLead({
     FirstName: body.name,

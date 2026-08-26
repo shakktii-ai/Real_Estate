@@ -13,6 +13,7 @@ import {
   Settings,
   Menu,
   X,
+  Plug,
 } from "lucide-react";
 
 const menuItems = [
@@ -22,6 +23,7 @@ const menuItems = [
   { name: "Projects Management", icon: ClipboardList, link: "/admin/projects" },
   { name: "Calendar & Bookings", icon: Calendar, link: "/admin/calenderandbooking" },
   { name: "Blogs", icon: BookOpen, link: "/admin/blogs" },
+  { name: "Leads", icon: Plug, link: "/admin/leads"},
   { name: "Contact & Inquiries", icon: MessageSquare, link: "/admin/contact" },
   { name: "Settings", icon: Settings, link: "/admin/settings" },
 ];

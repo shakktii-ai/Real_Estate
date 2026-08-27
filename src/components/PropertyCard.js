@@ -110,7 +110,7 @@ const [showOverlay, setShowOverlay] = useState(false);
             </div>
             <div className="absolute top-3 left-3  flex flex-wrap gap-1.5 max-w-[80%]">
               {project.tags
-                ?.filter((tag) => tag !== "RERA Verified" && tag !== "Highest Selling" && tag !== "New Launch")
+                ?.filter((tag) => tag !== "RERA Verified" && tag !== "Highest Selling" && tag !== "New Launch" && tag !== "Sold out")
                 .map((tag) => (
                   <span
                     key={tag}
@@ -121,6 +121,12 @@ const [showOverlay, setShowOverlay] = useState(false);
                 ))}
 
             </div>
+
+            {project.tags?.includes("Sold out") && (
+              <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-10 bg-[#c80815] px-5 py-1 rounded-md text-[12px] sm:text-[12px] text-white font-semibold whitespace-nowrap shadow-lg">
+                Sold Out
+              </div>
+            )}
 
             {user && (
               <span

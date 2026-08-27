@@ -92,6 +92,12 @@ function PropertyFilterBar({ projects, onFilteredProjects, onViewMore }) {
 
         return () => clearInterval(interval);
     }, []);
+    const handleCategorySelect = (value) => {
+        setSelectedCategory(value);
+        if (value === "Plot") {
+            setBudget(440);
+        }
+    };
     const applyFilters = () => {
         const filtered = projects.filter((project) => {
             const matchesBudget = (project.pricing?.maxPrice || 0) / 100000 <= budget;
@@ -238,7 +244,7 @@ function PropertyFilterBar({ projects, onFilteredProjects, onViewMore }) {
                         <div className="relative flex items-center">
                             <select
                                 value={selectedCategory}
-                                onChange={(e) => setSelectedCategory(e.target.value)}
+                                onChange={(e) => handleCategorySelect(e.target.value)}
                                 className={`${selectClass} w-full bg-transparent font-medium text-gray-800 pr-5 focus:outline-none cursor-pointer`}
                                 style={{ WebkitAppearance: "none", MozAppearance: "none" }}
                             >
@@ -543,7 +549,7 @@ function FeaturedProjectCarousel({ projects, direction, onTourClick, showTopCont
     return (
         <div className="relative overflow-hidden py-4" onMouseEnter={() => setIsHovering(true)} onMouseLeave={() => setIsHovering(false)}>
             {showTopControls && (
-                <div className="flex justify-end px-3 mb-3 space-x-2">
+                <div className="flex justify-start px-3 mb-3 space-x-2">
                     <button type="button" onClick={handlePrev} className="rounded-full bg-white/95 border border-[#742E85] p-2.5 shadow-md text-[#742E85] hover:scale-105 transition">
                         <ChevronRight className="h-5 w-5 rotate-180" />
                     </button>
@@ -566,7 +572,7 @@ function FeaturedProjectCarousel({ projects, direction, onTourClick, showTopCont
                 </div>
             </div>
             {showBottomControls && (
-                <div className="flex justify-end px-3 mt-3 space-x-2">
+                <div className="flex justify-start px-3 mt-3 space-x-2">
                     <button type="button" onClick={handlePrev} className="rounded-full bg-white/95 border border-[#742E85] p-2.5 shadow-md text-[#742E85] hover:scale-105 transition">
                         <ChevronRight className="h-5 w-5 rotate-180" />
                     </button>

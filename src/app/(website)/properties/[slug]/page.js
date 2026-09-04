@@ -600,9 +600,8 @@ Team Piinggaksha`;
         </div>
         <div className="w-full lg:w-[30%]">
           {/* <div className="bg-white border border-gray-100 rounded-2xl p-8 shadow-sm  flex flex-col "> */}
-          <div className="mb-4 space-y-6">
+          {/* <div className="mb-4 space-y-6">
 
-            {/* Talk to an Expert */}
             <div className="bg-white rounded-3xl border border-gray-200 shadow-md p-5">
               <h3 className="text-xl font-semibold mb-5">
                 Talk to an Expert
@@ -634,7 +633,7 @@ Team Piinggaksha`;
               </div>
             </div>
 
-          </div>
+          </div> */}
           <div className="lg:sticky lg:top-24 bg-white rounded-3xl border border-gray-200 shadow-sm p-5">
             <h3 className="text-lg font-semibold mb-4">
               Similar Price Range

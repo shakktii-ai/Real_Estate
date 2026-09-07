@@ -786,6 +786,25 @@ export default function WebsitePage() {
   };
 
 
+const name = user?.name || "Customer";
+
+  const message = `Dear ${name},
+
+Thank you for choosing PIINGGAKSHA to help you find your dream home.
+
+We would truly appreciate it if you could take just one minute today to share your experience with our team. Your feedback helps us improve our services and also helps other homebuyers make informed decisions.
+
+⭐ Please leave your review here:
+https://g.page/r/CYYb97YJda6_EBM/review
+
+Your kind words mean a lot to us and motivate our team to serve every customer better.
+
+Thank you for your valuable time and support.
+
+Warm Regards,
+Team Piinggaksha`;
+
+  const whatsappUrl = `https://wa.me/?text=${encodeURIComponent(message)}`;
 
 
   if (loading) return null;
@@ -986,14 +1005,25 @@ export default function WebsitePage() {
         </div>
 
         {/* Button */}
-        <a
-          href="https://g.page/r/CYYb97YJda6_EBM/review"
-          target="_blank"
-          rel="noopener noreferrer"
-          className="inline-flex items-center gap-2 px-5 py-2 bg-blue-600 text-white rounded-full font-medium hover:bg-blue-700 transition-colors text-sm"
-        >
-          Review Us on Google
-        </a>
+        <div className='flex  gap-2'> <a
+                    href="https://g.page/r/CYYb97YJda6_EBM/review"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="inline-flex items-center gap-2 px-5 py-2 bg-blue-600 text-white rounded-full font-medium hover:bg-blue-700 transition-colors text-sm"
+                >
+                    Review Us on Google
+                </a>
+                 <a
+                                 href={whatsappUrl}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="inline-flex items-center gap-2 px-5 py-2 rounded-full bg-[#25D366] text-white  font-medium text-sm"
+                              >
+                                {/* <FaTelegramPlane size={24} className="mr-2" /> */}
+                                 Share Review 
+                              </a>
+                              </div> 
+            
       </div>
 
       <Review />

@@ -737,7 +737,7 @@ Team Piinggaksha`;
                 rel="noopener noreferrer"
                 className="mt-4 flex justify-center items-center rounded-[16px] bg-[#25D366] text-white py-4 font-medium"
               >
-                <FaTelegramPlane size={24} className="mr-2" /> Hare Review Link via WhatsApp
+                <FaTelegramPlane size={24} className="mr-2" /> Here Review Link via WhatsApp
               </a>
               <p className="flex justify-center mt-2 text-black text-[12px]">
                 Takes less than 60 seconds - No login required.

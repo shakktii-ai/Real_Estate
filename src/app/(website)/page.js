@@ -27,6 +27,7 @@ import NewLaunchCard from '@/components/NewLaunchCard';
 import NewLaunchPopup from '@/components/NewLaunchPopup';
 import ConsultNow from '@/components/ConsultSection';
 import Image from 'next/image';
+import { FaTelegramPlane } from 'react-icons/fa';
 // ─── Slide data ───────────────────────────────────────────────────────────────
 const WHY_SLIDES = [
     {
@@ -669,7 +670,26 @@ export default function WebsitePage() {
         setFilteredProjects(filtered);
         setHasFiltered(true);
     };
+const name = user?.name || "Customer";
 
+  const message = `Dear ${name},
+
+Thank you for choosing PIINGGAKSHA to help you find your dream home.
+
+We would truly appreciate it if you could take just one minute today to share your experience with our team. Your feedback helps us improve our services and also helps other homebuyers make informed decisions.
+
+⭐ Please leave your review here:
+https://g.page/r/CYYb97YJda6_EBM/review
+
+Your kind words mean a lot to us and motivate our team to serve every customer better.
+
+Thank you for your valuable time and support.
+
+Warm Regards,
+Team Piinggaksha`;
+
+  const whatsappUrl = `https://wa.me/?text=${encodeURIComponent(message)}`;
+  
     if (loading || user) return null;
 
     return (
@@ -771,7 +791,7 @@ export default function WebsitePage() {
                 </div>
 
                 {/* Button */}
-                <a
+              <div className='flex  gap-2'> <a
                     href="https://g.page/r/CYYb97YJda6_EBM/review"
                     target="_blank"
                     rel="noopener noreferrer"
@@ -779,6 +799,16 @@ export default function WebsitePage() {
                 >
                     Review Us on Google
                 </a>
+                 <a
+                                 href={whatsappUrl}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="inline-flex items-center gap-2 px-5 py-2 rounded-full bg-[#25D366] text-white  font-medium text-sm"
+                              >
+                                {/* <FaTelegramPlane size={24} className="mr-2" /> */}
+                                 Share Review 
+                              </a>
+                              </div> 
             </div>
 
             <Review />

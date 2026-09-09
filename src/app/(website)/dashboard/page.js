@@ -197,9 +197,21 @@ function PropertyFilterBar({ projects, onFilteredProjects, onViewMore }) {
 
       <div className="flex flex-col lg:flex-row items-center gap-4 w-full ">
         {/* ── 1. Filter Bar Component ── */}
-        <div className="bg-white text-[14px] rounded-xl shadow-lg px-5 py-3 flex flex-wrap md:flex-nowrap items-center gap-4 md:gap-0 w-full max-w-4xl border border-gray-100">
+        {/* <div className="bg-white text-[14px] rounded-xl shadow-lg px-5 py-3 flex flex-wrap md:flex-nowrap items-center gap-4 md:gap-0 w-full max-w-4xl border border-gray-100"> */}
+          <div
+  className="
+    bg-white text-[14px] rounded-xl shadow-lg
+    px-4 py-3
+    grid grid-cols-2 gap-x-4 gap-y-3
+    w-full max-w-4xl
+    border border-gray-100
+    md:flex md:flex-nowrap md:items-center md:gap-0
+  "
+>
           {/* Location */}
-          <div className="flex flex-col flex-1 min-w-[120px] md:border-r border-gray-200 md:pr-4">
+          {/* <div className="flex flex-col flex-1 min-w-[120px] md:border-r border-gray-200 md:pr-4"> */}
+           <div className="flex flex-col min-w-0 md:flex-1 md:border-r md:border-gray-200 md:pr-4">
+                     
             <span className=" font-semibold text-[#742E85] uppercase tracking-widest mb-1">Location</span>
             <div className="relative flex items-center">
               <select
@@ -227,7 +239,9 @@ function PropertyFilterBar({ projects, onFilteredProjects, onViewMore }) {
           </div>
 
           {/* Property */}
-          <div className="flex flex-col flex-1 min-w-[170px] md:border-r border-gray-200 md:px-4">
+          {/* <div className="flex flex-col flex-1 min-w-[170px] md:border-r border-gray-200 md:px-4"> */}
+             <div className="flex flex-col min-w-0 md:flex-1 md:border-r md:border-gray-200 md:px-4">
+                      
             <span className=" font-semibold text-[#742E85] uppercase tracking-widest mb-1">Property</span>
             <div className="relative flex items-center">
               <select
@@ -246,7 +260,9 @@ function PropertyFilterBar({ projects, onFilteredProjects, onViewMore }) {
           </div>
 
           {/* Budget */}
-          <div className="flex flex-col flex-1 min-w-[140px] md:border-r border-gray-200 md:px-4">
+          {/* <div className="flex flex-col flex-1 min-w-[140px] md:border-r border-gray-200 md:px-4"> */}
+           <div className="flex flex-col min-w-0 md:flex-1 md:border-r md:border-gray-200 md:px-4">
+                    
             <span className=" font-semibold text-[#742E85] uppercase tracking-widest mb-1">Budget</span>
             <input
               type="range" min="65" max="1000" step="1" value={budget}
@@ -259,7 +275,9 @@ function PropertyFilterBar({ projects, onFilteredProjects, onViewMore }) {
           </div>
 
           {/* Status */}
-          <div className="flex flex-col flex-1 min-w-[120px] md:border-r border-gray-200 md:px-4">
+          {/* <div className="flex flex-col flex-1 min-w-[120px] md:border-r border-gray-200 md:px-4"> */}
+            <div className="flex flex-col min-w-0 md:flex-1 md:border-r md:border-gray-200 md:px-4">
+                    
             <span className="font-semibold text-[#742E85] uppercase tracking-widest mb-1">Status</span>
             <div className="relative flex items-center">
               <select
@@ -422,7 +440,7 @@ function HeroWhyChooseUs({ projects, onFilteredProjects, onViewMore }) {
       </section>
       {newLaunchProjects.length > 0 && (
         <div className="p-6 bg-[#742E85]">
-          <div className="flex gap-1 lg:gap-2 mb-3 w-[380px] lg:w-md rounded-2xl px-2 lg:px-4 py-2 lg:py-0">
+          <div className="flex gap-1 lg:gap-2 mb-3 w-[338px] lg:w-md rounded-2xl px-2 lg:px-4 py-2 lg:py-0">
             <Image
               src="/rocket.png"
               alt="New Launch"
@@ -431,7 +449,7 @@ function HeroWhyChooseUs({ projects, onFilteredProjects, onViewMore }) {
               className="object-contain"
             />
 
-            <h3 className="text-white font-semibold text-[18px] lg:text-[20px]">
+            <h3 className="text-white font-semibold text-[15px] sm:text-[18px] lg:text-[20px]">
               New Launches – Be the First to Know
             </h3>
           </div>

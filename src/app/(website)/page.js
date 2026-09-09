@@ -431,7 +431,7 @@ function HeroWhyChooseUs({ projects, onFilteredProjects, onViewMore }) {
                                 <ul className="space-y-2.5 sm:space-y-3 w-full md:max-w-[800px] text-[15px] sm:text-[16px] md:text-[16px] pl-[52px] md:pl-[66px]">
                                     {slide.points.map((pt, i) => (
                                         <li
-                                            key={i} className="flex items-start gap-2.5 sm:gap-3 leading-5 md:leading-[22px] text-[##5E5E5E] font-medium"
+                                            key={i} className="flex items-start gap-2.5 sm:gap-3 leading-5 md:leading-[22px] text-[#5E5E5E] font-medium"
                                         >
                                             <span
                                                 className="flex-shrink-0 rounded-full bg-[#5E5E5E] w-1.5 h-1.5 mt-2"

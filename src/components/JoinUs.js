@@ -32,9 +32,9 @@ export default function GrowBusinessSection() {
           {/* Right */}
           <div className="order-1 lg:order-2">
             <img
-              src="/joinus.png"
+              src="/whyWork.png"
               alt="Grow with PIINGGAKSHA"
-              className="w-full h-[220px] sm:h-[280px] lg:h-[320px] object-cover rounded-2xl"
+              className="w-100% h-[100%] sm:h-[280px] lg:h-[100%] object-cover "
             />
           </div>
 

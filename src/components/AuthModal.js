@@ -341,7 +341,7 @@ export default function AuthModal({ onClose, onAuthSuccess }) {
                         <button
                             type="button"
                             onClick={handleSendOtp}
-                            className="w-full py-2 uppercase rounded-md font-semibold border mt-2 transition flex items-center justify-center gap-2 bg-[#ffffff] hover:bg-gray-50 hover:cursor-pointer text-black"
+                            className="w-full py-2 uppercase rounded-md font-semibold border mt-2 transition flex items-center justify-center gap-2 bg-[#ffffff] hover:bg-gray-50 hover:cursor-pointer text-[#FF0000] border-[#FF0000]"
                         >
                             Resend OTP
                         </button>

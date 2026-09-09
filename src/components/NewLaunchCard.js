@@ -23,7 +23,7 @@ export default function NewLaunchCard({ project }) {
 
   return (
     <Link href={`/properties/${project.slug}`}>
-      <div className="group w-full lg:w-[250px] bg-white/70 border border-[#ffffff] rounded-2xl  p-2  transition cursor-pointer">
+      <div className="group w-full lg:w-[250px] bg-white border border-[#000000] rounded-2xl  p-2  transition cursor-pointer">
 
         <div className="flex gap-2">
           <img

@@ -140,14 +140,12 @@ function PropertyFilterBar({ projects, onFilteredProjects, onViewMore }) {
 
   const selectClass =
     "appearance-none w-full text-sm text-gray-800 font-semibold bg-transparent outline-none pr-6 cursor-pointer rounded-none border-0 focus:ring-0";
-  const newLaunchProjects = projects
-    .filter((project) => project.tags?.includes("New Launch"))
-    .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+
   return (
-    <div className="w-full max-w-6xl mx-auto">
+    <div className="w-full max-w-6xl mx-auto ">
 
       {/* Trust Bar */}
-      <div className="flex flex-row md:flex-cols flex-wrap gap-2 py-4">
+      <div className="hidden md:flex flex-cols  md:flex-row flex-wrap  gap-2 py-4 ">
         {/* No Brokerage */}
         <div className="flex items-center gap-2 w-full md:w-[160px] h-[70px] rounded-2xl border border-[#664997] bg-[#6D4491]/85 px-2 shadow-md shadow-gray-600">
           <div className="w-[45px] h-[58px] rounded-xl border border-[#664997] bg-[#000000]/60 flex items-center justify-center">
@@ -196,7 +194,8 @@ function PropertyFilterBar({ projects, onFilteredProjects, onViewMore }) {
           </h3>
         </div>
       </div>
-      <div className="flex flex-col lg:flex-row items-center gap-4 w-full">
+
+      <div className="flex flex-col lg:flex-row items-center gap-4 w-full ">
         {/* ── 1. Filter Bar Component ── */}
         <div className="bg-white text-[14px] rounded-xl shadow-lg px-5 py-3 flex flex-wrap md:flex-nowrap items-center gap-4 md:gap-0 w-full max-w-4xl border border-gray-100">
           {/* Location */}
@@ -282,7 +281,7 @@ function PropertyFilterBar({ projects, onFilteredProjects, onViewMore }) {
           <div className="md:pl-3 w-full md:w-auto">
             <button
               onClick={applyFilters}
-              className="bg-black text-white text-sm font-bold px-8 py-3 rounded-xl hover:bg-gray-900 transition whitespace-nowrap"
+              className="w-full md:w-auto bg-black text-white text-sm font-bold px-8 py-3 rounded-xl hover:bg-gray-900 transition whitespace-nowrap"
             >
               Apply
             </button>
@@ -290,44 +289,7 @@ function PropertyFilterBar({ projects, onFilteredProjects, onViewMore }) {
         </div>
       </div>
 
-      {newLaunchProjects.length > 0 && (
-        <div className="mt-6">
-          <div className="flex gap-1 lg:gap-2 mb-3 bg-white/50 w-[380px] lg:w-md rounded-2xl px-2 lg:px-4 py-2 lg:py-0">
-            <Image
-              src="/rocket.png"
-              alt="New Launch"
-              width={24}
-              height={24}
-              className="object-contain"
-            />
 
-            <h3 className="text-black font-semibold text-[18px] lg:text-[20px]">
-              New Launches – Be the First to Know
-            </h3>
-          </div>
-
-          <div className="flex flex-col lg:flex-row gap-3 ">
-            {newLaunchProjects.slice(0, 3).map((project) => (
-              <NewLaunchCard
-                key={project._id}
-                project={project}
-              />
-            ))}
-            {newLaunchProjects.length > 3 && (
-
-              <button
-                onClick={onViewMore}
-                className="text-black underline decoration-black font-semibold text-[20px] hover:cursor-pointer"
-              >
-
-                View More
-
-              </button>
-
-            )}
-          </div>
-        </div>
-      )}
     </div>
   );
 }
@@ -346,63 +308,57 @@ function HeroWhyChooseUs({ projects, onFilteredProjects, onViewMore }) {
   }, [isPaused]);
 
   const slide = WHY_SLIDES[current];
+  const newLaunchProjects = projects
+    .filter((project) => project.tags?.includes("New Launch"))
+    .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
 
   return (
     <>
-      <div className='w-full bg-[#742E85]/41 font-medium text-[12px] lg:text-[18px] flex justify-center items-center text-black p-2'>
-        <Phone size={15} className='text-black mr-2 ' />   Talk to Our Property Expert  : <a href="tel:+919284429197" className='mr-2'> 9284429197</a>  |  <a href="tel:+919529249230" className='ml-2'>9529249230</a>
+      <div className='w-full bg-[#742E85] font-medium text-[12px] lg:text-[18px] flex justify-center items-center text-white p-2'>
+        <Phone size={15} className='text-white mr-2 ' />   Talk to Our Property Expert  : <a href="tel:+919284429197" className='mr-2'> 9284429197</a>  |  <a href="tel:+919529249230" className='ml-2'>9529249230</a>
       </div>
       <section
         className="relative w-full overflow-hidden"
         style={{ minHeight: "92vh" }}
-        onTouchStart={() => setIsPaused(true)}
-        onTouchEnd={() => setIsPaused(false)}
-        onMouseDown={() => setIsPaused(true)}
-        onMouseUp={() => setIsPaused(false)}
-        onMouseEnter={() => setIsPaused(true)}
-        onMouseLeave={() => setIsPaused(false)}
+      // onTouchStart={() => setIsPaused(true)}
+      // onTouchEnd={() => setIsPaused(false)}
+      // onMouseDown={() => setIsPaused(true)}
+      // onMouseUp={() => setIsPaused(false)}
+      // onMouseEnter={() => setIsPaused(true)}
+      // onMouseLeave={() => setIsPaused(false)}
       >
 
-        {/* ── Background layer ── */}
+        {/* ── Static full-viewport background ── */}
+        {/* <div
+          className="absolute inset-0 w-screen overflow-hidden bg-cover bg-center bg-no-repeat "
+          style={{
+            zIndex: 0,
+            backgroundImage: "url('/HeroSection.png')",
+          }}
+          aria-hidden="true"
+        /> */}
         <div
-          key={current}
-          className="absolute inset-0 transition-opacity duration-700 ease-in-out"
-          style={{ zIndex: 0 }}
-        >
-          <img
-            src={slide.bg}
-            alt=""
-            loading="eager"
-            decoding="async"
-            className="absolute inset-0 w-full h-full object-cover md:object-center"
-            aria-hidden="true"
-          />
-          <div className="absolute inset-0">
-            <div className="absolute inset-0 md:hidden bg-gradient-to-b from-[#ffffff] to-[#ffffff]/10" />
-            <div className="absolute inset-0 hidden md:block bg-gradient-to-b from-[#ffffff] to-[#ffffff]/25" />
-          </div>
-        </div>
+          className="
+    absolute inset-0 w-full overflow-hidden
+    bg-cover  bg-center bg-no-repeat
+    bg-[url('/HeroSectionMbl.png')]
+    md:bg-[url('/HeroSection.png')]
+  "
+          style={{
+            zIndex: 0,
+          }}
+          aria-hidden="true"
+        />
+
 
         {/* ── Content ── */}
         <div
-          className="relative flex flex-col justify-between px-6 md:px-14 lg:px-20 pt-6 pb-4"
+          className="relative flex flex-col justify-between px-6 md:px-14 lg:px-15  pb-4"
           style={{ zIndex: 10, minHeight: "82vh" }}
         >
-          <div className="flex-1 flex flex-col justify-center max-w-6xl">
+          <div className="flex-1 flex flex-col justify-start md:justify-center max-w-xl mt-4 md:mt-0">
 
-            <p
-              className="mb-5 font-semibold text-[24px] lg:text-[28px] text-[#2D1037]"
-              style={{
-                fontSize: "clamp(16px, 1.8vw, 20px)",
-                lineHeight: "28px",
-                letterSpacing: "0rem",
-                width: "fit-content",
-              }}
-            >
-              The Address That Defines Success,
-              <br className="hidden sm:inline" />{" "}
-              Your Gateway to Premium Living in Pune South
-            </p>
+
 
             <AnimatePresence mode="wait">
               <motion.div
@@ -425,27 +381,27 @@ function HeroWhyChooseUs({ projects, onFilteredProjects, onViewMore }) {
                   </div>
 
                   <h2
-                    className="font-semibold leading-tight text-[18px] sm:text-[22px] md:text-[28px] text-[#54315D] w-full"
+                    className="font-semibold leading-tight text-[18px] sm:text-[22px] md:text-[22px] bg-gradient-to-r from-[#000000] to-[#CD00FF] bg-clip-text text-transparent"
                   >
                     {slide.badge}
                   </h2>
                 </div>
 
-                <ul className="space-y-2.5 sm:space-y-3 w-full md:max-w-[800px] text-[15px] sm:text-[16px] md:text-[18px] pl-[52px] md:pl-[66px]">
+                <ul className="space-y-2.5 sm:space-y-3 w-full md:max-w-[800px] text-[15px] sm:text-[16px] md:text-[16px] pl-[52px] md:pl-[66px]">
                   {slide.points.map((pt, i) => (
                     <li
                       key={i}
-                      className="flex items-start gap-2.5 sm:gap-3 leading-5 md:leading-[22px] text-[#54325D] font-medium"
-                      // style={{
-                      //   color: "#ffffff",
-                      //   fontFamily: "Poppins, sans-serif",
-                      //   //   fontSize: "clamp(14px, 1.4vw, 18px)",
-                      //   fontWeight: 400,
-                      // }}
+                      className="flex items-start gap-2.5 sm:gap-3 leading-5 md:leading-[22px] text-[#5E5E5E] font-medium"
+                    // style={{
+                    //   color: "#ffffff",
+                    //   fontFamily: "Poppins, sans-serif",
+                    //   //   fontSize: "clamp(14px, 1.4vw, 18px)",
+                    //   fontWeight: 400,
+                    // }}
                     >
                       <span
-                        className="flex-shrink-0 rounded-full bg-[#54325D] w-1.5 h-1.5 mt-2"
-                        // style={{ width: 5, height: 5, background: "#ffffff", marginTop: 8 }}
+                        className="flex-shrink-0 rounded-full bg-[#5E5E5E] w-1.5 h-1.5 mt-2"
+                      // style={{ width: 5, height: 5, background: "#ffffff", marginTop: 8 }}
                       />
                       <span>{pt}</span>
                     </li>
@@ -453,13 +409,75 @@ function HeroWhyChooseUs({ projects, onFilteredProjects, onViewMore }) {
                 </ul>
               </motion.div>
             </AnimatePresence>
+            <div className="flex md:hidden mt-4" >
+              <img src='/NoBorkerage.png' alt='' />
+            </div>
           </div>
 
-          <div className="flex flex-col items-center gap-5 mt-0">
+
+          <div className="flex flex-col items-center gap-5 ">
             <PropertyFilterBar projects={projects} onFilteredProjects={onFilteredProjects} onViewMore={onViewMore} />
           </div>
         </div>
       </section>
+      {newLaunchProjects.length > 0 && (
+        <div className="p-6 bg-[#742E85]">
+          <div className="flex gap-1 lg:gap-2 mb-3 w-[380px] lg:w-md rounded-2xl px-2 lg:px-4 py-2 lg:py-0">
+            <Image
+              src="/rocket.png"
+              alt="New Launch"
+              width={24}
+              height={24}
+              className="object-contain"
+            />
+
+            <h3 className="text-white font-semibold text-[18px] lg:text-[20px]">
+              New Launches – Be the First to Know
+            </h3>
+          </div>
+
+          <div className="flex flex-col lg:flex-row gap-3 ">
+            {newLaunchProjects.slice(0, 3).map((project, index) => (
+              <motion.div
+                key={project._id}
+                initial={{
+                  opacity: 0,
+                  y: 30,
+                  scale: 0.95,
+                }}
+                whileInView={{
+                  opacity: 1,
+                  y: 0,
+                  scale: 1,
+                }}
+                viewport={{
+                  once: false,
+                  amount: 0.2,
+                }}
+                transition={{
+                  duration: 0.6,
+                  delay: index * 0.15,
+                  ease: [0.22, 1, 0.36, 1],
+                }}
+              >
+                <NewLaunchCard project={project} />
+              </motion.div>
+            ))}
+            {newLaunchProjects.length > 3 && (
+
+              <button
+                onClick={onViewMore}
+                className="text-white  font-semibold text-[20px] hover:cursor-pointer"
+              >
+
+                View More
+
+              </button>
+
+            )}
+          </div>
+        </div>
+      )}
     </>
   );
 }
@@ -658,9 +676,9 @@ export default function WebsitePage() {
   const [livingIndex, setLivingIndex] = useState(0);
   const [isLivingHovered, setIsLivingHovered] = useState(false);
   const [showPopup, setShowPopup] = useState(false);
-    const newLaunchProjects = projects
-        .filter(p => p.tags?.includes("New Launch"))
-        .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+  const newLaunchProjects = projects
+    .filter(p => p.tags?.includes("New Launch"))
+    .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
 
   const handleToggleWishlist = (propertyId, isNowWishlisted) => {
     if (isNowWishlisted) {
@@ -786,7 +804,7 @@ export default function WebsitePage() {
   };
 
 
-const name = user?.name || "Customer";
+  const name = user?.name || "Customer";
 
   const message = `Dear ${name},
 
@@ -811,7 +829,7 @@ Team Piinggaksha`;
   return (
     <div className='bg-white'>
 
-      <HeroWhyChooseUs projects={projects} onFilteredProjects={handleFilteredProjects} onViewMore={() => setShowPopup(true)}/>
+      <HeroWhyChooseUs projects={projects} onFilteredProjects={handleFilteredProjects} onViewMore={() => setShowPopup(true)} />
 
       {/* ② Explore Filtered Results (shown after Apply) */}
       {hasFiltered && (
@@ -1006,24 +1024,24 @@ Team Piinggaksha`;
 
         {/* Button */}
         <div className='flex  gap-2'> <a
-                    href="https://g.page/r/CYYb97YJda6_EBM/review"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="inline-flex items-center gap-2 px-5 py-2 bg-blue-600 text-white rounded-full font-medium hover:bg-blue-700 transition-colors text-sm"
-                >
-                    Review Us on Google
-                </a>
-                 <a
-                                 href={whatsappUrl}
-                                target="_blank"
-                                rel="noopener noreferrer"
-                                className="inline-flex items-center gap-2 px-5 py-2 rounded-full bg-[#25D366] text-white  font-medium text-sm"
-                              >
-                                {/* <FaTelegramPlane size={24} className="mr-2" /> */}
-                                 Share Review 
-                              </a>
-                              </div> 
-            
+          href="https://g.page/r/CYYb97YJda6_EBM/review"
+          target="_blank"
+          rel="noopener noreferrer"
+          className="inline-flex items-center gap-2 px-5 py-2 bg-blue-600 text-white rounded-full font-medium hover:bg-blue-700 transition-colors text-sm"
+        >
+          Review Us on Google
+        </a>
+          <a
+            href={whatsappUrl}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="inline-flex items-center gap-2 px-5 py-2 rounded-full bg-[#25D366] text-white  font-medium text-sm"
+          >
+            {/* <FaTelegramPlane size={24} className="mr-2" /> */}
+            Share Review
+          </a>
+        </div>
+
       </div>
 
       <Review />

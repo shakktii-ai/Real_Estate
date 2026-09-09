@@ -144,7 +144,7 @@ function PropertyFilterBar({ projects, onFilteredProjects, onViewMore }) {
 
     return (
 
-        <div className="w-full max-w-6xl mx-auto">
+        <div className="w-full max-w-6xl mx-auto mt-6">
 
 
             <div className="hidden md:flex flex-row md:flex-cols flex-wrap gap-2 py-4">
@@ -197,18 +197,15 @@ function PropertyFilterBar({ projects, onFilteredProjects, onViewMore }) {
                 </div>
             </div>
 
-            <div className="flex flex-col lg:flex-row items-center gap-4 w-full">
+            <div className="flex flex-col lg:flex-row items-center gap-4 w-full mt-[102px] md:mt-0">
                 {/* ── 1. Filter Bar Component ── */}
                 {/* <div className="bg-white text-[14px] rounded-xl shadow-lg px-5 py-3 flex flex-wrap md:flex-nowrap items-center gap-4 md:gap-0 w-full max-w-4xl border border-gray-100"> */}
                 <div
                     className="
-    bg-white text-[14px] rounded-xl shadow-lg
-    px-4 py-3
-    grid grid-cols-2 gap-x-4 gap-y-3
-    w-full max-w-4xl
-    border border-gray-100
-    md:flex md:flex-nowrap md:items-center md:gap-0
-  "
+                       bg-white text-[14px] rounded-xl shadow-lg px-4 py-3 grid grid-cols-2 gap-x-4 gap-y-3
+                       w-full max-w-4xl
+                         border border-gray-100
+                         md:flex md:flex-nowrap md:items-center md:gap-0 "
                 >
                     {/* Location */}
                     {/* <div className="flex flex-col flex-1 min-w-[120px] md:border-r border-gray-200 md:pr-4"> */}
@@ -316,7 +313,8 @@ function PropertyFilterBar({ projects, onFilteredProjects, onViewMore }) {
                     </div>
 
                     {/* Apply Button */}
-                    <div className="md:pl-3 w-full md:w-auto">
+                    {/* <div className="md:pl-3 w-full md:w-auto"> */}
+                    <div className="col-span-2 md:col-span-1 md:pl-3 md:w-auto">
                         <button
                             onClick={applyFilters}
                             className="w-full md:w-auto bg-[#1B1C22] text-white text-[15px] font-bold px-8 py-2.5 rounded-xl hover:bg-black transition-all shadow-md whitespace-nowrap active:scale-95 cursor-pointer"
@@ -351,7 +349,7 @@ function HeroWhyChooseUs({ projects, onFilteredProjects, onViewMore }) {
         .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
     return (
         <>
-            <div className='w-full  bg-[#742E85] font-medium text-[12px] lg:text-[18px] flex justify-center items-center text-white p-2'>
+            <div className='w-full   bg-[#742E85] font-medium text-[10px] lg:text-[18px] flex  justify-center items-center text-white p-2'>
                 <Phone size={15} className='text-white mr-2 ' />   Talk to Our Property Expert  : <a href="tel:+919284429197" className='mr-2'> 9284429197</a>  |  <a href="tel:+919529249230" className='ml-2'>9529249230</a>
             </div>
             <section

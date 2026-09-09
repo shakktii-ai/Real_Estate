@@ -332,7 +332,7 @@ function HeroWhyChooseUs({ projects, onFilteredProjects, onViewMore }) {
 
   return (
     <>
-      <div className='w-full bg-[#742E85] font-medium text-[12px] lg:text-[18px] flex justify-center items-center text-white p-2'>
+      <div className='w-full bg-[#742E85] font-medium text-[10px] lg:text-[18px] flex justify-center items-center text-white p-2'>
         <Phone size={15} className='text-white mr-2 ' />   Talk to Our Property Expert  : <a href="tel:+919284429197" className='mr-2'> 9284429197</a>  |  <a href="tel:+919529249230" className='ml-2'>9529249230</a>
       </div>
       <section

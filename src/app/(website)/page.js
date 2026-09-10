@@ -353,8 +353,10 @@ function HeroWhyChooseUs({ projects, onFilteredProjects, onViewMore }) {
                 <Phone size={15} className='text-white mr-2 ' />   Talk to Our Property Expert  : <a href="tel:+919284429197" className='mr-2'> 9284429197</a>  |  <a href="tel:+919529249230" className='ml-2'>9529249230</a>
             </div>
             <section
-                className="relative w-full overflow-hidden"
-                style={{ minHeight: "92vh" }}
+                className="relative w-full overflow-hidden  h-[720px]
+    sm:h-[760px]
+    md:h-auto md:min-h-[86vh]"
+                // style={{ minHeight: "92vh" }}
             // onTouchStart={() => setIsPaused(true)}
             // onTouchEnd={() => setIsPaused(false)}
             // onMouseDown={() => setIsPaused(true)}
@@ -364,18 +366,38 @@ function HeroWhyChooseUs({ projects, onFilteredProjects, onViewMore }) {
             >
 
                 {/* ── Background layer ── */}
-                <div
-                    className="
-    absolute inset-0 w-full overflow-hidden
-    bg-cover  bg-center bg-no-repeat
-    bg-[url('/HeroSectionMbl.png')]
-    md:bg-[url('/HeroSection.png')]
-  "
-                    style={{
-                        zIndex: 0,
-                    }}
-                    aria-hidden="true"
-                />
+            <div
+          className="absolute inset-0 w-full h-full overflow-hidden"
+          style={{ zIndex: 0 }}
+          aria-hidden="true"
+        >
+          {/* Mobile */}
+          <img
+            src="/HeroSectionMbl3.png"
+            alt=""
+            className="
+      absolute inset-0
+      w-full h-full
+      object-cover
+      object-center
+      md:hidden
+    "
+          />
+
+          {/* Desktop */}
+          <img
+            src="/HeroSection.png"
+            alt=""
+            className="
+      absolute inset-0
+      w-full h-full
+      object-cover
+      object-center
+      hidden md:block
+    "
+          />
+        </div>
+
                 {/* <div
                     className="absolute inset-0 w-screen overflow-hidden bg-cover bg-center bg-no-repeat "
                     style={{
@@ -399,68 +421,78 @@ function HeroWhyChooseUs({ projects, onFilteredProjects, onViewMore }) {
                 </div> */}
 
                 {/* ── Content ── */}
-                <div
-                    className="relative flex flex-col justify-between px-6 md:px-14 lg:px-15 pt-4 pb-4"
-                    style={{ zIndex: 10, minHeight: "82vh" }}
-                >
-                    <div className="flex-1 flex flex-col justify-start md:justify-center max-w-xl mt-2 md:mt-0">
-
-
-
-                        <AnimatePresence mode="wait">
-                            <motion.div
-                                key={current}
-                                initial={{ opacity: 0, y: 20 }}
-                                animate={{ opacity: 1, y: 0 }}
-                                exit={{ opacity: 0, y: -20 }}
-                                transition={{ duration: 0.5 }}
-                                className="w-full"
-                            >
-                                {/* Header & Icon Container */}
-                                <div className="flex items-center gap-3 sm:gap-4 mb-2 sm:mb-3">
-                                    {/* Dynamic Icon Wrapper */}
-                                    <div
-                                        className="flex-shrink-0 flex items-center justify-center rounded-full shadow-md shadow-black/25 w-10 h-10 md:w-[50px] md:h-[50px] bg-gradient-to-br from-white to-[#E579FF]"
-                                    >
-                                        <img
-                                            src={slide.icon}
-                                            alt=""
-                                            className="w-6 h-6 md:w-9 md:h-9 object-contain"
-                                        />
-                                    </div>
-
-                                    {/* Heading */}
-                                    <h2
-                                        className="font-semibold leading-tight text-[18px] sm:text-[22px] md:text-[22px] bg-gradient-to-r from-[#000000] to-[#CD00FF] bg-clip-text text-transparent"
-                                    >
-                                        {slide.badge}
-                                    </h2>
-                                </div>
-
-                                {/* Bullet Points List */}
-                                <ul className="space-y-2.5 sm:space-y-3 w-full md:max-w-[800px] text-[15px] sm:text-[16px] md:text-[16px] pl-[52px] md:pl-[66px]">
-                                    {slide.points.map((pt, i) => (
-                                        <li
-                                            key={i} className="flex items-start gap-2.5 sm:gap-3 leading-5 md:leading-[22px] text-[#5E5E5E] font-medium"
-                                        >
-                                            <span
-                                                className="flex-shrink-0 rounded-full bg-[#5E5E5E] w-1.5 h-1.5 mt-2"
-                                            />
-                                            <span>{pt}</span>
-                                        </li>
-                                    ))}
-                                </ul>
-                            </motion.div>
-                        </AnimatePresence>
-                        <div className="flex md:hidden mt-4" >
-                            <img src='/NoBorkerage.png' alt='' />
-                        </div>
-                    </div>
-
-                    <div className="flex flex-col items-center gap-5 mt-0">
-                        <PropertyFilterBar projects={projects} onFilteredProjects={onFilteredProjects} onViewMore={onViewMore} />
-                    </div>
+              
+                     <div
+          className="
+    absolute top-4 left-6 right-6
+    md:relative md:top-4 md:left-8 md:right-auto
+    md:px-0 md:max-w-xl
+  "
+        >
+          <AnimatePresence mode="wait">
+            <motion.div
+              key={current}
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -20 }}
+              transition={{ duration: 0.5 }}
+              className="w-full "
+            >
+              {/* Header */}
+              <div className="flex items-center gap-3 sm:gap-4 mb-2 sm:mb-3">
+                <div className="flex-shrink-0 flex items-center justify-center rounded-full shadow-md shadow-black/25 w-10 h-10 md:w-[50px] md:h-[50px] bg-gradient-to-br from-white to-[#E579FF]">
+                  <img
+                    src={slide.icon}
+                    alt=""
+                    className="w-6 h-6 md:w-9 md:h-9 object-contain"
+                  />
                 </div>
+
+                <h2 className="font-semibold leading-tight text-[18px] sm:text-[22px] md:text-[22px] bg-gradient-to-r from-[#000000] to-[#CD00FF] bg-clip-text text-transparent">
+                  {slide.badge}
+                </h2>
+              </div>
+
+              {/* Points */}
+              <ul className="space-y-2.5 sm:space-y-3 w-full md:max-w-[800px] text-[15px] sm:text-[16px] md:text-[16px] pl-[52px] md:pl-[66px]">
+                {slide.points.map((pt, i) => (
+                  <li
+                    key={i}
+                    className="flex items-start gap-2.5 sm:gap-3 leading-5 md:leading-[22px] text-[#5E5E5E] font-medium"
+                  >
+                    <span className="flex-shrink-0 rounded-full bg-[#5E5E5E] w-1.5 h-1.5 mt-2" />
+                    <span>{pt}</span>
+                  </li>
+                ))}
+              </ul>
+            </motion.div>
+          </AnimatePresence>
+        </div>
+<div className="absolute top-[280px] left-4 right-4 md:hidden">
+          <img
+            src="/NoBorkerage.png"
+            alt=""
+            className="w-full"
+          />
+        </div>
+        
+                  <div
+          className="
+    absolute
+    left-4 right-4
+    bottom-4
+    md:left-14 md:right-14
+    md:bottom-6
+    lg:left-15 lg:right-15
+  "
+        >
+          <PropertyFilterBar
+            projects={projects}
+            onFilteredProjects={onFilteredProjects}
+            onViewMore={onViewMore}
+          />
+        </div>
+               
             </section>
             {newLaunchProjects.length > 0 && (
                 <div className="p-6 bg-[#742E85]">

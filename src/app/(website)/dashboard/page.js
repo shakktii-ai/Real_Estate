@@ -198,8 +198,8 @@ function PropertyFilterBar({ projects, onFilteredProjects, onViewMore }) {
       <div className="flex flex-col lg:flex-row items-center gap-4 w-full ">
         {/* ── 1. Filter Bar Component ── */}
         {/* <div className="bg-white text-[14px] rounded-xl shadow-lg px-5 py-3 flex flex-wrap md:flex-nowrap items-center gap-4 md:gap-0 w-full max-w-4xl border border-gray-100"> */}
-          <div
-  className="
+        <div
+          className="
     bg-white text-[14px] rounded-xl shadow-lg
     px-4 py-3
     grid grid-cols-2 gap-x-4 gap-y-3
@@ -207,11 +207,11 @@ function PropertyFilterBar({ projects, onFilteredProjects, onViewMore }) {
     border border-gray-100
     md:flex md:flex-nowrap md:items-center md:gap-0
   "
->
+        >
           {/* Location */}
           {/* <div className="flex flex-col flex-1 min-w-[120px] md:border-r border-gray-200 md:pr-4"> */}
-           <div className="flex flex-col min-w-0 md:flex-1 md:border-r md:border-gray-200 md:pr-4">
-                     
+          <div className="flex flex-col min-w-0 md:flex-1 md:border-r md:border-gray-200 md:pr-4">
+
             <span className=" font-semibold text-[#742E85] uppercase tracking-widest mb-1">Location</span>
             <div className="relative flex items-center">
               <select
@@ -240,8 +240,8 @@ function PropertyFilterBar({ projects, onFilteredProjects, onViewMore }) {
 
           {/* Property */}
           {/* <div className="flex flex-col flex-1 min-w-[170px] md:border-r border-gray-200 md:px-4"> */}
-             <div className="flex flex-col min-w-0 md:flex-1 md:border-r md:border-gray-200 md:px-4">
-                      
+          <div className="flex flex-col min-w-0 md:flex-1 md:border-r md:border-gray-200 md:px-4">
+
             <span className=" font-semibold text-[#742E85] uppercase tracking-widest mb-1">Property</span>
             <div className="relative flex items-center">
               <select
@@ -261,8 +261,8 @@ function PropertyFilterBar({ projects, onFilteredProjects, onViewMore }) {
 
           {/* Budget */}
           {/* <div className="flex flex-col flex-1 min-w-[140px] md:border-r border-gray-200 md:px-4"> */}
-           <div className="flex flex-col min-w-0 md:flex-1 md:border-r md:border-gray-200 md:px-4">
-                    
+          <div className="flex flex-col min-w-0 md:flex-1 md:border-r md:border-gray-200 md:px-4">
+
             <span className=" font-semibold text-[#742E85] uppercase tracking-widest mb-1">Budget</span>
             <input
               type="range" min="65" max="1000" step="1" value={budget}
@@ -276,8 +276,8 @@ function PropertyFilterBar({ projects, onFilteredProjects, onViewMore }) {
 
           {/* Status */}
           {/* <div className="flex flex-col flex-1 min-w-[120px] md:border-r border-gray-200 md:px-4"> */}
-            <div className="flex flex-col min-w-0 md:flex-1 md:border-r md:border-gray-200 md:px-4">
-                    
+          <div className="flex flex-col min-w-0 md:flex-1 md:border-r md:border-gray-200 md:px-4">
+
             <span className="font-semibold text-[#742E85] uppercase tracking-widest mb-1">Status</span>
             <div className="relative flex items-center">
               <select
@@ -296,7 +296,7 @@ function PropertyFilterBar({ projects, onFilteredProjects, onViewMore }) {
           </div>
 
           {/* Apply */}
-          <div className="md:pl-3 w-full md:w-auto">
+          <div className="col-span-2 md:col-span-1 md:pl-3 md:w-auto">
             <button
               onClick={applyFilters}
               className="w-full md:w-auto bg-black text-white text-sm font-bold px-8 py-3 rounded-xl hover:bg-gray-900 transition whitespace-nowrap"
@@ -336,8 +336,10 @@ function HeroWhyChooseUs({ projects, onFilteredProjects, onViewMore }) {
         <Phone size={15} className='text-white mr-2 ' />   Talk to Our Property Expert  : <a href="tel:+919284429197" className='mr-2'> 9284429197</a>  |  <a href="tel:+919529249230" className='ml-2'>9529249230</a>
       </div>
       <section
-        className="relative w-full overflow-hidden"
-        style={{ minHeight: "92vh" }}
+        className="relative w-full overflow-hidden  h-[720px]
+    sm:h-[760px]
+    md:h-auto md:min-h-[86vh]"
+      // style={{ minHeight: "92vh" }}
       // onTouchStart={() => setIsPaused(true)}
       // onTouchEnd={() => setIsPaused(false)}
       // onMouseDown={() => setIsPaused(true)}
@@ -356,29 +358,93 @@ function HeroWhyChooseUs({ projects, onFilteredProjects, onViewMore }) {
           aria-hidden="true"
         /> */}
         <div
-          className="
-    absolute inset-0 w-full overflow-hidden
-    bg-cover  bg-center bg-no-repeat
-    bg-[url('/HeroSectionMbl.png')]
-    md:bg-[url('/HeroSection.png')]
-  "
-          style={{
-            zIndex: 0,
-          }}
+          className="absolute inset-0 w-full h-full overflow-hidden"
+          style={{ zIndex: 0 }}
           aria-hidden="true"
-        />
+        >
+          {/* Mobile */}
+          <img
+            src="/HeroSectionMbl3.png"
+            alt=""
+            className="
+      absolute inset-0
+      w-full h-full
+      object-cover
+      object-center
+      md:hidden
+    "
+          />
+
+          {/* Desktop */}
+          <img
+            src="/HeroSection.png"
+            alt=""
+            className="
+      absolute inset-0
+      w-full h-full
+      object-cover
+      object-center
+      hidden md:block
+    "
+          />
+        </div>
 
 
         {/* ── Content ── */}
-        <div
+        {/* <div
           className="relative flex flex-col justify-between px-6 md:px-14 lg:px-15  pb-4"
           style={{ zIndex: 10, minHeight: "82vh" }}
+        > */}
+        {/* <div className="flex-1 flex flex-col justify-start md:justify-center max-w-xl mt-4 md:mt-0"> */}
+
+        <div
+          className="
+    absolute top-4 left-6 right-6
+    md:relative md:top-4 md:left-8 md:right-auto
+    md:px-0 md:max-w-xl
+  "
         >
-          <div className="flex-1 flex flex-col justify-start md:justify-center max-w-xl mt-4 md:mt-0">
+          <AnimatePresence mode="wait">
+            <motion.div
+              key={current}
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -20 }}
+              transition={{ duration: 0.5 }}
+              className="w-full "
+            >
+              {/* Header */}
+              <div className="flex items-center gap-3 sm:gap-4 mb-2 sm:mb-3">
+                <div className="flex-shrink-0 flex items-center justify-center rounded-full shadow-md shadow-black/25 w-10 h-10 md:w-[50px] md:h-[50px] bg-gradient-to-br from-white to-[#E579FF]">
+                  <img
+                    src={slide.icon}
+                    alt=""
+                    className="w-6 h-6 md:w-9 md:h-9 object-contain"
+                  />
+                </div>
 
+                <h2 className="font-semibold leading-tight text-[18px] sm:text-[22px] md:text-[22px] bg-gradient-to-r from-[#000000] to-[#CD00FF] bg-clip-text text-transparent">
+                  {slide.badge}
+                </h2>
+              </div>
 
+              {/* Points */}
+              <ul className="space-y-2.5 sm:space-y-3 w-full md:max-w-[800px] text-[15px] sm:text-[16px] md:text-[16px] pl-[52px] md:pl-[66px]">
+                {slide.points.map((pt, i) => (
+                  <li
+                    key={i}
+                    className="flex items-start gap-2.5 sm:gap-3 leading-5 md:leading-[22px] text-[#5E5E5E] font-medium"
+                  >
+                    <span className="flex-shrink-0 rounded-full bg-[#5E5E5E] w-1.5 h-1.5 mt-2" />
+                    <span>{pt}</span>
+                  </li>
+                ))}
+              </ul>
+            </motion.div>
+          </AnimatePresence>
+        </div>
 
-            <AnimatePresence mode="wait">
+        {/* <AnimatePresence mode="wait">
               <motion.div
                 key={current}
                 initial={{ opacity: 0, y: 20 }}
@@ -405,7 +471,7 @@ function HeroWhyChooseUs({ projects, onFilteredProjects, onViewMore }) {
                   </h2>
                 </div>
 
-                <ul className="space-y-2.5 sm:space-y-3 w-full md:max-w-[800px] text-[15px] sm:text-[16px] md:text-[16px] pl-[52px] md:pl-[66px]">
+                <ul className="space-y-2.5 sm:space-y-3 w-full md:max-w-[800px] text-[15px] sm:text-[8px] md:text-[16px] pl-[52px] md:pl-[66px]">
                   {slide.points.map((pt, i) => (
                     <li
                       key={i}
@@ -426,17 +492,36 @@ function HeroWhyChooseUs({ projects, onFilteredProjects, onViewMore }) {
                   ))}
                 </ul>
               </motion.div>
-            </AnimatePresence>
-            <div className="flex md:hidden mt-4" >
-              <img src='/NoBorkerage.png' alt='' />
-            </div>
-          </div>
-
-
-          <div className="flex flex-col items-center gap-5 ">
-            <PropertyFilterBar projects={projects} onFilteredProjects={onFilteredProjects} onViewMore={onViewMore} />
-          </div>
+            </AnimatePresence> */}
+        <div className="absolute top-[280px] left-4 right-4 md:hidden">
+          <img
+            src="/NoBorkerage.png"
+            alt=""
+            className="w-full"
+          />
         </div>
+        {/* </div> */}
+
+        <div
+          className="
+    absolute
+    left-4 right-4
+    bottom-4
+    md:left-14 md:right-14
+    md:bottom-6
+    lg:left-15 lg:right-15
+  "
+        >
+          <PropertyFilterBar
+            projects={projects}
+            onFilteredProjects={onFilteredProjects}
+            onViewMore={onViewMore}
+          />
+        </div>
+        {/* <div className="flex flex-col items-center gap-5 ">
+            <PropertyFilterBar projects={projects} onFilteredProjects={onFilteredProjects} onViewMore={onViewMore} />
+          </div> */}
+        {/* </div> */}
       </section>
       {newLaunchProjects.length > 0 && (
         <div className="p-6 bg-[#742E85]">

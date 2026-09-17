@@ -1,4 +1,5 @@
 import { Geist, Geist_Mono, Roboto_Condensed } from "next/font/google";
+import Script from "next/script";
 import "../globals.css";
 import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
@@ -26,7 +27,7 @@ const robotoCondensed = Roboto_Condensed({
 export const metadata = {
   title: "Piinggaksha",
   description: "Zero Brokerage | Zero Fees | Zero Hidden Charges",
-   icons: {
+  icons: {
     icon: "/piinggaksha.png",
   },
 };
@@ -40,29 +41,43 @@ export default function RootLayout({ children }) {
       <body className="min-h-full flex flex-col font-roboto bg-white">
         {/* 2. Navbar sits here to stay visible on all pages */}
         <AuthProvider>
-        <Navbar />
+          <Navbar />
 
-        {/* 3. The main content will render inside this tag */}
-        <main className="flex-grow min-h-screen">
-          {children}
-          
-        </main>
-<Footer/>
-        <ToastContainer
-          position="top-right"
-          autoClose={3000}
-          hideProgressBar={false}
-          newestOnTop
-          closeOnClick
-          pauseOnHover
-          draggable
-          theme="light"
-          toastClassName="!rounded-xl !shadow-lg !text-sm !font-medium"
-          bodyClassName="!p-3"
-        />
-        <SimpleChatbot />
-      
+          {/* 3. The main content will render inside this tag */}
+          <main className="flex-grow min-h-screen">
+            {children}
+
+          </main>
+          <Footer />
+          <ToastContainer
+            position="top-right"
+            autoClose={3000}
+            hideProgressBar={false}
+            newestOnTop
+            closeOnClick
+            pauseOnHover
+            draggable
+            theme="light"
+            toastClassName="!rounded-xl !shadow-lg !text-sm !font-medium"
+            bodyClassName="!p-3"
+          />
+          <SimpleChatbot />
+
         </AuthProvider>
+         <Script
+          src="https://www.googletagmanager.com/gtag/js?id=G-8WZE3BFXH5"
+          strategy="afterInteractive"
+        />
+
+        <Script id="google-analytics" strategy="afterInteractive">
+          {`
+            window.dataLayer = window.dataLayer || [];
+            function gtag(){dataLayer.push(arguments);}
+            gtag('js', new Date());
+
+            gtag('config', 'G-8WZE3BFXH5');
+          `}
+        </Script>
       </body>
     </html>
   );

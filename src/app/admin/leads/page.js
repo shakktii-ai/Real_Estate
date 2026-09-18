@@ -64,7 +64,7 @@ export default function AdminLeadsPage() {
   return (
     <div className="p-6">
       {/* Header */}
-      <div className="flex items-center justify-between mb-6">
+      <div className="flex items-center justify-between mb-6 text-black">
         <div>
           <h1 className="text-2xl font-semibold">
             Leads
@@ -91,7 +91,7 @@ export default function AdminLeadsPage() {
       </div>
 
       {/* Stats */}
-      <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
+      <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6 text-black">
 
         <div className="bg-white border rounded-xl p-5">
           <p className="text-sm text-gray-500">
@@ -162,7 +162,7 @@ export default function AdminLeadsPage() {
       </div>
 
       {/* Table */}
-      <div className="bg-white border rounded-xl overflow-hidden">
+      <div className="bg-white border rounded-xl overflow-hidden text-black">
 
         {loading ? (
           <div className="p-10 text-center text-gray-500">
@@ -290,7 +290,7 @@ export default function AdminLeadsPage() {
       </div>
 
       {!loading && leads.length > 0 && (
-        <div className="flex items-center justify-between mt-6 gap-4">
+        <div className="flex items-center justify-between mt-6 gap-4 text-black">
           <p className="text-sm text-gray-500">
             Showing {Math.min(startIndex + 1, leads.length)}-{Math.min(startIndex + pageSize, leads.length)} of {leads.length}
           </p>

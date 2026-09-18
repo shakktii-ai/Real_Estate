@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { connectToDatabase } from "@/lib/db";
 import Lead from "@/models/LeadsAll";
 import ChatbotLead from "@/models/ChatbotLead";
+import Project from "@/models/Project";
 
 export async function GET(req) {
   try {

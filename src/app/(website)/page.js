@@ -100,8 +100,11 @@ function PropertyFilterBar({ projects, onFilteredProjects, onViewMore }) {
         }
     };
     const applyFilters = () => {
+        const effectiveBudget = (!selectedCategory && !selectedStatus && budget === 99) ? 1000 : budget;
+        setBudget(effectiveBudget);
+
         const filtered = projects.filter((project) => {
-            const matchesBudget = (project.pricing?.maxPrice || 0) / 100000 <= budget;
+            const matchesBudget = (project.pricing?.maxPrice || 0) / 100000 <= effectiveBudget;
             // const matchesCity = !selectedCity || project.address?.city === selectedCity;
             // const matchesCity =
             //     selectedCity === "Pune"
@@ -127,7 +130,7 @@ function PropertyFilterBar({ projects, onFilteredProjects, onViewMore }) {
             if (selectedCategory) params.set('category', selectedCategory);
             if (selectedCity) params.set('location', selectedCity);
             if (selectedStatus) params.set('status', selectedStatus);
-            if (budget) params.set('budget', String(budget));
+            if (effectiveBudget) params.set('budget', String(effectiveBudget));
             params.set('fromHome', '1');
             const q = params.toString();
             router.push(`/properties${q ? `?${q}` : ''}`);

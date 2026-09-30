@@ -169,12 +169,15 @@ function PropertiesContent() {
     const router = useRouter();
 
 const handleApplyFilters = () => {
+  const effectiveBudget = (!selectedCategory && !selectedStatus && budget === 99) ? 1000 : budget;
+  setBudget(effectiveBudget);
+
   const params = new URLSearchParams();
 
   if (selectedCity) params.set("location", selectedCity);
   if (selectedCategory) params.set("category", selectedCategory);
   if (selectedStatus) params.set("status", selectedStatus);
-  if (budget) params.set("budget", budget);
+  if (effectiveBudget) params.set("budget", String(effectiveBudget));
 
   router.push(`/properties?${params.toString()}`);
 };
@@ -275,12 +278,14 @@ const handleApplyFilters = () => {
     };
 
     const filteredProjects = useMemo(() => {
+        const effectiveBudget = (!selectedCategory && !selectedStatus && budget === 99) ? 1000 : budget;
+
         return projects.filter((project) => {
             const projectPriceInLakhs = project.pricing?.displayPrice
                 ? extractMinPriceInLakhs(project.pricing.displayPrice)
                 : 0;
 
-            const matchesBudget = projectPriceInLakhs <= budget;
+            const matchesBudget = projectPriceInLakhs <= effectiveBudget;
 
             const matchesConfig =
                 !selectedConfig ||

@@ -233,6 +233,11 @@ function PropertyFilterBar({ projects, onFilteredProjects, onViewMore }) {
                 <option value="Gultekdi">Pune - Gultekdi</option>
                 <option value="Wadachi Wadi">Pune - Wadachi Wadi</option>
                 <option value="NIBM Road">Pune - NIBM Road</option>
+                            <option value="Lullanagar">Pune - Lullanagar</option>
+                                <option value="Mahadev wadi">Pune - Mahadev wadi</option>
+                                <option value="Nibm annex">Pune - Nibm annex</option>
+                                <option value="Ked Nagar undri">Pune - Ked Nagar undri</option>
+                                <option value="Tribica High street Nibm">Pune - Tribica High street Nibm</option>
                 {cities.filter(c => c !== "Pune").map(city => (
                   <option key={city} value={city}>{city}</option>
                 ))}

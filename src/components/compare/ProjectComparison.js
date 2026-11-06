@@ -102,12 +102,6 @@ function ProjectThumbnail({ project, className = "h-14 w-14" }) {
   );
 }
 
-function getUniqueOptions(projects, getValue) {
-  return [...new Set(projects.flatMap(getValue).filter(Boolean))].sort((a, b) =>
-    a.localeCompare(b)
-  );
-}
-
 function ProjectOption({ project, isSelected, isFull, onSelect }) {
   const location = getLocation(project);
   const configurations = Array.isArray(project.configuration)
@@ -165,12 +159,6 @@ function ProjectSelector({ projects, selectedIds, onSelect, disabled }) {
   const [query, setQuery] = useState("");
   const [browseOpen, setBrowseOpen] = useState(false);
   const [searchOpen, setSearchOpen] = useState(false);
-  const [filters, setFilters] = useState({
-    location: "",
-    builder: "",
-    configuration: "",
-    status: "",
-  });
   const selectorRef = useRef(null);
 
   useEffect(() => {
@@ -190,14 +178,9 @@ function ProjectSelector({ projects, selectedIds, onSelect, disabled }) {
     const normalizedQuery = query.trim().toLowerCase();
     return projects.filter(
       (project) =>
-        (!normalizedQuery || getSearchText(project).includes(normalizedQuery)) &&
-        (!filters.location || getLocation(project) === filters.location) &&
-        (!filters.builder || project.builderName === filters.builder) &&
-        (!filters.configuration ||
-          project.configuration?.includes(filters.configuration)) &&
-        (!filters.status || project.status === filters.status)
+        !normalizedQuery || getSearchText(project).includes(normalizedQuery)
     );
-  }, [projects, query, filters]);
+  }, [projects, query]);
 
   const handleSelect = (project) => {
     onSelect(project);
@@ -205,33 +188,6 @@ function ProjectSelector({ projects, selectedIds, onSelect, disabled }) {
     setSearchOpen(false);
     setBrowseOpen(false);
   };
-
-  const locations = useMemo(
-    () => getUniqueOptions(projects, (project) => [getLocation(project)]),
-    [projects]
-  );
-  const builders = useMemo(
-    () =>
-      getUniqueOptions(projects, (project) =>
-        project.builderName ? [project.builderName] : []
-      ),
-    [projects]
-  );
-  const configurations = useMemo(
-    () =>
-      getUniqueOptions(projects, (project) =>
-        Array.isArray(project.configuration) ? project.configuration : []
-      ),
-    [projects]
-  );
-  const statuses = useMemo(
-    () =>
-      getUniqueOptions(projects, (project) =>
-        project.status ? [project.status] : []
-      ),
-    [projects]
-  );
-  const activeFiltersCount = Object.values(filters).filter(Boolean).length;
 
   return (
     <div ref={selectorRef} className="relative">
@@ -268,8 +224,10 @@ function ProjectSelector({ projects, selectedIds, onSelect, disabled }) {
         <button
           type="button"
           onClick={() => {
-            setBrowseOpen((open) => !open);
+            const shouldOpen = !browseOpen;
+            setBrowseOpen(shouldOpen);
             setSearchOpen(false);
+            if (shouldOpen) setQuery("");
           }}
           aria-expanded={browseOpen}
           aria-controls="browse-projects-panel"
@@ -277,11 +235,6 @@ function ProjectSelector({ projects, selectedIds, onSelect, disabled }) {
         >
           <Building2 size={17} aria-hidden="true" />
           Browse All Projects
-          {activeFiltersCount > 0 && (
-            <span className="rounded-full bg-[#742E85]/10 px-2 py-0.5 text-[10px] font-bold">
-              {activeFiltersCount} {activeFiltersCount === 1 ? "filter" : "filters"}
-            </span>
-          )}
           <ChevronDown
             size={16}
             aria-hidden="true"
@@ -327,72 +280,23 @@ function ProjectSelector({ projects, selectedIds, onSelect, disabled }) {
               <div>
                 <h3 className="font-bold text-gray-900">Browse all projects</h3>
                 <p className="mt-0.5 text-xs text-gray-500">
-                  {matches.length} {matches.length === 1 ? "project" : "projects"} found
+                  {projects.length} {projects.length === 1 ? "project" : "projects"} available
                 </p>
               </div>
-              <div className="flex items-center gap-2">
-                {activeFiltersCount > 0 && (
-                  <button
-                    type="button"
-                    onClick={() =>
-                      setFilters({
-                        location: "",
-                        builder: "",
-                        configuration: "",
-                        status: "",
-                      })
-                    }
-                    className="rounded-lg px-2 py-1.5 text-xs font-semibold text-[#742E85] hover:bg-[#742E85]/5"
-                  >
-                    Clear filters
-                  </button>
-                )}
-                <button
-                  type="button"
-                  onClick={() => setBrowseOpen(false)}
-                  aria-label="Close project browser"
-                  className="flex h-9 w-9 items-center justify-center rounded-full text-gray-500 hover:bg-gray-100 hover:text-gray-900"
-                >
-                  <X size={18} aria-hidden="true" />
-                </button>
-              </div>
-            </div>
-            <div className="grid grid-cols-1 gap-2 sm:grid-cols-2 lg:grid-cols-4">
-              {[
-                ["location", "Location", locations],
-                ["builder", "Builder / Developer", builders],
-                ["configuration", "Configuration", configurations],
-                ["status", "Project Status", statuses],
-              ].map(([key, label, options]) => (
-                <label key={key} className="min-w-0">
-                  <span className="mb-1 block text-[11px] font-semibold text-gray-500">
-                    {label}
-                  </span>
-                  <select
-                    value={filters[key]}
-                    onChange={(event) =>
-                      setFilters((current) => ({
-                        ...current,
-                        [key]: event.target.value,
-                      }))
-                    }
-                    className="w-full rounded-lg border border-gray-200 bg-white px-3 py-2.5 text-xs text-gray-800 outline-none focus:border-[#742E85] focus:ring-2 focus:ring-[#742E85]/10"
-                  >
-                    <option value="">All {label.toLowerCase()}</option>
-                    {options.map((option) => (
-                      <option key={option} value={option}>
-                        {option}
-                      </option>
-                    ))}
-                  </select>
-                </label>
-              ))}
+              <button
+                type="button"
+                onClick={() => setBrowseOpen(false)}
+                aria-label="Close project browser"
+                className="flex h-9 w-9 items-center justify-center rounded-full text-gray-500 hover:bg-gray-100 hover:text-gray-900"
+              >
+                <X size={18} aria-hidden="true" />
+              </button>
             </div>
           </div>
           <div className="max-h-[45vh] overflow-y-auto overscroll-contain sm:max-h-[50vh]">
-            {matches.length ? (
+            {projects.length ? (
               <ul className="divide-y divide-gray-100">
-                {matches.map((project) => (
+                {projects.map((project) => (
                   <ProjectOption
                     key={project._id}
                     project={project}
@@ -404,7 +308,7 @@ function ProjectSelector({ projects, selectedIds, onSelect, disabled }) {
               </ul>
             ) : (
               <p className="px-4 py-8 text-center text-sm text-gray-500">
-                No projects match the current search and filters.
+                No projects are available.
               </p>
             )}
           </div>

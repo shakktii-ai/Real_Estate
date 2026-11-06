@@ -78,6 +78,7 @@ export default function AdminProjectsPage() {
                 key={project._id}
                 project={project}
                 onDelete={handleDelete}
+                refreshData={fetchProjects}
               />
             ))
           }

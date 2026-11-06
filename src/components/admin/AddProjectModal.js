@@ -1,12 +1,17 @@
 "use client";
+import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { X, Upload, CheckCircle2, FileText } from "lucide-react";
 import { toast } from "react-toastify";
+import ProjectImageManager from "@/components/admin/ProjectImageManager";
+import { normalizeProjectImages } from "@/lib/projectImages";
+import { uploadProjectFile } from "@/lib/uploadProjectFile";
 export default function AddProjectModal({ isOpen, onClose, refreshData }) {
+    const [images, setImages] = useState([]);
+    const [uploadProgress, setUploadProgress] = useState({});
     const { register, handleSubmit, reset, setValue, watch, formState: { errors, isSubmitting } } = useForm({
         defaultValues: { constructionProgress: 65 }
     });
-    const watchedImage = watch("imageFile");
     const watchedBrochure = watch("brochureFile");
     const watchedPriceSheet = watch("priceSheetFile");
     const watchedQrCode = watch("qrCodeUrlFile");
@@ -44,19 +49,44 @@ export default function AddProjectModal({ isOpen, onClose, refreshData }) {
             return value;
         };
         try {
-            // 1. Handle File Uploads (Multiple Files)
+            // 1. Upload images and supporting project documents.
             const uploadFile = async (file) => {
                 if (!file?.[0]) return "";
                 const formData = new FormData();
                 formData.append("file", file[0]);
                 const res = await fetch("/api/upload", { method: "POST", body: formData });
                 const json = await res.json();
+                if (!res.ok || !json.url) {
+                    throw new Error(json.error || "A project document could not be uploaded.");
+                }
                 return json.url;
             };
 
-            // Upload all files in parallel for speed
-            const [mainImageUrl, brochureUrl, priceSheetUrl, qrCodeUrl] = await Promise.all([
-                uploadFile(data.imageFile),
+            const uploadedImages = await Promise.all(
+                images.map(async (image) => ({
+                    url: image.file
+                        ? await uploadProjectFile(image.file, (progress) =>
+                            setUploadProgress((current) => ({
+                                ...current,
+                                [image.id]: progress,
+                            }))
+                        )
+                        : image.url,
+                    isCover: image.isCover,
+                    order: image.order,
+                    alt: image.alt || data.projectName,
+                    category: image.category || "",
+                }))
+            );
+            const normalizedImages = normalizeProjectImages(
+                uploadedImages,
+                "",
+                data.projectName
+            );
+            const mainImageUrl =
+                normalizedImages.find((image) => image.isCover)?.url || "";
+
+            const [brochureUrl, priceSheetUrl, qrCodeUrl] = await Promise.all([
                 uploadFile(data.brochureFile),
                 uploadFile(data.priceSheetFile),
                 uploadFile(data.qrCodeUrlFile),
@@ -67,6 +97,7 @@ export default function AddProjectModal({ isOpen, onClose, refreshData }) {
                 ...data,
                 tags: data.tags || [],
                 mainImage: mainImageUrl,
+                images: normalizedImages,
                 brochureUrl,
                 priceSheetUrl,
                 qrCodeUrl,
@@ -95,7 +126,6 @@ export default function AddProjectModal({ isOpen, onClose, refreshData }) {
             };
 
             // Clean up temporary form fields
-            delete formattedData.imageFile;
             delete formattedData.brochureFile;
             delete formattedData.priceSheetFile;
             delete formattedData.qrCodeUrlFile;
@@ -115,6 +145,8 @@ export default function AddProjectModal({ isOpen, onClose, refreshData }) {
                     autoClose: 3000
                 });
                 reset();
+                setImages([]);
+                setUploadProgress({});
                 onClose();
                 refreshData();
             } else {
@@ -124,11 +156,13 @@ export default function AddProjectModal({ isOpen, onClose, refreshData }) {
         } catch (error) {
             console.error(error);
             toast.update(toastId, {
-                render: "Error: Could not save project. Please try again.",
+                render: error.message || "Error: Could not save project. Please try again.",
                 type: "error",
                 isLoading: false,
                 autoClose: 4000
             });
+        } finally {
+            setUploadProgress({});
         }
     }; if (!isOpen) return null;
 
@@ -354,25 +388,15 @@ export default function AddProjectModal({ isOpen, onClose, refreshData }) {
                     <div>
                         <h3 className="text-sm font-semibold mb-4 text-black">Media & Documents</h3>
 
-                        <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                            {/* Project Image */}
-                            <label className={`border-2 border-dashed rounded-2xl p-4 flex flex-col items-center justify-center gap-2 cursor-pointer transition-all ${watchedImage?.length > 0 ? 'border-green-500 bg-green-50' : 'border-gray-200 hover:border-[#D81B60]'}`}>
-                                <FileStatus fileList={watchedImage} label="Project Image" />
-                                <input type="file" accept="image/*" {...register("imageFile")} className="hidden" />
-                                {watchedImage?.length > 0 && (
-                                    <button
-                                        type="button"
-                                        onClick={(e) => {
-                                            e.stopPropagation();
-                                            removeFile("imageFile");
-                                        }}
-                                        className="mt-2 text-xs text-red-500 underline"
-                                    >
-                                        Remove
-                                    </button>
-                                )}
-                            </label>
+                        <ProjectImageManager
+                            images={images}
+                            onChange={setImages}
+                            projectName={watch("projectName")}
+                            uploadProgress={uploadProgress}
+                            disabled={isSubmitting}
+                        />
 
+                        <div className="mt-5 grid grid-cols-2 gap-4 md:grid-cols-3">
                             {/* Brochure */}
                             <label className={`border-2 border-dashed rounded-2xl p-4 flex flex-col items-center justify-center gap-2 cursor-pointer transition-all ${watchedBrochure?.length > 0 ? 'border-green-500 bg-green-50' : 'border-gray-200 hover:border-[#742E85]'}`}>
                                 <FileStatus fileList={watchedBrochure} label="Brochure PDF" />

@@ -29,7 +29,7 @@ export default function AdminDashboard() {
 
   useEffect(() => {
     if (!isMounted) return;
-   const fetchStats = async () => {
+    const fetchStats = async () => {
       try {
         const res = await fetch("/api/dashboard");
         const data = await res.json();
@@ -98,20 +98,35 @@ export default function AdminDashboard() {
       <div className="bg-white p-4 sm:p-6 rounded-2xl shadow-sm mb-8 sm:mb-10">
         <h3 className="font-bold mb-4 text-black">Quick Actions</h3>
         <div className="flex flex-col sm:flex-row gap-3">
-          <Link href="/admin/projects" className="w-full sm:w-auto">
-            <button className="w-full flex items-center justify-center gap-2 px-6 py-3 border rounded-xl font-bold text-sm text-black hover:bg-gray-50">
-              <Plus size={18} /> Add Project
-            </button>
-          </Link>
-          <Link href="/admin/blogs" className="w-full sm:w-auto">
-            <button className="w-full flex items-center justify-center gap-2 px-6 py-3 border rounded-xl font-bold text-sm text-black hover:bg-gray-50">
-              <Plus size={18} /> Add Blogs
-            </button>
-          </Link>
-          <Link href="/admin/calenderandbooking" className="w-full sm:w-auto">
-            <button className="w-full flex items-center justify-center gap-2 px-6 py-3 border rounded-xl font-bold text-sm text-black hover:bg-gray-50">
-              <Eye size={18} /> View Bookings
-            </button>
+         <Link 
+  href="/admin/projects" 
+  className="w-full sm:w-auto flex items-center justify-center gap-2 px-6 py-3 border border-gray-200 rounded-xl font-bold text-sm text-black hover:bg-gray-50 transition-colors duration-200 text-center"
+>
+  <Plus size={18} className="shrink-0" />
+  <span>Add Project</span>
+</Link>
+
+<Link 
+  href="/admin/blogs" 
+  className="w-full sm:w-auto flex items-center justify-center gap-2 px-6 py-3 border border-gray-200 rounded-xl font-bold text-sm text-black hover:bg-gray-50 transition-colors duration-200 text-center"
+>
+  <Plus size={18} className="shrink-0" />
+  <span>Add Blogs</span>
+</Link>
+
+<Link 
+  href="/admin/calenderandbooking" 
+  className="w-full sm:w-auto flex items-center justify-center gap-2 px-6 py-3 border border-gray-200 rounded-xl font-bold text-sm text-black hover:bg-gray-50 transition-colors duration-200 text-center"
+>
+  <Eye size={18} className="shrink-0" />
+  <span>View Bookings</span>
+</Link>
+          <Link
+            href="/admin/leadPluss"
+            className="w-full sm:w-auto flex items-center justify-center gap-2 px-6 py-3 border border-gray-200  rounded-xl font-bold text-sm text-black hover:bg-gray-50 transition-colors duration-200 text-center"
+          >
+            <Plus size={18} className="shrink-0" />
+            <span>Add LeadPluss</span>
           </Link>
         </div>
       </div>

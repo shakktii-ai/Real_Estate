@@ -1,4 +1,6 @@
 import Link from "next/link";
+import ProjectImage from "@/components/ProjectImage";
+import { getProjectCoverImage } from "@/lib/projectImages";
 
 export default function NewLaunchCard({ project }) {
   const priceLabel = (() => {
@@ -26,11 +28,14 @@ export default function NewLaunchCard({ project }) {
       <div className="group w-full lg:w-[250px] bg-white border border-[#000000] rounded-2xl  p-2  transition cursor-pointer">
 
         <div className="flex gap-2">
-          <img
-            src={project.mainImage}
-            alt={project.projectName}
-            className="w-16 h-16 rounded-xl object-cover flex-shrink-0 shadow-md shadow-black/32"
-          />
+          <div className="relative h-16 w-16 flex-shrink-0 overflow-hidden rounded-xl shadow-md shadow-black/32">
+            <ProjectImage
+              src={getProjectCoverImage(project)}
+              alt={project.projectName || "Project"}
+              sizes="64px"
+              className="h-full w-full object-cover"
+            />
+          </div>
 
           <div className="flex-1 min-w-0">
             <h3 className="text-[12px] font-medium text-black ">

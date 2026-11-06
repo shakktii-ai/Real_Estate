@@ -3,6 +3,13 @@
 import { useState, useEffect } from "react";
 import { X, Upload } from "lucide-react";
 import { toast } from "react-toastify";
+import ProjectImageManager from "@/components/admin/ProjectImageManager";
+import {
+  getProjectImages,
+  MAX_PROJECT_IMAGES,
+  normalizeProjectImages,
+} from "@/lib/projectImages";
+import { uploadProjectFile } from "@/lib/uploadProjectFile";
 
 export default function EditProjectModal({
   isOpen,
@@ -11,6 +18,8 @@ export default function EditProjectModal({
   project,
 }) {
   const [loading, setLoading] = useState(false);
+  const [images, setImages] = useState([]);
+  const [uploadProgress, setUploadProgress] = useState({});
 
   const [formData, setFormData] = useState({
     projectName: "",
@@ -29,11 +38,9 @@ export default function EditProjectModal({
     progress: 0,
     tags: [],
     priceDrop: false,
-    image: null,
     brochure: null,
     priceSheet: null,
     qrCode: null,
-    removeImage: false,
     removeBrochure: false,
     removePriceSheet: false,
     removeQrCode: false,
@@ -79,6 +86,12 @@ export default function EditProjectModal({
     if (project) {
       const old = convertFromRupees(project.priceDrop?.oldPrice);
       const newP = convertFromRupees(project.priceDrop?.newPrice);
+      setImages(
+        getProjectImages(project).map((image, index) => ({
+          ...image,
+          id: `${project._id}-${index}`,
+        }))
+      );
       setFormData({
         projectName: project.projectName || "",
         builderName: project.builderName || "",
@@ -107,7 +120,6 @@ export default function EditProjectModal({
         usp: project.usp?.join(", ") || "",
 
         description: project.description || "",
-        removeImage: false,
         removeBrochure: false,
         removePriceSheet: false,
         removeQrCode: false,
@@ -128,6 +140,9 @@ export default function EditProjectModal({
     });
 
     const data = await res.json();
+    if (!res.ok || !data.url) {
+      throw new Error(data.error || "A project document could not be uploaded.");
+    }
     return data.url;
   };
 
@@ -140,8 +155,35 @@ export default function EditProjectModal({
     try {
       setLoading(true);
 
-      const [img, brochure, sheet, qr] = await Promise.all([
-        uploadFile(formData.image),
+      if (images.length > MAX_PROJECT_IMAGES) {
+        throw new Error(`A project can have up to ${MAX_PROJECT_IMAGES} images.`);
+      }
+
+      const uploadedImages = await Promise.all(
+        images.map(async (image) => ({
+          url: image.file
+            ? await uploadProjectFile(image.file, (progress) =>
+                setUploadProgress((current) => ({
+                  ...current,
+                  [image.id]: progress,
+                }))
+              )
+            : image.url,
+          isCover: image.isCover,
+          order: image.order,
+          alt: image.alt || formData.projectName,
+          category: image.category || "",
+        }))
+      );
+      const normalizedImages = normalizeProjectImages(
+        uploadedImages,
+        "",
+        formData.projectName
+      );
+      const mainImage =
+        normalizedImages.find((image) => image.isCover)?.url || "";
+
+      const [brochure, sheet, qr] = await Promise.all([
         uploadFile(formData.brochure),
         uploadFile(formData.priceSheet),
         uploadFile(formData.qrCode),
@@ -185,7 +227,8 @@ export default function EditProjectModal({
 
         description: formData.description,
 
-        mainImage: img || project.mainImage,
+        mainImage,
+        images: normalizedImages,
         brochureUrl: brochure || project.brochureUrl,
         priceSheetUrl: sheet || project.priceSheetUrl,
         qrCodeUrl: formData.removeQrCode ? "" : qr || project.qrCodeUrl,
@@ -223,6 +266,7 @@ export default function EditProjectModal({
       });
     } finally {
       setLoading(false);
+      setUploadProgress({});
     }
   };
 
@@ -420,27 +464,16 @@ export default function EditProjectModal({
           <div>
             <label className="text-sm font-semibold mb-2 block">Media & Documents</label>
 
-            {/* EXISTING PREVIEW */}
-            <div className="grid grid-cols-4 gap-4">
-              {[
-                { key: "mainImage", label: "Image" },
-                { key: "brochureUrl", label: "Brochure" },
-                { key: "priceSheetUrl", label: "Price Sheet" },
-                { key: "qrCodeUrl", label: "QR Code" },
-              ].map((item) => (
-                <div key={item.key}>
-                  {project[item.key] && (
-                    <p className="text-xs text-green-600 mb-1">
-                      Existing {item.label} ✓
-                    </p>
-                  )}
-                </div>
-              ))}
-            </div>
+            <ProjectImageManager
+              images={images}
+              onChange={setImages}
+              projectName={formData.projectName}
+              uploadProgress={uploadProgress}
+              disabled={loading}
+            />
 
-            <div className="grid grid-cols-4 gap-4">
+            <div className="mt-5 grid grid-cols-2 gap-4 md:grid-cols-3">
               {[
-                { field: 'image', label: 'Project Image', projectKey: 'mainImage', removeFlag: 'removeImage' },
                 { field: 'brochure', label: 'Brochure', projectKey: 'brochureUrl', removeFlag: 'removeBrochure' },
                 { field: 'priceSheet', label: 'Price Sheet', projectKey: 'priceSheetUrl', removeFlag: 'removePriceSheet' },
                 { field: 'qrCode', label: 'QR Code', projectKey: 'qrCodeUrl', removeFlag: 'removeQrCode' },

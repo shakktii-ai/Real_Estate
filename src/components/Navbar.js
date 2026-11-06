@@ -33,11 +33,12 @@ const Navbar = () => {
 
   const navLinks = [
     { name: "Home", href: "/" },
-    { name: "Explore Properties", href: "/properties" },
+    { name: " Properties", href: "/properties" },
     { name: "Blogs", href: "/blogs" },
     { name: "EMI Calculator", href: "/emi" },
     { name: "About Us", href: "/about" },
     { name: "Refer Now", href: "/referrals" },
+    {name: "Compare", href: "/compare" }
   ];
 
   useEffect(() => {

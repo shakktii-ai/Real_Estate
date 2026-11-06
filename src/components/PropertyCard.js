@@ -7,6 +7,8 @@ import { useAuth } from '@/lib/context/AuthContext';
 import { BsWhatsapp } from 'react-icons/bs';
 import ShareProject from '@/components/ShareProject';
 import Image from 'next/image';
+import ProjectImage from "@/components/ProjectImage";
+import { getProjectCoverImage } from "@/lib/projectImages";
 const PropertyCard = ({ project, isWishlisted, onToggleWishlist, onTourClick }) => {
   const { user } = useAuth();
   const [showAllAmenities, setShowAllAmenities] = useState(false);
@@ -45,12 +47,11 @@ const [showOverlay, setShowOverlay] = useState(false);
 }}
 >
 
-            <img
-              src={project.mainImage}
-              alt={project.projectName}
-              loading="lazy"
-              decoding="async"
-              className="w-full h-full object-cover rounded-t-2xl"
+            <ProjectImage
+              src={getProjectCoverImage(project)}
+              alt={project.projectName || "Project"}
+              sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 25vw"
+              className="h-full w-full rounded-t-2xl object-cover"
             />
             <div
   className={`absolute inset-0 bg-black/68 transition-all duration-300 flex flex-col items-center justify-center z-20

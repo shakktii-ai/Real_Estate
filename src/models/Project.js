@@ -1,5 +1,16 @@
 import mongoose from "mongoose";
 
+const ProjectImageSchema = new mongoose.Schema(
+  {
+    url: { type: String, required: true, trim: true },
+    isCover: { type: Boolean, default: false },
+    order: { type: Number, min: 0, default: 0 },
+    alt: { type: String, trim: true, default: "" },
+    category: { type: String, trim: true, default: "" },
+  },
+  { _id: false }
+);
+
 const ProjectSchema = new mongoose.Schema(
   {
     // Basic Information
@@ -69,6 +80,7 @@ const ProjectSchema = new mongoose.Schema(
     // Media & Files
   
     mainImage: { type: String },
+    images: { type: [ProjectImageSchema], default: undefined },
     brochureUrl: { type: String },
     priceSheetUrl: { type: String },
    qrCodeUrl: { type: String },
@@ -80,6 +92,43 @@ const ProjectSchema = new mongoose.Schema(
   },
   { timestamps: true } // Automatically creates createdAt and updatedAt
 );
+
+ProjectSchema.pre("validate", function () {
+  const projectImages = Array.isArray(this.images) ? this.images : [];
+
+  if (!projectImages.length) {
+    if (this.mainImage) {
+      this.images = [
+        {
+          url: this.mainImage,
+          isCover: true,
+          order: 0,
+          alt: this.projectName || "",
+        },
+      ];
+    }
+    return;
+  }
+
+  const explicitlySelectedCover = projectImages.findIndex(
+    (image) => image.isCover
+  );
+  const mainImageCover = projectImages.findIndex(
+    (image) => image.url === this.mainImage
+  );
+  const coverIndex =
+    explicitlySelectedCover >= 0
+      ? explicitlySelectedCover
+      : mainImageCover >= 0
+        ? mainImageCover
+        : 0;
+
+  projectImages.forEach((image, index) => {
+    image.isCover = index === coverIndex;
+    image.order = index;
+  });
+  this.mainImage = projectImages[coverIndex]?.url || "";
+});
 
 // This prevents Mongoose from creating the model multiple times during Next.js Hot Reloads
 const Project = mongoose.models.Project || mongoose.model("Project", ProjectSchema);

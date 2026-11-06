@@ -5,6 +5,8 @@ import HeartButton from "@/components/HeartButton"
 import { useAuth } from "@/lib/context/AuthContext";
 import { BsWhatsapp } from "react-icons/bs";
 import ShareProject from "@/components/ShareProject";
+import ProjectImage from "@/components/ProjectImage";
+import { getProjectCoverImage } from "@/lib/projectImages";
 export default function ProjectListCard({ project, isWishlisted, onToggleWishlist, onTourClick }) {
   const { user } = useAuth();
   const [showAllAmenities, setShowAllAmenities] = useState(false);
@@ -27,10 +29,11 @@ export default function ProjectListCard({ project, isWishlisted, onToggleWishlis
       {/* Left Image Section */}
       <div className="relative w-full md:w-[45%] h-60 md:h-full overflow-hidden rounded-l-3xl">
           <Link href={`/properties/${project.slug}`}>
-        <img
-          src={project.mainImage}
-          className="w-full h-full object-cover"
-          alt={project.projectName}
+        <ProjectImage
+          src={getProjectCoverImage(project)}
+          className="h-full w-full object-cover"
+          alt={project.projectName || "Project"}
+          sizes="(max-width: 768px) 100vw, 45vw"
         />
         </Link>
         <div className="absolute top-3 left-3 flex flex-wrap gap-2 max-w-[80%]">

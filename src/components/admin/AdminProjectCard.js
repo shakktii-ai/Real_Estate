@@ -1,23 +1,9 @@
 import { Edit, Trash2 } from 'lucide-react';
 import PropertyCard from '../PropertyCard'; // Reuse the card we made earlier
 import EditProjectModal from '@/components/admin/EditProjectModal';
-import { useState, useEffect } from 'react';
-export default function AdminProjectCard({ project, onEdit, onDelete }) {
+import { useState } from 'react';
+export default function AdminProjectCard({ project, onDelete, refreshData }) {
   const [editData, setEditData] = useState(null);
-  const [projects, setProjects] = useState([]);
-  const fetchProjects = async () => {
-    try {
-      const res = await fetch("/api/properties");
-      const data = await res.json();
-      setProjects(data);
-    } catch (error) {
-      console.error("Failed to fetch projects:", error);
-    }
-  };
-
-  useEffect(() => {
-    fetchProjects();
-  }, []);
   return (
      <div className="flex flex-col h-full rounded-2xl border border-gray-200 shadow-sm bg-white overflow-hidden">
       {/* Main Content: flex-grow ensures this takes up available space */}
@@ -45,7 +31,7 @@ export default function AdminProjectCard({ project, onEdit, onDelete }) {
         isOpen={!!editData}
         project={editData}
         onClose={() => setEditData(null)}
-         refreshData={fetchProjects}
+        onRefresh={refreshData}
       />
     </div>
   );

@@ -5,6 +5,8 @@
 import { X, ChevronRight, Phone } from "lucide-react";
 import Link from "next/link";
 import Image from "next/image";
+import ProjectImage from "@/components/ProjectImage";
+import { getProjectCoverImage } from "@/lib/projectImages";
 export default function NewLaunchPopup({
     open,
     onClose,
@@ -67,7 +69,7 @@ export default function NewLaunchPopup({
                         </h2>
 
                         <p className="mt-2 text-[15px] font-normal">
-                            New launches you don't want to miss
+                            New launches you don&apos;t want to miss
                         </p>
 
                         <div className="mt-2 bg-white/32 rounded-full py-1 text-[14px] font-medium">
@@ -92,10 +94,14 @@ export default function NewLaunchPopup({
 
                             <div className="border-1 border-gray-300 rounded-2xl p-2  transition flex gap-2 my-2.5">
 
-                                <img
-                                    src={project.mainImage}
-                                    className="w-[103px] h-[100px] rounded-2xl object-cover"
-                                />
+                                <div className="relative h-[100px] w-[103px] shrink-0 overflow-hidden rounded-2xl">
+                                    <ProjectImage
+                                        src={getProjectCoverImage(project)}
+                                        alt={project.projectName || "Project"}
+                                        sizes="103px"
+                                        className="h-full w-full object-cover"
+                                    />
+                                </div>
 
                                 <div className="flex-1">
 

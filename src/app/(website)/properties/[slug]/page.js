@@ -15,6 +15,9 @@ import ShareProject from "@/components/ShareProject";
 import { RiTelegram2Fill } from "react-icons/ri";
 import { FaTelegramPlane } from "react-icons/fa";
 import Image from "next/image";
+import ProjectImage from "@/components/ProjectImage";
+import ProjectImageGallery from "@/components/ProjectImageGallery";
+import { getProjectCoverImage } from "@/lib/projectImages";
 export default function ProjectDetails() {
   const { user } = useAuth();
   const { slug } = useParams();
@@ -340,47 +343,40 @@ Team Piinggaksha`;
       </div>
 
       {/* 2. Main Hero Image Section */}
-      <div className="flex flex-col md:flex-row gap-6">
+      <div className="flex flex-col lg:flex-row gap-6">
         <div className="w-full lg:w-[70%]">
-          <div className="relative rounded-3xl overflow-hidden shadow-xl aspect-[16/10] md:aspect-[16/8]">
-            <img
-              src={project.mainImage || "https://via.placeholder.com/1200x500"}
-              alt={project.projectName}
-              className="w-full h-full"
-            />
+          <ProjectImageGallery project={project}>
             {project.tags?.includes("RERA Verified") && (
-              <div className="absolute bottom-3 left-3 bg-[#DBFCE7] px-2 py-1 rounded-full flex items-center gap-1 text-[10px] text-[#009318] font-bold border border-green-200">
+              <div className="absolute bottom-3 left-3 rounded-full border border-green-200 bg-[#DBFCE7] px-2 py-1 text-[10px] font-bold text-[#009318]">
                 RERA Verified
               </div>
             )}
             {project.tags?.includes("Highest Selling") && (
-              <div className="absolute bottom-3 left-26 bg-[#FFA900] px-2 py-1 rounded-full flex items-center gap-1 text-[10px] text-[#ffffff] font-normal  whitespace-nowrap shadow-md">
+              <div className="absolute bottom-3 left-28 flex items-center gap-1 rounded-full bg-[#FFA900] px-2 py-1 text-[10px] font-normal text-white shadow-md">
                 <Image
                   src="/fire.png"
-                  alt="Highest Selling"
+                  alt=""
                   width={12}
                   height={12}
-                  className="object-contain flex-shrink-0"
+                  className="flex-shrink-0 object-contain"
                 />
                 <span>Highest Selling</span>
               </div>
             )}
-            <div className="absolute top-3 right-3 flex flex-wrap gap-2 max-w-[80%]">
-
-
+            <div className="absolute right-3 top-3 flex max-w-[80%] flex-wrap gap-2">
               {project.tags
                 ?.filter((tag) => tag !== "RERA Verified" && tag !== "Highest Selling")
                 .map((tag) => (
                   <span
                     key={tag}
-                    className={`px-3 py-1 rounded-full text-xs font-bold text-white ${categoryColors[tag] || "text-gray-600 bg-gray-100"
+                    className={`rounded-full px-3 py-1 text-xs font-bold text-white ${categoryColors[tag] || "bg-gray-100 text-gray-600"
                       }`}
                   >
                     {tag}
                   </span>
                 ))}
             </div>
-          </div>
+          </ProjectImageGallery>
 
           {/* 3. Stats Highlight Bar */}
           <div className="bg-white rounded-2xl shadow-sm border p-6 mt-6 grid grid-cols-2 lg:grid-cols-5 gap-4 lg:gap-6 items-center">
@@ -580,7 +576,7 @@ Team Piinggaksha`;
 
             {activeTab === "USP's of Project" && (
               <div className="bg-white border border-gray-100 rounded-2xl p-8 shadow-sm">
-                <h3 className="text-lg font-bold mb-6">USP's of Project</h3>
+                <h3 className="text-lg font-bold mb-6">USP&apos;s of Project</h3>
 
                 {project.usp?.length > 0 ? (
                   <ul className="space-y-3 list-disc list-inside text-gray-700">
@@ -651,11 +647,14 @@ Team Piinggaksha`;
                       href={`/properties/${item.slug}`}
                       className="flex gap-3 cursor-pointer rounded-xl p-2 hover:bg-gray-50 transition-all duration-1000 ease-out"
                     >
-                      <img
-                        src={item.mainImage}
-                        alt={item.projectName}
-                        className="w-24 h-20 rounded-lg object-cover"
-                      />
+                      <div className="relative h-20 w-24 shrink-0 overflow-hidden rounded-lg">
+                        <ProjectImage
+                          src={getProjectCoverImage(item)}
+                          alt={item.projectName || "Project"}
+                          sizes="96px"
+                          className="h-full w-full object-cover"
+                        />
+                      </div>
 
                       <div className="flex-1">
                         <h4 className="font-semibold text-sm line-clamp-1">

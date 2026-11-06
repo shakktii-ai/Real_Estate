@@ -5,6 +5,8 @@ import { useState, useEffect } from 'react';
 import { Heart, Sparkles, Phone, Calendar, MapPin } from 'lucide-react';
 import PriceDropFilters from '@/components/PriceDropFilter';
 import Link from 'next/link';
+import ProjectImage from "@/components/ProjectImage";
+import { getProjectCoverImage } from "@/lib/projectImages";
 // 1. Server-side Data Fetching
 
 async function getPriceDropProjects() {
@@ -77,7 +79,6 @@ const PropertyCard = ({ property }) => {
     projectName,
     builderName,
     address,
-    mainImage,
     priceDrop,
     tags,
     units
@@ -106,11 +107,12 @@ const PropertyCard = ({ property }) => {
     <div className="group bg-white rounded-2xl border border-gray-100 shadow-sm hover:shadow-md transition-all duration-300 overflow-hidden flex flex-col md:flex-row">
 
       {/* Left: Image Section */}
-      <div className="md:w-[350px] relative shrink-0">
-        <img
-          src={mainImage || "/api/placeholder/400/500"}
-          alt={projectName}
-          className="w-full h-64 md:h-full object-cover"
+      <div className="relative h-64 w-full shrink-0 md:h-auto md:w-[350px]">
+        <ProjectImage
+          src={getProjectCoverImage(property)}
+          alt={projectName || "Project"}
+          sizes="(max-width: 768px) 100vw, 350px"
+          className="h-full w-full object-cover"
         />
         <div className="absolute bottom-4 left-4 bg-red-600 text-white text-[10px] font-bold px-3 py-1 rounded shadow-lg uppercase tracking-wider">
           Limited time deal

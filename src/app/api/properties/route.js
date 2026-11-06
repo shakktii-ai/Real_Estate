@@ -2,6 +2,50 @@ import { connectToDatabase } from "@/lib/db";
 import Project from "@/models/Project";
 import { NextResponse } from "next/server";
 import Notification from "@/models/Notification";
+import {
+  MAX_PROJECT_IMAGES,
+  isValidProjectImageUrl,
+  normalizeProjectImages,
+} from "@/lib/projectImages";
+
+class ProjectImageValidationError extends Error {}
+
+function getValidatedGallery(images, mainImage, projectName) {
+  if (images !== undefined && !Array.isArray(images)) {
+    throw new ProjectImageValidationError("The project image gallery is invalid.");
+  }
+
+  if (mainImage && !isValidProjectImageUrl(mainImage)) {
+    throw new ProjectImageValidationError("The project cover image URL is invalid.");
+  }
+
+  if (!Array.isArray(images)) {
+    return normalizeProjectImages([], mainImage, projectName || "");
+  }
+
+  if (images.length > MAX_PROJECT_IMAGES) {
+    throw new ProjectImageValidationError(
+      `A project can have up to ${MAX_PROJECT_IMAGES} images.`
+    );
+  }
+
+  if (
+    images.some(
+      (image) =>
+        !image ||
+        !isValidProjectImageUrl(image.url) ||
+        (image.category !== undefined &&
+          typeof image.category !== "string") ||
+        (image.alt !== undefined && typeof image.alt !== "string")
+    )
+  ) {
+    throw new ProjectImageValidationError(
+      "One or more project image details are invalid."
+    );
+  }
+
+  return normalizeProjectImages(images, mainImage, projectName || "");
+}
 
 // 1. GET: Fetch projects for the Index Page & Admin Dashboard
 export async function GET(req) {
@@ -35,6 +79,12 @@ export async function POST(req) {
   try {
     await connectToDatabase();
     const body = await req.json();
+    const images = getValidatedGallery(
+      body.images,
+      body.mainImage,
+      body.projectName
+    );
+    const coverImage = images.find((image) => image.isCover);
 
     // Generate unique 6 digit slug
     let slug;
@@ -53,6 +103,8 @@ export async function POST(req) {
     const projectData = {
       ...body,
       slug,
+      images,
+      mainImage: coverImage?.url || "",
 
 
       reraNumber: body.reraNumber || "",

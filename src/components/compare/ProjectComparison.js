@@ -4,6 +4,7 @@ import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import Link from "next/link";
 import {
   AlertCircle,
+  Award,
   Building2,
   Check,
   ChevronDown,
@@ -13,6 +14,7 @@ import {
   MapPin,
   Plus,
   Search,
+  ShieldCheck,
   Trash2,
   X,
 } from "lucide-react";
@@ -20,6 +22,28 @@ import ProjectImage from "@/components/ProjectImage";
 import { getProjectCoverImage } from "@/lib/projectImages";
 
 const MAX_PROJECTS = 4;
+const PROPERTY_OPTIONS = ["Residential", "Commercial", "Plot"];
+const STATUS_OPTIONS = ["Ready", "Under Construction", "Late Possession"];
+const PUNE_LOCATION_OPTIONS = [
+  { value: "Pune", label: "Pune" },
+  { value: "Hadapsar", label: "Pune - Hadapsar" },
+  { value: "Kondhwa", label: "Pune - Kondhwa" },
+  { value: "Pisoli", label: "Pune - Pisoli" },
+  { value: "Undri", label: "Pune - Undri" },
+  { value: "Mohammed Wadi", label: "Pune - Mohammed Wadi" },
+  { value: "Salisbury Park", label: "Pune - Salisbury Park" },
+  { value: "Gultekdi", label: "Pune - Gultekdi" },
+  { value: "Wadachi Wadi", label: "Pune - Wadachi Wadi" },
+  { value: "NIBM Road", label: "Pune - NIBM Road" },
+  { value: "Lullanagar", label: "Pune - Lullanagar" },
+  { value: "Mahadev wadi", label: "Pune - Mahadev wadi" },
+  { value: "NIBM Annex", label: "Pune - NIBM Annex" },
+  { value: "Ked Nagar undri", label: "Pune - Ked Nagar undri" },
+  {
+    value: "Tribica High street Nibm",
+    label: "Pune - Tribica High street Nibm",
+  },
+];
 
 const comparisonRows = [
   { key: "builderName", label: "Developer Name" },
@@ -102,6 +126,293 @@ function ProjectThumbnail({ project, className = "h-14 w-14" }) {
   );
 }
 
+function getUniqueOptions(projects, getValue) {
+  const uniqueOptions = new Map();
+  projects.flatMap(getValue).forEach((value) => {
+    if (typeof value !== "string" || !value.trim()) return;
+    const option = value.trim();
+    const normalizedOption = option.toLocaleLowerCase();
+    if (!uniqueOptions.has(normalizedOption)) {
+      uniqueOptions.set(normalizedOption, option);
+    }
+  });
+  return [...uniqueOptions.values()].sort((a, b) => a.localeCompare(b));
+}
+
+function getStartingPriceInRupees(project) {
+  const price = project.pricing?.displayPrice;
+  if (typeof price !== "string") return null;
+
+  const amountMatch = price.match(/([\d,]+(?:\.\d+)?)/);
+  const unitMatch = price.match(/(crores?|cr|lakhs?|l|k)\b/i);
+  if (!amountMatch || !unitMatch) return null;
+
+  const amount = Number.parseFloat(amountMatch[1].replace(/,/g, ""));
+  if (!Number.isFinite(amount) || amount <= 0) return null;
+
+  const unit = unitMatch[1].toLowerCase();
+  const multiplier = unit.startsWith("cr")
+    ? 10000000
+    : unit.startsWith("l")
+      ? 100000
+      : 1000;
+  return amount * multiplier;
+}
+
+function getComparableConfigurations(project) {
+  return new Set(
+    (Array.isArray(project.configuration) ? project.configuration : [])
+      .filter((configuration) => typeof configuration === "string")
+      .map((configuration) => configuration.trim())
+      .filter(Boolean)
+      .map((configuration) =>
+        configuration.replace(/\s+/g, " ").toLocaleLowerCase()
+      )
+  );
+}
+
+function getPossessionTimestamp(value) {
+  if (typeof value !== "string" || !value.trim()) return null;
+  const monthYear = value.trim().match(/^([a-z]+)\s+(\d{4})$/i);
+  if (monthYear) {
+    const monthIndex = [
+      "january",
+      "february",
+      "march",
+      "april",
+      "may",
+      "june",
+      "july",
+      "august",
+      "september",
+      "october",
+      "november",
+      "december",
+    ].findIndex((month) => month.startsWith(monthYear[1].toLowerCase()));
+    if (monthIndex >= 0) {
+      return Date.UTC(Number(monthYear[2]), monthIndex, 1);
+    }
+  }
+
+  const timestamp = Date.parse(value);
+  return Number.isFinite(timestamp) ? timestamp : null;
+}
+
+function getRecommendation(projects) {
+  if (!projects.length) return null;
+
+  let candidates = projects.map((project, index) => ({ project, index }));
+  const reasons = [];
+  const readyCandidates = candidates.filter(
+    ({ project }) => project.status === "Ready"
+  );
+
+  if (readyCandidates.length) {
+    const readyProjectsNarrowedCandidates =
+      readyCandidates.length < candidates.length;
+    candidates = readyCandidates;
+    reasons.push(
+      readyProjectsNarrowedCandidates
+        ? "Ready-to-move status: prioritized projects marked Ready."
+        : "All compared projects are marked Ready."
+    );
+  } else {
+    reasons.push("No project is marked Ready; the next priority is considered.");
+  }
+
+  if (candidates.length > 1) {
+    const configurationSets = candidates.map(({ project }) =>
+      getComparableConfigurations(project)
+    );
+    const sharedConfigurations = [...configurationSets[0]].filter(
+      (configuration) =>
+        configurationSets.every((configurations) =>
+          configurations.has(configuration)
+        )
+    );
+    const sharedConfigurationLabels = sharedConfigurations.map(
+      (configuration) =>
+        candidates[0].project.configuration.find(
+          (item) =>
+            typeof item === "string" &&
+            item.trim().replace(/\s+/g, " ").toLocaleLowerCase() ===
+              configuration
+        )
+    );
+    const prices = candidates.map(({ project }) =>
+      getStartingPriceInRupees(project)
+    );
+
+    if (sharedConfigurations.length && prices.every(Number.isFinite)) {
+      const lowestPrice = Math.min(...prices);
+      const lowerPricedCandidates = candidates.filter(
+        (_, index) => prices[index] === lowestPrice
+      );
+      candidates = lowerPricedCandidates;
+      reasons.push(
+        candidates.length < prices.length
+          ? `Lower listed price for the shared ${sharedConfigurationLabels.join(
+              ", "
+            )} configuration${sharedConfigurations.length > 1 ? "s" : ""}.`
+          : `Listed prices are equal for the shared ${sharedConfigurationLabels.join(
+              ", "
+            )} configuration${sharedConfigurations.length > 1 ? "s" : ""}.`
+      );
+    } else if (!sharedConfigurations.length) {
+      reasons.push(
+        "Price was not used: the remaining projects have no shared configuration."
+      );
+    } else {
+      reasons.push(
+        "Price was not used: comparable listed prices are not available for every remaining project."
+      );
+    }
+  }
+
+  if (candidates.length > 1) {
+    const possessionDates = candidates.map(({ project }) =>
+      getPossessionTimestamp(project.possessionDate)
+    );
+    if (possessionDates.every(Number.isFinite)) {
+      const earliestPossession = Math.min(...possessionDates);
+      const earliestCandidates = candidates.filter(
+        (_, index) => possessionDates[index] === earliestPossession
+      );
+      candidates = earliestCandidates;
+      reasons.push(
+        candidates.length < possessionDates.length
+          ? "Earlier stated possession date."
+          : "Stated possession dates are equal."
+      );
+    } else {
+      reasons.push(
+        "Possession dates were not used because a comparable date is unavailable."
+      );
+    }
+  }
+
+  if (candidates.length > 1) {
+    const progressValues = candidates.map(({ project }) =>
+      typeof project.constructionProgress === "number" &&
+      Number.isFinite(project.constructionProgress) &&
+      project.constructionProgress >= 0 &&
+      project.constructionProgress <= 100
+        ? project.constructionProgress
+        : null
+    );
+    if (progressValues.every(Number.isFinite)) {
+      const highestProgress = Math.max(...progressValues);
+      const highestProgressCandidates = candidates.filter(
+        (_, index) => progressValues[index] === highestProgress
+      );
+      candidates = highestProgressCandidates;
+      reasons.push(
+        candidates.length < progressValues.length
+          ? "Higher reported construction progress."
+          : "Reported construction progress is equal."
+      );
+    } else {
+      reasons.push(
+        "Construction progress was not used because a valid value is unavailable."
+      );
+    }
+  }
+
+  const recommended = candidates.reduce(
+    (first, candidate) => (candidate.index < first.index ? candidate : first),
+    candidates[0]
+  );
+  if (candidates.length > 1) {
+    reasons.push("Selection order was used to resolve the remaining tie.");
+  }
+
+  return { project: recommended.project, reasons };
+}
+
+function RecommendationPanel({ projects }) {
+  const recommendation = getRecommendation(projects);
+  const recommendedProject = recommendation?.project;
+
+  return (
+    <aside
+      aria-labelledby="comparison-recommendations-heading"
+      className="mt-6 overflow-hidden rounded-2xl border border-[#742E85]/15 bg-white shadow-sm"
+    >
+      <div className="flex items-center gap-3 border-b border-gray-100 bg-gradient-to-r from-[#742E85]/[0.07] to-white px-5 py-4 sm:px-6">
+        {/* <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-[#742E85] text-white shadow-sm">
+          <Award size={20} aria-hidden="true" />
+        </span> */}
+        <div className="min-w-0">
+          <h3
+            id="comparison-recommendations-heading"
+            className="text-base font-bold text-gray-900"
+          >
+            Our recommendation
+          </h3>
+          <p className="mt-0.5 text-xs text-gray-500">
+            Ranked using your priorities and the project details available.
+          </p>
+        </div>
+      </div>
+      {recommendedProject ? (
+        <div className="grid gap-5 p-5 sm:p-6 lg:grid-cols-[minmax(0,1fr)_minmax(0,1.15fr)] lg:items-center">
+          <div className="flex min-w-0 items-center gap-4">
+            <ProjectThumbnail
+              project={recommendedProject}
+              className="h-20 w-24 rounded-xl"
+            />
+            <div className="min-w-0">
+              <span className="mb-1 inline-flex items-center gap-1 rounded-full bg-emerald-50 px-2.5 py-1 text-[11px] font-semibold text-emerald-700">
+                <ShieldCheck size={13} aria-hidden="true" />
+                Recommended match
+              </span>
+              <h4 className="text-lg font-bold leading-snug text-gray-950">
+                {recommendedProject.projectName || "Unnamed project"}
+              </h4>
+              <p className="mt-1 truncate text-sm text-gray-600">
+                {recommendedProject.builderName || "Developer not available"}
+                {getLocation(recommendedProject)
+                  ? ` · ${getLocation(recommendedProject)}`
+                  : ""}
+              </p>
+              <p className="mt-1 text-sm font-semibold text-[#742E85]">
+                {recommendedProject.pricing?.displayPrice || "Price not available"}
+              </p>
+            </div>
+          </div>
+          {/* <div className="rounded-xl border border-gray-100 bg-[#FAF9FB] p-4 sm:p-5">
+            <h5 className="text-xs font-bold uppercase tracking-wide text-gray-500">
+              Why this project
+            </h5>
+            <ol className="mt-3 space-y-2.5">
+              {recommendation.reasons.map((reason, index) => (
+                <li
+                  key={`${index}-${reason}`}
+                  className="flex gap-2.5 text-sm leading-5 text-gray-700"
+                >
+                  <span className="flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-[#742E85]/10 text-[10px] font-bold text-[#742E85]">
+                    {index + 1}
+                  </span>
+                  <span>{reason}</span>
+                </li>
+              ))}
+            </ol>
+          </div>
+          <p className="text-xs leading-5 text-gray-500 lg:col-span-2">
+            Price is compared only when all remaining candidates share a
+            configuration. Recommendations reflect listed information only
+            and are not investment advice.
+          </p> */}
+        </div>
+      ) : (
+        <p className="p-5 text-sm text-gray-600">
+          Select projects to see a recommendation.
+        </p>
+      )}
+    </aside>
+  );
+}
+
 function ProjectOption({ project, isSelected, isFull, onSelect }) {
   const location = getLocation(project);
   const configurations = Array.isArray(project.configuration)
@@ -159,6 +470,11 @@ function ProjectSelector({ projects, selectedIds, onSelect, disabled }) {
   const [query, setQuery] = useState("");
   const [browseOpen, setBrowseOpen] = useState(false);
   const [searchOpen, setSearchOpen] = useState(false);
+  const [filters, setFilters] = useState({
+    location: "",
+    property: "",
+    status: "",
+  });
   const selectorRef = useRef(null);
 
   useEffect(() => {
@@ -178,16 +494,34 @@ function ProjectSelector({ projects, selectedIds, onSelect, disabled }) {
     const normalizedQuery = query.trim().toLowerCase();
     return projects.filter(
       (project) =>
-        !normalizedQuery || getSearchText(project).includes(normalizedQuery)
+        (!normalizedQuery || getSearchText(project).includes(normalizedQuery)) &&
+        (!filters.location ||
+          filters.location === "Pune" ||
+          project.address?.city === filters.location ||
+          project.address?.area?.includes(filters.location)) &&
+        (!filters.property || project.tags?.includes(filters.property)) &&
+        (!filters.status || project.status === filters.status)
     );
-  }, [projects, query]);
-
+  }, [projects, query, filters]);
   const handleSelect = (project) => {
     onSelect(project);
     setQuery("");
     setSearchOpen(false);
     setBrowseOpen(false);
   };
+
+  const locations = useMemo(() => {
+    const knownLocations = new Set(
+      PUNE_LOCATION_OPTIONS.map((location) => location.value)
+    );
+    const projectCities = getUniqueOptions(projects, (project) =>
+      project.address?.city ? [project.address.city] : []
+    )
+      .filter((city) => city !== "Pune" && !knownLocations.has(city))
+      .map((city) => ({ value: city, label: city }));
+    return [...PUNE_LOCATION_OPTIONS, ...projectCities];
+  }, [projects]);
+  const activeFiltersCount = Object.values(filters).filter(Boolean).length;
 
   return (
     <div ref={selectorRef} className="relative">
@@ -224,10 +558,8 @@ function ProjectSelector({ projects, selectedIds, onSelect, disabled }) {
         <button
           type="button"
           onClick={() => {
-            const shouldOpen = !browseOpen;
-            setBrowseOpen(shouldOpen);
+            setBrowseOpen((open) => !open);
             setSearchOpen(false);
-            if (shouldOpen) setQuery("");
           }}
           aria-expanded={browseOpen}
           aria-controls="browse-projects-panel"
@@ -235,6 +567,11 @@ function ProjectSelector({ projects, selectedIds, onSelect, disabled }) {
         >
           <Building2 size={17} aria-hidden="true" />
           Browse All Projects
+          {activeFiltersCount > 0 && (
+            <span className="rounded-full bg-[#742E85]/10 px-2 py-0.5 text-[10px] font-bold">
+              {activeFiltersCount} {activeFiltersCount === 1 ? "filter" : "filters"}
+            </span>
+          )}
           <ChevronDown
             size={16}
             aria-hidden="true"
@@ -280,23 +617,73 @@ function ProjectSelector({ projects, selectedIds, onSelect, disabled }) {
               <div>
                 <h3 className="font-bold text-gray-900">Browse all projects</h3>
                 <p className="mt-0.5 text-xs text-gray-500">
-                  {projects.length} {projects.length === 1 ? "project" : "projects"} available
+                  {matches.length} {matches.length === 1 ? "project" : "projects"} found
                 </p>
               </div>
-              <button
-                type="button"
-                onClick={() => setBrowseOpen(false)}
-                aria-label="Close project browser"
-                className="flex h-9 w-9 items-center justify-center rounded-full text-gray-500 hover:bg-gray-100 hover:text-gray-900"
-              >
-                <X size={18} aria-hidden="true" />
-              </button>
+              <div className="flex items-center gap-2">
+                {activeFiltersCount > 0 && (
+                  <button
+                    type="button"
+                    onClick={() =>
+                      setFilters({
+                        location: "",
+                        property: "",
+                        status: "",
+                      })
+                    }
+                    className="rounded-lg px-2 py-1.5 text-xs font-semibold text-[#742E85] hover:bg-[#742E85]/5"
+                  >
+                    Clear filters
+                  </button>
+                )}
+                <button
+                  type="button"
+                  onClick={() => setBrowseOpen(false)}
+                  aria-label="Close project browser"
+                  className="flex h-9 w-9 items-center justify-center rounded-full text-gray-500 hover:bg-gray-100 hover:text-gray-900"
+                >
+                  <X size={18} aria-hidden="true" />
+                </button>
+              </div>
+            </div>
+            <div className="grid grid-cols-1 gap-2 sm:grid-cols-2 lg:grid-cols-3">
+              {[
+                ["location", "Location", locations],
+                ["property", "Property", PROPERTY_OPTIONS],
+                ["status", "Status", STATUS_OPTIONS],
+              ].map(([key, label, options]) => (
+                <label key={key} className="min-w-0">
+                  <span className="mb-1 block text-[11px] font-semibold text-gray-500">
+                    {label}
+                  </span>
+                  <select
+                    value={filters[key]}
+                    onChange={(event) =>
+                      setFilters((current) => ({
+                        ...current,
+                        [key]: event.target.value,
+                      }))
+                    }
+                    className="w-full rounded-lg border border-gray-200 bg-white px-3 py-2.5 text-xs text-gray-800 outline-none focus:border-[#742E85] focus:ring-2 focus:ring-[#742E85]/10"
+                  >
+                    <option value="">All</option>
+                    {options.map((option) => (
+                      <option
+                        key={typeof option === "string" ? option : option.value}
+                        value={typeof option === "string" ? option : option.value}
+                      >
+                        {typeof option === "string" ? option : option.label}
+                      </option>
+                    ))}
+                  </select>
+                </label>
+              ))}
             </div>
           </div>
           <div className="max-h-[45vh] overflow-y-auto overscroll-contain sm:max-h-[50vh]">
-            {projects.length ? (
+            {matches.length ? (
               <ul className="divide-y divide-gray-100">
-                {projects.map((project) => (
+                {matches.map((project) => (
                   <ProjectOption
                     key={project._id}
                     project={project}
@@ -308,7 +695,7 @@ function ProjectSelector({ projects, selectedIds, onSelect, disabled }) {
               </ul>
             ) : (
               <p className="px-4 py-8 text-center text-sm text-gray-500">
-                No projects are available.
+                No projects match the current search and filters.
               </p>
             )}
           </div>
@@ -727,6 +1114,7 @@ export default function ProjectComparison() {
               projects={selectedProjects}
               onRemove={removeProject}
             />
+            <RecommendationPanel projects={selectedProjects} />
             <p className="mt-3 text-xs text-gray-500">
               Values marked “Not Available” are not present in the project
               record.
